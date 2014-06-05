@@ -1,0 +1,55 @@
+---
+deploy_targets:
+  local:
+    handler: :common_deployer
+    builders:
+      root:
+        handler: :common
+        type: dir
+      drupal:
+        handler: :drupal
+        type: drupal
+      repo:
+        handler: :git
+        type: direct
+      dir:
+        handler: :common
+        type: dir
+  acquia:
+    handler: :git_deployer
+    deploy_action: git_push
+    builders:
+      root:
+        handler: :git
+        type: direct
+        after_build_actions:
+          - git_commit
+      drupal:
+        handler: :drupal
+        type: drupal
+        after_build_actions:
+          - git_commit
+      repo:
+        handler: :git
+        type: strip
+        after_build_actions:
+          - git_commit
+      dir:
+        handler: :common
+        type: dir
+        after_build_actions:
+          - git_commit
+
+environments:
+  local:
+    deploy_target: local
+    state: development
+  dev:
+    deploy_target: acquia
+    state: development
+  test:
+    deploy_target: acquia
+    state: staging
+  prod:
+    deploy_target: acquia
+    state: stable
