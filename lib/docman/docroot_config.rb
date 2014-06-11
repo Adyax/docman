@@ -5,8 +5,7 @@ module Docman
 
   class DocrootConfig
 
-    attr_reader :structure, :deploy_target
-
+    attr_reader :structure, :deploy_target, :docroot_dir
     def initialize(docroot_dir, deploy_target)
       @docroot_dir = docroot_dir
       @deploy_target = deploy_target

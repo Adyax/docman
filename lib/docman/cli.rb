@@ -32,6 +32,9 @@ module Docman
     method_option :force, :aliases => '-f', :desc => 'Force full rebuild'
     def build(deploy_target, state)
       config_dir?
+      if options[:force]
+        FileUtils.rm_r('master')
+      end
       Application.instance.build(deploy_target, state, options)
       say('Complete!', :green)
     end

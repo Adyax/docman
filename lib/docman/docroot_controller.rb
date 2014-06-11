@@ -1,6 +1,7 @@
 require 'docman/builders/builder'
 require 'docman/builders/common_builder'
 require 'docman/builders/git_builder'
+require 'docman/builders/drupal_builder'
 require 'docman/deployers/deployer'
 require 'docman/deployers/git_deployer'
 require 'docman/deployers/common_deployer'

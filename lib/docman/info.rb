@@ -30,13 +30,16 @@ module Docman
     end
 
     def need_rebuild?
-      return TRUE if Docman::Application.instance.options[:force]
-      return TRUE unless File.directory? self['full_build_path']
+      return true if Docman::Application.instance.options[:force]
+      return true unless File.directory? self['full_build_path']
       info_filename = File.join(self['full_build_path'], 'info.yaml')
-      return TRUE unless File.file?(info_filename)
+      return true unless File.file?(info_filename)
       version = YAML::load_file(info_filename)
-      return TRUE if version['type'] != self['type']
-      return TRUE if version['build_type'] != self['build_type']
+      return true if version['type'] != self['type']
+      return true if version['build_type'] != self['build_type']
+      return true if (not version['version'].nil? and version['version'] != self.version)
+      return true if (not version['version_type'].nil? and version['version_type'] != self.version_type)
+      return true if (not version['state'].nil? and version['state'] != self['state'])
       false
     end
 

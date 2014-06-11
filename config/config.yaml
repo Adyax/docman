@@ -8,7 +8,7 @@ deploy_targets:
         type: dir
       drupal:
         handler: :drupal
-        type: drupal
+        type: drush
       repo:
         handler: :git
         type: direct
@@ -26,7 +26,7 @@ deploy_targets:
           - git_commit
       drupal:
         handler: :drupal
-        type: drupal
+        type: drush
         after_build_actions:
           - git_commit
       repo:

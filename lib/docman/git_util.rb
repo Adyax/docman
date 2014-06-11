@@ -3,7 +3,7 @@ module Docman
   class GitUtil
 
     def self.get(repo, path, type, version)
-      if File.directory? path
+      if File.directory? path and File.directory?(File.join(path, '.git'))
         Dir.chdir path
         `git checkout #{version} && git pull origin #{version}` if type == 'branch'
         if type == 'tag'
