@@ -24,10 +24,10 @@ module Docman
         @deploy_target = deploy_target
       end
 
-      def build(root, info)
+      def build(info)
         return if @deployed.include? info['name']
         build_type = build_type(info['type'])
-        Docman::Builders::Builder.create(build_type['handler'], root, build_type, info).do()
+        Docman::Builders::Builder.create(build_type['handler'], build_type, info).execute()
         @deployed << info['name']
       end
 

@@ -23,22 +23,22 @@ deploy_targets:
         handler: :git
         type: direct
         after_build_actions:
-          - git_commit
+          - :git_commit
       drupal:
         handler: :drupal
         type: drush
         after_build_actions:
-          - git_commit
+          - :git_commit
       repo:
         handler: :git
         type: strip
         after_build_actions:
-          - git_commit
+          - :git_commit
       dir:
         handler: :common
         type: dir
         after_build_actions:
-          - git_commit
+          - :git_commit
 
 environments:
   local:

@@ -36,11 +36,11 @@ module Docman
       info['children'] = children
 
       i = Docman::Info.new(info)
+      @root = i if parent.nil?
+      i['root'] = @root
 
       @names[name.to_s] = i
 
-      data = [i]
-      # data[:children] = children
       Dir.foreach(path) do |entry|
         next if (entry == '..' || entry == '.')
         full_path = File.join(path, entry)
@@ -66,7 +66,7 @@ module Docman
     end
 
     def root(info)
-      chain(info).each do |name, item|
+      chain(info).values.each do |item|
         if item['type'] == 'root'
           return item
         end

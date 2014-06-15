@@ -5,11 +5,11 @@ module Docman
       register_builder :common
 
       def dir
-        if File.directory? @info['full_build_path']
-          FileUtils.rm_r(@info['full_build_path']) if self.repo? @info['full_build_path']
+        if File.directory? @context['full_build_path']
+          FileUtils.rm_r(@context['full_build_path']) if self.repo? @context['full_build_path']
         end
-        FileUtils::mkdir_p @info['full_build_path']
-        @info['build_path']
+        FileUtils::mkdir_p @context['full_build_path']
+        @context['build_path']
       end
     end
   end

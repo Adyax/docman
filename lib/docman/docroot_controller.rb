@@ -5,6 +5,12 @@ require 'docman/builders/drupal_builder'
 require 'docman/deployers/deployer'
 require 'docman/deployers/git_deployer'
 require 'docman/deployers/common_deployer'
+require 'docman/command'
+require 'docman/composite_command'
+require 'docman/builders/commands/create_symlink_cmd'
+require 'docman/builders/commands/execute_script_cmd'
+require 'docman/builders/commands/clean_changed_cmd'
+require 'docman/builders/commands/git_commit_cmd'
 
 # TODO: make universal logging class.
 
@@ -24,7 +30,7 @@ module Docman
 
     def deploy(name, type, version)
       puts "Deploy #{name}, type: #{type}"
-      @docroot_config.states_dependin_on(name, version).each do |state_name, state|
+      @docroot_config.states_dependin_on(name, version).keys.each do |state_name|
         deploy_dir_chain(state_name, @docroot_config.info_by(name))
         @deployer.push(@docroot_config.root_dir, state_name)
       end
@@ -57,7 +63,7 @@ module Docman
 
     def build_dir(state, info)
       info.state = state
-      @deployer.build(@docroot_config.root(info), info)
+      @deployer.build(info)
     end
 
   end

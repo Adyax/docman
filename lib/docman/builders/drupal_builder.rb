@@ -7,13 +7,13 @@ module Docman
       register_builder :drupal
 
       def drush
-        return unless @info.need_rebuild?
+        return unless @context.need_rebuild?
         puts 'Download drupal through drush'
-        FileUtils.mkdir_p(@info['temp_path'])
-        Dir.chdir @info['temp_path']
-        `drush dl drupal-#{@info.version} --yes`
-        FileUtils.mkdir_p(@info['full_build_path'])
-        FileUtils.cp_r(Dir["#{@info['temp_path']}/drupal-#{@info.version}/."], @info['full_build_path'])
+        FileUtils.mkdir_p(@context['temp_path'])
+        Dir.chdir @context['temp_path']
+        `drush dl drupal-#{@context.version} --yes`
+        FileUtils.mkdir_p(@context['full_build_path'])
+        FileUtils.cp_r(Dir["#{@context['temp_path']}/drupal-#{@context.version}/."], @context['full_build_path'])
       end
 
     end
