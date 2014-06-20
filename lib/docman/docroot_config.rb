@@ -5,7 +5,7 @@ module Docman
 
   class DocrootConfig
 
-    attr_reader :structure, :deploy_target, :docroot_dir
+    attr_reader :structure, :deploy_target, :docroot_dir, :root
     def initialize(docroot_dir, deploy_target)
       @docroot_dir = docroot_dir
       @deploy_target = deploy_target
@@ -54,7 +54,6 @@ module Docman
       i
     end
 
-
     def chain(info)
       chain = {}
       chain[info['name']] = info
@@ -63,18 +62,6 @@ module Docman
         info = info['parent']
       end
       Hash[chain.to_a.reverse!]
-    end
-
-    def root(info)
-      chain(info).values.each do |item|
-        if item['type'] == 'root'
-          return item
-        end
-      end
-    end
-
-    def root_dir
-      @structure[:data]
     end
 
     def info_by(name)

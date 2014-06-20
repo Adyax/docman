@@ -13,12 +13,12 @@ module Docman
     def add_commands(cmds)
       return if cmds.nil?
       cmds.each do |k, v|
-        Docman::Command.create(k, v, @context).perform
+        @commands << Docman::Command.create(k, v, @context)
       end
     end
 
     def execute
-      @commands.each { |cmd| cmd.execute }
+      @commands.each { |cmd| cmd.perform }
     end
 
     def description

@@ -4,9 +4,8 @@ module Docman
 
       register_deployer :git_deployer
 
-      def push(info, state_name)
-        version = info['states'][state_name]['version']
-        GitUtil.push(info['full_build_path'], version)
+      def execute
+        GitUtil.push(@context['full_build_path'], @context.version)
       end
     end
   end

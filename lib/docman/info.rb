@@ -6,7 +6,7 @@ module Docman
       hash.each_pair do |k, v|
         self[k] = v
       end
-      self['build_type'] = self['docroot_config'].deploy_target['builders'][self['type']]['type']
+      self['build_type'] = self['docroot_config'].deploy_target['builders'][self['type']]['handler']
     end
 
     def version
@@ -17,12 +17,11 @@ module Docman
       self['states'][self['state']].nil? ? nil : self['states'][self['state']]['type']
     end
 
-    def write_info(result)
+    def write_info
       to_save = {}
       to_save['state'] = self['state']
       to_save['version_type'] = self.version_type unless self.version_type.nil?
       to_save['version'] = self.version unless self.version.nil?
-      # to_save['ref'] = result
       to_save['type'] = self['type']
       to_save['build_type'] = self['build_type']
 

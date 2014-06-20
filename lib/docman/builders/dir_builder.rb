@@ -1,10 +1,10 @@
 module Docman
   module Builders
-    class CommonBuilder < Builder
+    class DirBuilder < Builder
 
-      register_builder :common
+      register_builder :dir
 
-      def dir
+      def execute
         if File.directory? @context['full_build_path']
           FileUtils.rm_r(@context['full_build_path']) if self.repo? @context['full_build_path']
         end

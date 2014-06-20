@@ -4,40 +4,32 @@ deploy_targets:
     handler: :common_deployer
     builders:
       root:
-        handler: :common
-        type: dir
+        handler: :dir
       drupal:
-        handler: :drupal
-        type: drush
+        handler: :drupal_drush
       repo:
-        handler: :git
-        type: direct
+        handler: :git_direct
       dir:
-        handler: :common
-        type: dir
+        handler: :dir
   acquia:
     handler: :git_deployer
     deploy_action: git_push
     builders:
       root:
-        handler: :git
-        type: direct
-        after_build_actions:
+        handler: :git_direct
+        after:
           - :git_commit
       drupal:
-        handler: :drupal
-        type: drush
-        after_build_actions:
+        handler: :drupal_drush
+        after:
           - :git_commit
       repo:
-        handler: :git
-        type: strip
-        after_build_actions:
+        handler: :git_strip
+        after:
           - :git_commit
       dir:
-        handler: :common
-        type: dir
-        after_build_actions:
+        handler: :dir
+        after:
           - :git_commit
 
 environments:

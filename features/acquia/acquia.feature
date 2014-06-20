@@ -1,4 +1,4 @@
-Feature: Docroot management - Local
+Feature: Docroot management - Acquia
 
   In order to manage docroot
   As a developer using Cucumber
@@ -7,9 +7,9 @@ Feature: Docroot management - Local
   @announce
   @no-clobber
   @build
-  Scenario: Local build development
+  Scenario: Acquia build development
     Given I cd to "sample-docroot"
-    Then I run `docman build local development`
+    Then I run `docman build acquia development`
     Then the exit status should be 0
     Then the following directories should exist:
       | master |
@@ -26,7 +26,7 @@ Feature: Docroot management - Local
     Then I remove the file "master/docroot/profiles/sample_profile"
     Then the following directories should not exist:
       | master/docroot/profiles/sample_profile |
-    Then I run `docman build local development`
+    Then I run `docman build acquia development`
     Then the exit status should be 0
     Then the following directories should exist:
       | master |
@@ -62,9 +62,9 @@ Feature: Docroot management - Local
   @announce
   @no-clobber
   @deploy
-  Scenario: Local deploy sample project 1 develop
+  Scenario: Acquia deploy sample project 1 develop
     Given I cd to "sample-docroot"
-    Then I run `docman deploy local sample_project1 branch develop`
+    Then I run `docman deploy acquia sample_project1 branch develop`
     Then the exit status should be 0
     Then the following directories should exist:
       | master |
@@ -79,9 +79,9 @@ Feature: Docroot management - Local
   @announce
   @no-clobber
   @deploy
-  Scenario: Local deploy sample project 2 master
+  Scenario: Acquia deploy sample project 2 master
     Given I cd to "sample-docroot"
-    Then I run `docman deploy local sample_project2 branch master`
+    Then I run `docman deploy acquia sample_project2 branch master`
     Then the exit status should be 0
     Then the following directories should exist:
       | master |

@@ -1,18 +1,10 @@
-require 'yaml'
-
 module Docman
   module Builders
-    class GitBuilder < Builder
+    class GitStripBuilder < Builder
 
-      register_builder :git
+      register_builder :git_strip
 
-      def direct
-        puts 'Do direct'
-        GitUtil.get(@context['repo'], @context['full_build_path'], @context.version_type, @context.version)
-      end
-
-      def strip
-        puts 'Do strip'
+      def execute
         FileUtils.rm_r(@context['full_build_path']) if File.directory? @context['full_build_path']
         FileUtils.rm_r @context['temp_path'] if @context.need_rebuild? and File.directory? @context['temp_path']
         result = GitUtil.get(@context['repo'], @context['temp_path'], @context.version_type, @context.version)

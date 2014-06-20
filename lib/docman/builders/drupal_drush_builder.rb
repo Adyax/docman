@@ -2,11 +2,11 @@ require 'yaml'
 
 module Docman
   module Builders
-    class DrupalBuilder < Builder
+    class DrupalDrushBuilder < Builder
 
-      register_builder :drupal
+      register_builder :drupal_drush
 
-      def drush
+      def execute
         return unless @context.need_rebuild?
         puts 'Download drupal through drush'
         FileUtils.mkdir_p(@context['temp_path'])

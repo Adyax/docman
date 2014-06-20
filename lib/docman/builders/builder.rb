@@ -1,13 +1,13 @@
-require 'yaml'
 require 'docman/command'
 
 module Docman
   module Builders
     class Builder < Docman::Command
       @@builders = {}
+      @@builded = []
 
-      def self.create(type, params = nil, context = nil)
-        c = @@builders[type]
+      def self.create(params = nil, context = nil)
+        c = @@builders[params['handler']]
         if c
           c.new(params, context)
         else
@@ -19,23 +19,27 @@ module Docman
         @@builders[name] = self
       end
 
-      def execute
-        #TODO: need refactoring
-        @build_type = @params
+      def validate_command
+        raise "Please provide 'context'" if @context.nil?
+        raise "Context should be of type 'Info'" unless @context.is_a? Docman::Info
+      end
 
-        @before_build_actions = Docman::CompositeCommand.new(nil, @context)
-        @before_build_actions.add_commands @build_type['before_build_actions']
-        @before_build_actions.add_command(Docman::Command.create(:clean_changed, nil, @context))
-        @before_build_actions.add_commands @context['before_build_actions'] if @context.has_key? 'before_build_actions'
+      def before_execute
+        @not_execute = true if @@builded.include? @context['name']
+        actions = Docman::CompositeCommand.new(nil, @context)
+        actions.add_commands self['before']
+        actions.add_command(Docman::Command.create(:clean_changed, nil, @context))
+        actions.add_commands @context['before'] if @context.has_key? 'before'
+        actions.perform
+      end
 
-        @after_build_actions = Docman::CompositeCommand.new(nil, @context)
-        @after_build_actions.add_commands @build_type['after_build_actions']
-        @after_build_actions.add_commands @context['after_build_actions'] if @context.has_key? 'after_build_actions'
-
-        @before_build_actions.execute
-        # Dispatch to corresponding method.
-        @context.write_info(self.send("#{@build_type['type']}"))
-        @after_build_actions.execute
+      def after_execute
+        actions = Docman::CompositeCommand.new(nil, @context)
+        actions.add_commands self['after']
+        actions.add_commands @context['after'] if @context.has_key? 'after'
+        actions.perform
+        @@builded << @context['name']
+        @context.write_info
       end
 
       def repo?(path)

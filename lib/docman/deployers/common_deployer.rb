@@ -4,7 +4,7 @@ module Docman
 
       register_deployer :common_deployer
 
-      def push(info, state_name)
+      def execute
       end
     end
   end
