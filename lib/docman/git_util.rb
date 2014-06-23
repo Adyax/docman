@@ -27,9 +27,8 @@ module Docman
       if self.repo_changed? path
         puts message
         Dir.chdir root_path
-        path.slice! "#{root_path}/"
         `git pull`
-        `git add --all #{path}`
+        `git add --all #{path.slice "#{root_path}/"}`
         `git commit -m "#{message}"`
       end
     end
