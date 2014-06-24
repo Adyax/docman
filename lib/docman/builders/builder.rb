@@ -4,7 +4,7 @@ module Docman
   module Builders
     class Builder < Docman::Command
       @@builders = {}
-      @@builded = []
+      # @@builded = []
 
       def self.create(params = nil, context = nil)
         c = @@builders[params['handler']]
@@ -25,7 +25,7 @@ module Docman
       end
 
       def before_execute
-        @not_execute = true if @@builded.include? @context['name']
+        # @not_execute = true if @@builded.include? @context['name']
         actions = Docman::CompositeCommand.new(nil, @context)
         actions.add_commands self['before']
         actions.add_command(Docman::Command.create(:clean_changed, nil, @context))
@@ -38,7 +38,7 @@ module Docman
         actions.add_commands self['after']
         actions.add_commands @context['after'] if @context.has_key? 'after'
         actions.perform
-        @@builded << @context['name']
+        # @@builded << @context['name']
         @context.write_info
       end
 

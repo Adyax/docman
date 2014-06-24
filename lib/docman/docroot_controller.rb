@@ -26,6 +26,7 @@ module Docman
       docroot_config = DocrootConfig.new(docroot_dir, @deploy_target)
       @docroot_dir = docroot_dir
       @docroot_config = docroot_config
+      @builded = []
     end
 
     def deploy(name, type, version)
@@ -59,6 +60,7 @@ module Docman
 
     def deploy_dir_chain(state, info)
       @docroot_config.chain(info).values.each do |item|
+        item.state = state
         if item.need_rebuild?
           build_recursive(state, item)
           return
@@ -69,8 +71,10 @@ module Docman
     end
 
     def build_dir(state, info)
+      return if @builded.include? info['name']
       info.state = state
       Docman::Builders::Builder.create(@deploy_target['builders'][info['type']], info).perform
+      @builded << info['name']
     end
 
   end

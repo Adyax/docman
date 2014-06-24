@@ -24,6 +24,9 @@ module Docman
 
       children = []
       info = YAML::load_file(File.join(path, 'info.yaml'))
+      unless info['status'].nil?
+        return if info['status'] == 'disabled'
+      end
       name = File.basename path
       prefix = prefix.size > 0 ? File.join(prefix, name) : name
       info['full_path'] = path

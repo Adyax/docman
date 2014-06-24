@@ -38,12 +38,21 @@ module Docman
       return true if version['build_type'] != self['build_type']
       return true if (not version['version'].nil? and version['version'] != self.version)
       return true if (not version['version_type'].nil? and version['version_type'] != self.version_type)
-      return true if (not version['state'].nil? and version['state'] != self['state'])
+      unless version['state'].nil?
+        return true if version['state'] != self['state']
+      end
       false
     end
 
     def state=(state)
       self['state'] = state
+    end
+
+    def disabled?
+      unless self['status'].nil?
+        return self['status'] == 'disabled'
+      end
+      false
     end
 
   end
