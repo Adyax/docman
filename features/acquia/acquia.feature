@@ -78,7 +78,10 @@ Feature: Docroot management - Acquia
 
   @announce
   @no-clobber
+  @acquia
   @deploy
+  @master
+  @sample_project2
   Scenario: Acquia deploy sample project 2 master
     Given I cd to "sample-docroot"
     Then I run `docman deploy acquia sample_project2 branch master`

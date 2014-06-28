@@ -5,7 +5,8 @@ module Docman
       register_builder :git_direct
 
       def execute
-        GitUtil.get(@context['repo'], @context['full_build_path'], @context.version_type, @context.version)
+        execute_result = GitUtil.get(@context['repo'], @context['full_build_path'], @context.version_type, @context.version)
+        @context['type'] ? @context['build_path'] : execute_result
       end
 
     end

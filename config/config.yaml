@@ -31,17 +31,4 @@ deploy_targets:
         handler: :dir
         after:
           - :git_commit
-
 environments:
-  local:
-    deploy_target: local
-    state: development
-  dev:
-    deploy_target: acquia
-    state: development
-  test:
-    deploy_target: acquia
-    state: staging
-  prod:
-    deploy_target: acquia
-    state: stable

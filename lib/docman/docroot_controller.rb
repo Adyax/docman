@@ -18,63 +18,33 @@ require 'docman/builders/commands/git_commit_cmd'
 module Docman
   class DocrootController
 
-    attr_reader :docroot_dir
+    attr_reader :docroot_dir, :docroot_config
 
     def initialize(docroot_dir, deploy_target_name, options = {})
       @deploy_target = Docman::Application.instance.config['deploy_targets'][deploy_target_name]
+      @deploy_target_name = deploy_target_name
       Docman::Application.instance.deploy_target = @deploy_target
       docroot_config = DocrootConfig.new(docroot_dir, @deploy_target)
       @docroot_dir = docroot_dir
       @docroot_config = docroot_config
-      @builded = []
-    end
-
-    def deploy(name, type, version)
-      puts "Deploy #{name}, type: #{type}"
-      @docroot_config.states_dependin_on(name, version).keys.each do |state_name|
-        deploy_dir_chain(state_name, @docroot_config.info_by(name))
-        deployer_perform(state_name)
-      end
-    end
-
-    def deployer_perform(state_name)
-      root = @docroot_config.root
-      root.state = state_name
-      @deployer = Docman::Deployers::Deployer.create(@deploy_target, root)
-      @deployer.perform
     end
 
     def build(state_name)
-      build_recursive(state_name)
-      deployer_perform(state_name)
+      execute(state_name)
     end
 
-    def build_recursive(state, info = nil)
-      info = info ? info : @docroot_config.structure
-      build_dir(state, info)
-
-      info['children'].each do |child|
-        build_recursive(state, child)
+    def deploy(name, type, version)
+      @docroot_config.states_dependin_on(name, version).keys.each do |state_name|
+        execute(state_name, name)
       end
     end
 
-    def deploy_dir_chain(state, info)
-      @docroot_config.chain(info).values.each do |item|
-        item.state = state
-        if item.need_rebuild?
-          build_recursive(state, item)
-          return
-        elsif
-          build_dir(state, item)
-        end
-      end
-    end
-
-    def build_dir(state, info)
-      return if @builded.include? info['name']
-      info.state = state
-      Docman::Builders::Builder.create(@deploy_target['builders'][info['type']], info).perform
-      @builded << info['name']
+    def execute(state, name = nil)
+      #Docman::Application.instance.config.environment(state_name, @deploy_target_name)
+      params = @deploy_target
+      params['state'] = state
+      params['name'] = name
+      Docman::Deployers::Deployer.create(params, self).perform
     end
 
   end

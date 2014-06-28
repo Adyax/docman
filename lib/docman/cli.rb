@@ -33,7 +33,7 @@ module Docman
     def build(deploy_target, state)
       config_dir?
       if options[:force]
-        FileUtils.rm_r('master')
+        FileUtils.rm_r('master') if File.directory? 'master'
       end
       Application.instance.build(deploy_target, state, options)
       say('Complete!', :green)

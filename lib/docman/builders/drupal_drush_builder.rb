@@ -14,6 +14,7 @@ module Docman
         `drush dl drupal-#{@context.version} --yes`
         FileUtils.mkdir_p(@context['full_build_path'])
         FileUtils.cp_r(Dir["#{@context['temp_path']}/drupal-#{@context.version}/."], @context['full_build_path'])
+        @context['version']
       end
 
     end

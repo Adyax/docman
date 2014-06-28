@@ -1,3 +1,5 @@
+require 'pathname'
+
 module Docman
   class CreateSymlinkCmd < Docman::Command
 
@@ -11,8 +13,12 @@ module Docman
     end
 
     def execute
-      Dir.chdir File.join(@context['docroot_config'].docroot_dir, self['target_dir'])
-      puts `ln -s #{@context['full_build_path']} #{@context['name']}`
+      source_path = File.join(@context['docroot_config'].docroot_dir, self['target_dir'])
+      Dir.chdir source_path
+      source_pathname = Pathname.new source_path
+      target_pathname = Pathname.new @context['full_build_path']
+      relative_path = target_pathname.relative_path_from source_pathname
+      puts `ln -s #{relative_path} #{@context['name']}`
     end
   end
 end

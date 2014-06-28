@@ -11,6 +11,9 @@ module Docman
       @deploy_target = deploy_target
       @docroot_config_dir = File.join(docroot_dir, 'config')
       update
+      if File.file? File.join(@docroot_config_dir, 'config.yaml')
+        Docman::Application.instance.config.merge_config_from_file(File.join(@docroot_config_dir, 'config.yaml'))
+      end
       @names = {}
       @structure = structure_build File.join(@docroot_config_dir, 'master')
     end

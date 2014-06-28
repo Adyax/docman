@@ -1,5 +1,11 @@
+require 'docman/logging'
+
 module Docman
+
+
   class Command < Hash
+
+    include Docman::Logging
 
     @@subclasses = {}
     @not_execute = false
@@ -25,6 +31,7 @@ module Docman
       end
       # @params = params
       @context = context
+      @log = true
     end
 
     # @abstract
@@ -42,11 +49,23 @@ module Docman
     end
 
     def perform
+      if @log
+        if @context.nil?
+          logger.info "Performing command: #{describe}"
+        else
+          logger.info "Performing command: #{describe} in Context: #{@context.describe}"
+        end
+      end
       validate_command
       before_execute
       return if @not_execute
-      execute
+      @execute_result = execute
       after_execute
+      @execute_result
+    end
+
+    def describe(type = 'short')
+      properties_info
     end
 
   end

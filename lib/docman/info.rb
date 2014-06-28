@@ -1,5 +1,9 @@
+require 'docman/context'
+
 module Docman
   class Info < Hash
+
+    include Docman::Context
 
     def initialize(hash = {})
       super
@@ -17,15 +21,21 @@ module Docman
       self['states'][self['state']].nil? ? nil : self['states'][self['state']]['type']
     end
 
-    def write_info
+    def describe(type = 'short')
+      properties_info(['name', 'type', 'build_type'])
+    end
+
+    def write_info(result)
       to_save = {}
       to_save['state'] = self['state']
       to_save['version_type'] = self.version_type unless self.version_type.nil?
       to_save['version'] = self.version unless self.version.nil?
+      to_save['result'] = result
       to_save['type'] = self['type']
       to_save['build_type'] = self['build_type']
 
       File.open(File.join(self['full_build_path'], 'info.yaml'), 'w') {|f| f.write to_save.to_yaml}
+      to_save
     end
 
     def need_rebuild?

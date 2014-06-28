@@ -4,6 +4,7 @@ module Docman
       @params = params
       @context = context
       @commands = []
+      @log = false
     end
 
     def add_command(cmd)

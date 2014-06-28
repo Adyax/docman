@@ -4,7 +4,8 @@ module Docman
   module Builders
     class Builder < Docman::Command
       @@builders = {}
-      # @@builded = []
+      @@build_results = {}
+      @@builded = []
 
       def self.create(params = nil, context = nil)
         c = @@builders[params['handler']]
@@ -19,13 +20,16 @@ module Docman
         @@builders[name] = self
       end
 
+      def self.builded? name
+        @@builded.include? name
+      end
+
       def validate_command
         raise "Please provide 'context'" if @context.nil?
         raise "Context should be of type 'Info'" unless @context.is_a? Docman::Info
       end
 
       def before_execute
-        # @not_execute = true if @@builded.include? @context['name']
         actions = Docman::CompositeCommand.new(nil, @context)
         actions.add_commands self['before']
         actions.add_command(Docman::Command.create(:clean_changed, nil, @context))
@@ -38,8 +42,7 @@ module Docman
         actions.add_commands self['after']
         actions.add_commands @context['after'] if @context.has_key? 'after'
         actions.perform
-        # @@builded << @context['name']
-        @context.write_info
+        @context.write_info(@execute_result)
       end
 
       def repo?(path)
