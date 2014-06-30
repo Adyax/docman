@@ -11,6 +11,10 @@ deploy_targets:
         handler: :git_direct
       dir:
         handler: :dir
+    environments:
+      development: local
+      staging: local
+      stable: local
   acquia:
     handler: :git_deployer
     deploy_action: git_push
@@ -31,4 +35,7 @@ deploy_targets:
         handler: :dir
         after:
           - :git_commit
-environments:
+    environments:
+      development: dev
+      staging: stg
+      stable: prod

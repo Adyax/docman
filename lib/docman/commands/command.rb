@@ -23,14 +23,14 @@ module Docman
       @@subclasses[name] = self
     end
 
-    def initialize(params, context = nil)
+    def initialize(params, context = nil, caller = nil)
       unless params.nil?
         params.each_pair do |k, v|
           self[k] = v
         end
       end
-      # @params = params
       @context = context
+      @caller = caller
       @log = true
     end
 
@@ -51,21 +51,37 @@ module Docman
     def perform
       if @log
         if @context.nil?
-          logger.info "Performing command: #{describe}"
+          logger.debug "#{prefix}Started #{describe}"
         else
-          logger.info "Performing command: #{describe} in Context: #{@context.describe}"
+          logger.debug "#{prefix}Started #{describe} in Context: #{@context.describe}"
         end
       end
+
       validate_command
+      logger.debug "#{prefix}Before execute start" if @log
       before_execute
-      return if @not_execute
-      @execute_result = execute
-      after_execute
+      logger.debug "#{prefix}Before execute finish" if @log
+      unless @not_execute
+        logger.debug "#{prefix}Execute start" if @log
+        @execute_result = execute
+        logger.debug "#{prefix}Execute finish" if @log
+        logger.debug "#{prefix}After execute start" if @log
+        after_execute
+        logger.debug "#{prefix}After execute finish" if @log
+        @execute_result
+      end
+
+      logger.debug "Finished #{describe}" if @log
+
       @execute_result
     end
 
     def describe(type = 'short')
-      properties_info
+      "Command: #{properties_info}"
+    end
+
+    def prefix
+      "#{self.class.name}: "
     end
 
   end

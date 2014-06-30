@@ -7,11 +7,13 @@ module Docman
       @log = false
     end
 
-    def add_command(cmd)
+    def add_command(cmd, context = nil)
+      @context = context unless context.nil?
       @commands << cmd
     end
 
-    def add_commands(cmds)
+    def add_commands(cmds, context = nil)
+      @context = context unless context.nil?
       return if cmds.nil?
       cmds.each do |k, v|
         @commands << Docman::Command.create(k, v, @context)

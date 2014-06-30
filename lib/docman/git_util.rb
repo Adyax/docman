@@ -33,12 +33,23 @@ module Docman
       end
     end
 
+    def self.repo?(path)
+      File.directory? File.join(path, '.git')
+    end
+
     def self.repo_changed?(path)
       not Exec.do "#{Application::bin}/dm_repo_clean.sh #{path}"
     end
 
+    def self.last_commit_hash(path, branch)
+      Dir.chdir path
+      result = `git rev-parse --short origin/#{branch}`
+      result.delete!("\n")
+    end
+
     def self.push(root_path, version)
       Dir.chdir root_path
+      `git pull origin #{version}`
       `git push origin #{version}`
     end
   end

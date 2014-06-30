@@ -19,12 +19,12 @@ require 'docman/builders/drupal_drush_builder'
 require 'docman/deployers/deployer'
 require 'docman/deployers/git_deployer'
 require 'docman/deployers/common_deployer'
-require 'docman/command'
-require 'docman/composite_command'
-require 'docman/builders/commands/create_symlink_cmd'
-require 'docman/builders/commands/execute_script_cmd'
-require 'docman/builders/commands/clean_changed_cmd'
-require 'docman/builders/commands/git_commit_cmd'
+require 'docman/commands/command'
+require 'docman/commands/composite_command'
+require 'docman/commands/create_symlink_cmd'
+require 'docman/commands/execute_script_cmd'
+require 'docman/commands/clean_changed_cmd'
+require 'docman/commands/git_commit_cmd'
 
 module Docman
   class Application
@@ -41,11 +41,6 @@ module Docman
       @config = Docman::Config.new(File.join(Pathname(__FILE__).dirname.parent, 'config', 'config.yaml'))
     end
 
-    def merge_config_from_file(file)
-      config = YAML::load_file(file)
-      @config.deep_merge(config)
-    end
-
     def init(name, repo)
       `mkdir #{name} && cd #{name} && git clone #{repo} config`
     end
@@ -53,6 +48,7 @@ module Docman
     def build(deploy_target_name, state, options = false)
       @options = options
       @deploy_target = @config['deploy_targets'][deploy_target_name]
+      @deploy_target['name'] = deploy_target_name
       @docroot_config = DocrootConfig.new(@workspace_dir, deploy_target)
       execute(state)
     end
@@ -60,6 +56,7 @@ module Docman
     def deploy(deploy_target_name, name, type, version, options = false)
       @options = options
       @deploy_target = @config['deploy_targets'][deploy_target_name]
+      @deploy_target['name'] = deploy_target_name
       @docroot_config = DocrootConfig.new(@workspace_dir, deploy_target)
       @docroot_config.states_dependin_on(name, version).keys.each do |state|
         execute(state, name)
@@ -70,6 +67,7 @@ module Docman
       params = @deploy_target
       params['state'] = state
       params['name'] = name
+      params['environment'] = @deploy_target['environments'][state]
       Docman::Deployers::Deployer.create(params, self).perform
     end
 
