@@ -22,7 +22,7 @@ module Docman
     end
 
     def describe(type = 'short')
-      properties_info(['name', 'type', 'build_type'])
+      properties_info(%w(name type build_type))
     end
 
     def write_info(result)
@@ -40,7 +40,7 @@ module Docman
 
     def need_rebuild?
       return @need_rebuild unless @need_rebuild.nil?
-      @need_rebuld = _need_rebuild?
+      @need_rebuild = _need_rebuild?
     end
 
     def _need_rebuild?

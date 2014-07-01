@@ -15,7 +15,22 @@ module Docman
       @context
       dir = File.join(@context['docroot_config'].docroot_dir, self['dir'])
       Dir.chdir dir
-      logger.info Exec.do File.join(@context['full_path'], self['name'], true)
+      logger.info "Script execution: #{self['name']}"
+      params = self['params'].nil? ? '' : prepare_params(self['params'])
+      logger.info `#{File.join(@context['full_path'], self['name'])} #{params}`
+      $?.exitstatus
     end
+
+    def prepare_params(params)
+      result = []
+      params.each do |param|
+        case param
+          when 'environment'
+            result << @context['docroot_config'].deploy_target['environment']
+        end
+      end
+      result.join(' ')
+    end
+
   end
 end

@@ -1,26 +1,40 @@
+require 'logger'
+
 module Docman
 
-  class GitUtil
+  module GitUtil
+
+    @logger = Logger.new(STDOUT)
+
+    def self.exec(command)
+      @logger.info command
+      @logger.info `#{command}`
+    end
 
     def self.get(repo, path, type, version)
       if File.directory? path and File.directory?(File.join(path, '.git'))
         Dir.chdir path
-        `git checkout #{version} && git pull origin #{version}` if type == 'branch'
+        if type == 'branch'
+          exec "git checkout #{version}"
+          exec "git pull origin #{version}"
+        end
         if type == 'tag'
-          `git fetch --tags`
-          `git checkout "tags/#{version}"`
+          exec "git fetch --tags"
+          exec "git checkout tags/#{version}"
         end
       else
-        `git clone #{repo} #{path}`
+        exec "git clone #{repo} #{path}"
         Dir.chdir path
-        `git checkout #{version}`
+        exec "git checkout #{version}"
       end
       result = `git rev-parse --short HEAD`
+      @logger.info "Commit hash: #{result}"
       result.delete!("\n")
     end
 
     def self.update(path)
-      `cd #{path} && git pull`
+      Dir.chdir path
+      exec "git pull"
     end
 
     def self.commit(root_path, path, message)

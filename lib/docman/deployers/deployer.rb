@@ -35,6 +35,7 @@ module Docman
 
       def before_execute
         super
+        @before.perform
       end
 
       def execute
@@ -47,14 +48,12 @@ module Docman
 
         if @changed
           @build_results['hash'] = hash @build_results
-          #File.open(File.join(@docroot_config.root['full_build_path'], 'version.yaml'), 'w') {|f| f.write @build_results.to_yaml}
-
           filename = 'version.yaml'
           path = File.join(@docroot_config.root['full_build_path'], filename)
           version = SecureRandom.hex
           write_version_file version, path
           push
-          files_deployed? version, filename
+          raise 'Files are not deployed' unless files_deployed? version, filename
         else
           logger.info 'No changes in docroot'
         end
