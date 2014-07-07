@@ -4,37 +4,48 @@ deploy_targets:
     handler: :common_deployer
     builders:
       root:
-        handler: :dir
+        handler: :dir_builder
       drupal:
-        handler: :drupal_drush
+        handler: :drupal_drush_builder
       repo:
-        handler: :git_direct
+        handler: :git_direct_builder
       dir:
-        handler: :dir
+        handler: :dir_builder
     environments:
       development: local
       staging: local
       stable: local
   acquia:
     handler: :git_deployer
-    deploy_action: git_push
     builders:
       root:
-        handler: :git_direct
-        after:
-          - :git_commit
+        handler: :git_direct_builder
+        hooks:
+          builder:
+            after_execute:
+              - type: :git_commit
+                execution_dir: $PROJECT$
       drupal:
-        handler: :drupal_drush
-        after:
-          - :git_commit
+        handler: :drupal_drush_builder
+        hooks:
+          builder:
+            after_execute:
+              - type: :git_commit
+                execution_dir: $PROJECT$
       repo:
-        handler: :git_strip
-        after:
-          - :git_commit
+        handler: :git_strip_builder
+        hooks:
+          builder:
+            after_execute:
+              - type: :git_commit
+                execution_dir: $PROJECT$
       dir:
-        handler: :dir
-        after:
-          - :git_commit
+        handler: :dir_builder
+        hooks:
+          builder:
+            after_execute:
+              - type: :git_commit
+                execution_dir: $PROJECT$
     environments:
       development: dev
       staging: stg

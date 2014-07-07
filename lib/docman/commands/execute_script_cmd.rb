@@ -1,3 +1,4 @@
+
 module Docman
   class ExecuteScriptCmd < Docman::Command
 
@@ -5,19 +6,22 @@ module Docman
 
 
     def validate_command
-      raise "Please provide 'dir' param" if self['dir'].nil?
-      raise "Please provide 'context'" if @context.nil?
-      raise "Context should be of type 'Info'" unless @context.is_a? Docman::Info
-      raise "Directory #{File.join(@context['docroot_config'].docroot_dir, self['dir'])} not exists" unless File.directory? File.join(@context['docroot_config'].docroot_dir, self['dir'])
+      raise Docman::CommandValidationError.new("Please provide 'execution_dir' param") if self['execution_dir'].nil?
+      raise Docman::CommandValidationError.new("Please provide 'location' param") if self['location'].nil?
+      raise Docman::CommandValidationError.new("Please provide 'context'") if @context.nil?
+      raise Docman::CommandValidationError.new("Context should be of type 'Info'") unless @context.is_a? Docman::Info
+      replace_placeholder(self['execution_dir'])
+      replace_placeholder(self['location'])
+      raise Docman::CommandValidationError.new("Directory #{self['execution_dir']} not exists") unless File.directory? self['execution_dir']
+      raise Docman::CommandValidationError.new("Script #{self['location']} not exists") unless File.file? self['location']
     end
 
     def execute
-      @context
-      dir = File.join(@context['docroot_config'].docroot_dir, self['dir'])
-      Dir.chdir dir
-      logger.info "Script execution: #{self['name']}"
+      Dir.chdir self['execution_dir']
+      logger.info "Script execution: #{self['location']}"
       params = self['params'].nil? ? '' : prepare_params(self['params'])
-      logger.info `#{File.join(@context['full_path'], self['name'])} #{params}`
+      `chmod a+x #{self['location']}`
+      logger.info `#{self['location']} #{params}`
       $?.exitstatus
     end
 

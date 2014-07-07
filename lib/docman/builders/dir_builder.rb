@@ -2,7 +2,7 @@ module Docman
   module Builders
     class DirBuilder < Builder
 
-      register_builder :dir
+      register_builder :dir_builder
 
       def execute
         if File.directory? @context['full_build_path']

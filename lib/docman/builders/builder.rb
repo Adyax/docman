@@ -6,10 +6,11 @@ module Docman
       @@builders = {}
       @@build_results = {}
 
+
       def self.create(params = nil, context = nil, caller = nil)
         c = @@builders[params['handler']]
         if c
-          c.new(params, context, caller)
+          c.new(params, context, caller, 'builder')
         else
           raise "Bad builder type: #{type}"
         end
@@ -19,32 +20,26 @@ module Docman
         @@builders[name] = self
       end
 
+      def config
+        super
+        add_action('before_execute', {'type' => :clean_changed})
+      end
+
       def validate_command
         raise "Please provide 'context'" if @context.nil?
         raise "Context should be of type 'Info'" unless @context.is_a? Docman::Info
       end
 
-      def before_execute
-        actions = Docman::CompositeCommand.new(nil, @context)
-        actions.add_commands self['before']
-        actions.add_command(Docman::Command.create(:clean_changed, nil, @context))
-        actions.add_commands @context['before'] if @context.has_key? 'before'
-        actions.perform
+      before_execute do
+        #TODO: rebuld if config changed.
         unless @context.need_rebuild?
           unless changed?
-            logger.info "This version already deployed"
-            @not_execute = true
+            raise NoChangesError, 'This version already deployed'
           end
         end
       end
 
-      def after_execute
-        actions = Docman::CompositeCommand.new(nil, @context)
-        actions.add_commands self['after']
-        actions.add_commands @context['after'] if @context.has_key? 'after'
-        actions.perform
-        after_deploy_commands = @context['after_deploy'] if @context.has_key? 'after_deploy'
-        @caller.after.add_commands(after_deploy_commands, @context)
+      after_execute do
         @execute_result = @context.write_info(@execute_result)
       end
 
@@ -57,7 +52,7 @@ module Docman
       end
 
       def prefix
-        "#{@context['name']} - #{self.class.name}: "
+        "#{@context['name']} - #{self.class.name}"
       end
 
     end

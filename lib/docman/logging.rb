@@ -1,5 +1,6 @@
 module Docman
   module Logging
+
     def logger
       Logging.logger
     end
@@ -18,6 +19,13 @@ module Docman
         end
       end
       arr.join(', ')
+    end
+
+    def with_logging(message = nil, type = 'debug')
+      logger.send(type, "#{prefix} - #{message} - start") if @log
+      result = yield
+      logger.send(type, "#{prefix} - #{message} - finish") if @log
+      result
     end
 
   end

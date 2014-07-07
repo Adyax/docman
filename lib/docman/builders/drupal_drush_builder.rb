@@ -4,7 +4,7 @@ module Docman
   module Builders
     class DrupalDrushBuilder < Builder
 
-      register_builder :drupal_drush
+      register_builder :drupal_drush_builder
 
       def execute
         return unless @context.need_rebuild?

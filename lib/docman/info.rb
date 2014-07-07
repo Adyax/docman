@@ -75,5 +75,12 @@ module Docman
       false
     end
 
+    def commands(type, hook)
+       if self.has_key? 'actions' and self['actions'].has_key? type and self['actions'][type].has_key? hook
+         return self['actions'][type][hook]
+       end
+      []
+    end
+
   end
 end

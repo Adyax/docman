@@ -25,4 +25,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'thor'
   spec.add_dependency 'hash-deep-merge'
   spec.add_dependency 'net-sftp'
+  spec.add_dependency 'hooks'
 end

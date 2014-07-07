@@ -27,7 +27,7 @@ require 'docman/commands/clean_changed_cmd'
 require 'docman/commands/git_commit_cmd'
 
 module Docman
-  class Application
+  class Application < Docman::Command
 
     attr_reader :config, :options, :docroot_config
     attr_accessor :deploy_target
@@ -50,7 +50,7 @@ module Docman
       @deploy_target = @config['deploy_targets'][deploy_target_name]
       @deploy_target['name'] = deploy_target_name
       @docroot_config = DocrootConfig.new(@workspace_dir, deploy_target)
-      execute(state)
+      execute('build', state)
     end
 
     def deploy(deploy_target_name, name, type, version, options = false)
@@ -59,16 +59,17 @@ module Docman
       @deploy_target['name'] = deploy_target_name
       @docroot_config = DocrootConfig.new(@workspace_dir, deploy_target)
       @docroot_config.states_dependin_on(name, version).keys.each do |state|
-        execute(state, name)
+        execute('deploy', state, name)
       end
     end
 
-    def execute(state, name = nil)
+    def execute(action, state, name = nil)
       params = @deploy_target
       params['state'] = state
+      params['action'] = action
       params['name'] = name
       params['environment'] = @deploy_target['environments'][state]
-      Docman::Deployers::Deployer.create(params, self).perform
+      Docman::Deployers::Deployer.create(params, nil, self).perform
     end
 
     def self.root

@@ -1,6 +1,5 @@
 require 'docman/commands/target_checker'
 require 'docman/commands/ssh_target_checker'
-require 'digest/md5'
 require 'securerandom'
 
 module Docman
@@ -9,12 +8,14 @@ module Docman
 
       attr_accessor :before, :after
 
+      define_hooks :before_push, :after_push
+
       @@deployers = {}
 
-      def self.create(params, context)
+      def self.create(params, context = nil, caller = nil)
         c = @@deployers[params['handler']]
         if c
-          c.new(params, context)
+          c.new(params, context, caller, 'deployer')
         else
           raise "Bad deployer type: #{type}"
         end
@@ -24,18 +25,19 @@ module Docman
         @@deployers[name] = self
       end
 
-      def initialize(params, context = nil, caller = nil)
-        super(params, context, caller)
-        @docroot_config = context.docroot_config
+      def initialize(params, context = nil, caller = nil, type = nil)
+        super(params, context, caller, type)
+        @docroot_config = caller.docroot_config
         @builded = []
         @build_results = {}
-        @before = Docman::CompositeCommand.new(nil, @context)
-        @after = Docman::CompositeCommand.new(nil, @context)
       end
 
-      def before_execute
-        super
-        @before.perform
+      def config
+        unless self['name'].nil?
+          @docroot_config.chain(@docroot_config.info_by(self['name'])).values.each do |info|
+            add_actions(info)
+          end
+        end
       end
 
       def execute
@@ -62,10 +64,6 @@ module Docman
         logger.info 'Deploy finished'
       end
 
-      def after_execute
-        super
-        @after.perform
-      end
 
       def write_version_file(version, path)
         to_write = Hash.new
@@ -73,9 +71,6 @@ module Docman
         File.open(path, 'w') {|f| f.write to_write.to_yaml}
       end
 
-      def hash(object)
-        Digest::MD5.hexdigest(Marshal::dump(object))
-      end
 
       def build_dir_chain(info)
         @docroot_config.chain(info).values.each do |item|
@@ -112,6 +107,7 @@ module Docman
       end
 
       def files_deployed?(version, filename)
+        return true unless self.has_key? 'target_checker'
         params = self['target_checker']
         params['version'] = version
         params['filename'] = filename

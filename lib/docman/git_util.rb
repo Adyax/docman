@@ -8,7 +8,7 @@ module Docman
 
     def self.exec(command)
       @logger.info command
-      @logger.info `#{command}`
+      @logger.info `#{command}`.delete!("\n")
     end
 
     def self.get(repo, path, type, version)
@@ -33,18 +33,21 @@ module Docman
     end
 
     def self.update(path)
-      Dir.chdir path
-      exec "git pull"
+      pull path
     end
 
     def self.commit(root_path, path, message)
-      if self.repo_changed? path
-        puts message
-        Dir.chdir root_path
-        `git pull`
-        `git add --all #{path.slice "#{root_path}/"}`
-        `git commit -m "#{message}"`
+      if repo_changed? path
+        # puts message
+        pull root_path
+        exec %Q(git add --all #{path.slice "#{root_path}/"})
+        exec %Q(git commit -m "#{message}")
       end
+    end
+
+    def self.pull(path)
+      Dir.chdir path
+      exec 'git pull'
     end
 
     def self.repo?(path)

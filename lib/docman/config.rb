@@ -1,5 +1,6 @@
 require 'singleton'
 require 'hash_deep_merge'
+require 'digest/md5'
 
 module Docman
   class Config < Hash
@@ -22,8 +23,8 @@ module Docman
       assign_to_self
     end
 
-    def environment(state, target)
-      $test = ''
+    def hash(object)
+      Digest::MD5.hexdigest(Marshal::dump(object))
     end
 
   end

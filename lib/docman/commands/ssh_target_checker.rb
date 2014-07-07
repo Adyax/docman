@@ -15,6 +15,7 @@ module Docman
           sleep 30
         end until data['random'] == self['version']
       end
+      true
     end
 
   end

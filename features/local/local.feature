@@ -21,24 +21,24 @@ Feature: Docroot management - Local
       | master/profiles/sample_profile |
       | master/projects/sample_project1 |
       | master/projects/sample_project2 |
-#      | master/docroot/profiles/sample_profile |
+      | master/docroot/profiles/sample_profile |
     Then the following files should exist:
-#      | master/docroot/CHANGELOG.txt |
-#    Then I remove the file "master/docroot/profiles/sample_profile"
-#    Then the following directories should not exist:
-#      | master/docroot/profiles/sample_profile |
-#    Then I run `docman build local development`
-#    Then the exit status should be 0
-#    Then the following directories should exist:
-#      | master |
-#      | master/docroot |
-#      | master/docroot/sites |
-#      | master/hooks |
-#      | master/profiles |
-#      | master/profiles/sample_profile |
-#      | master/projects/sample_project1 |
-#      | master/projects/sample_project2 |
-#      | master/docroot/profiles/sample_profile |
+      | master/docroot/CHANGELOG.txt |
+    Then I remove the file "master/docroot/profiles/sample_profile"
+    Then the following directories should not exist:
+      | master/docroot/profiles/sample_profile |
+    Then I run `docman build local development`
+    Then the exit status should be 0
+    Then the following directories should exist:
+      | master |
+      | master/docroot |
+      | master/docroot/sites |
+      | master/hooks |
+      | master/profiles |
+      | master/profiles/sample_profile |
+      | master/projects/sample_project1 |
+      | master/projects/sample_project2 |
+      | master/docroot/profiles/sample_profile |
 
 #  @announce
 #  @no-clobber
