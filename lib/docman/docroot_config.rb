@@ -5,7 +5,8 @@ module Docman
 
   class DocrootConfig
 
-    attr_reader :structure, :deploy_target, :docroot_dir, :root
+    attr_reader :structure, :deploy_target, :docroot_dir, :root, :raw_infos
+
     def initialize(docroot_dir, deploy_target)
       @docroot_dir = docroot_dir
       @deploy_target = deploy_target
@@ -15,7 +16,7 @@ module Docman
         Docman::Application.instance.config.merge_config_from_file(File.join(@docroot_config_dir, 'config.yaml'))
       end
       @names = {}
-      @raw_infos = []
+      @raw_infos = {}
       @structure = structure_build File.join(@docroot_config_dir, 'master')
     end
 
@@ -28,7 +29,7 @@ module Docman
 
       children = []
       info = YAML::load_file(File.join(path, 'info.yaml'))
-      @raw_infos << YAML::load_file(File.join(path, 'info.yaml'))
+      @raw_infos[File.basename path] = YAML::load_file(File.join(path, 'info.yaml'))
       unless info['status'].nil?
         return if info['status'] == 'disabled'
       end

@@ -10,6 +10,7 @@ module Docman
       Net::SFTP.start(self['ssh_host'], self['ssh_user']) do |sftp|
         n = 0
         begin
+          sleep 15
           n+=1
           log "Checking if files deployed, retry ##{n}, filename: #{filename}"
           sftp.stat!(filename) do |response|
@@ -18,7 +19,6 @@ module Docman
             end
           end
           data = YAML.load sftp.download!(filename)
-          sleep 30
         end until data['random'] == self['version']
       end
       true
