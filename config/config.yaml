@@ -48,5 +48,5 @@ deploy_targets:
                 execution_dir: $PROJECT$
     environments:
       development: dev
-      staging: stg
-      stable: prod
+      staging: test
+      stable: test

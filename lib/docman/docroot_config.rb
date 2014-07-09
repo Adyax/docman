@@ -15,6 +15,7 @@ module Docman
         Docman::Application.instance.config.merge_config_from_file(File.join(@docroot_config_dir, 'config.yaml'))
       end
       @names = {}
+      @raw_infos = []
       @structure = structure_build File.join(@docroot_config_dir, 'master')
     end
 
@@ -27,6 +28,7 @@ module Docman
 
       children = []
       info = YAML::load_file(File.join(path, 'info.yaml'))
+      @raw_infos << YAML::load_file(File.join(path, 'info.yaml'))
       unless info['status'].nil?
         return if info['status'] == 'disabled'
       end
@@ -80,6 +82,10 @@ module Docman
         states[state] = info if info['version'] == version
       end
       states
+    end
+
+    def config_hash
+      Digest::MD5.hexdigest(Marshal::dump(@raw_infos))
     end
 
   end

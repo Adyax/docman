@@ -5,12 +5,15 @@ module Docman
 
     include Docman::Context
 
+    attr_accessor :need_rebuild
+
     def initialize(hash = {})
       super
       hash.each_pair do |k, v|
         self[k] = v
       end
       self['build_type'] = self['docroot_config'].deploy_target['builders'][self['type']]['handler']
+      @need_rebuild = Hash.new
     end
 
     def version
@@ -39,12 +42,25 @@ module Docman
     end
 
     def need_rebuild?
-      return @need_rebuild unless @need_rebuild.nil?
-      @need_rebuild = _need_rebuild?
+      return @need_rebuild[self['state']] if not @need_rebuild.nil? and @need_rebuild.has_key? self['state'] and not @need_rebuild[self['state']].nil?
+      @need_rebuild[self['state']] = _need_rebuild?
+      if @need_rebuild[self['state']]
+        set_rebuild_recursive(self, true)
+      end
+      @need_rebuild[self['state']]
+    end
+
+    def set_rebuild_recursive(obj, value)
+      obj.need_rebuild[self['state']] = value
+      if obj.has_key?('children')
+        obj['children'].each do |info|
+          set_rebuild_recursive(info, value)
+        end
+      end
     end
 
     def _need_rebuild?
-      return true if Docman::Application.instance.options[:force]
+      return true if Docman::Application.instance.force?
       return true unless File.directory? self['full_build_path']
       v = stored_version
       return true unless v

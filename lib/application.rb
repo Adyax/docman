@@ -29,8 +29,8 @@ require 'docman/commands/git_commit_cmd'
 module Docman
   class Application < Docman::Command
 
-    attr_reader :config, :options, :docroot_config
-    attr_accessor :deploy_target
+    attr_reader :config, :docroot_config
+    attr_accessor :deploy_target, :options, :force
 
     include Singleton
     include Docman::Context
@@ -39,6 +39,7 @@ module Docman
       # TODO: Define workspace properly
       @workspace_dir = Dir.pwd
       @config = Docman::Config.new(File.join(Pathname(__FILE__).dirname.parent, 'config', 'config.yaml'))
+      @force = false
     end
 
     def init(name, repo)
@@ -70,6 +71,10 @@ module Docman
       params['name'] = name
       params['environment'] = @deploy_target['environments'][state]
       Docman::Deployers::Deployer.create(params, nil, self).perform
+    end
+
+    def force?
+      @force or @options[:force]
     end
 
     def self.root

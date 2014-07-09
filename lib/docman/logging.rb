@@ -22,10 +22,19 @@ module Docman
     end
 
     def with_logging(message = nil, type = 'debug')
-      logger.send(type, "#{prefix} - #{message} - start") if @log
+      # logger.send(type, "#{prefix} - #{message} - start") if @log
+      log("#{message} - start", type)
       result = yield
-      logger.send(type, "#{prefix} - #{message} - finish") if @log
+      log("#{message} - finish", type)
+      # logger.send(type, "#{prefix} - #{message} - finish") if @log
       result
+    end
+
+    def log(message, type = 'debug')
+      logger.send(type, "#{prefix} - #{message}")
+    end
+
+    def prefix
     end
 
   end

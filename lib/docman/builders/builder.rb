@@ -32,11 +32,13 @@ module Docman
 
       before_execute do
         #TODO: rebuld if config changed.
-        unless @context.need_rebuild?
-          unless changed?
-            raise NoChangesError, 'This version already deployed'
-          end
+        if @context.need_rebuild?
+          log("Need rebuild")
+        else
+          log("Rebuild not needed")
+          raise NoChangesError, 'This version already deployed' unless changed?
         end
+
       end
 
       after_execute do

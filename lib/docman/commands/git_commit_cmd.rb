@@ -9,12 +9,17 @@ module Docman
     end
 
     before_execute do
-      @not_execute = true unless GitUtil.repo_changed? @context['root']['full_build_path']
+      unless GitUtil.repo_changed? @context['root']['full_build_path']
+        raise NoChangesError, "Repo not changed needed, commit not needed"
+      end
+      # @not_execute = true unless GitUtil.repo_changed? @context['root']['full_build_path']
     end
 
     def execute
       message = "name: #{@context['name']} updated, state: #{@context['state']}"
-      GitUtil.commit(@context['root']['full_build_path'], @context['full_build_path'], message)
+      with_logging(message) do
+        GitUtil.commit(@context['root']['full_build_path'], @context['full_build_path'], message)
+      end
     end
   end
 end

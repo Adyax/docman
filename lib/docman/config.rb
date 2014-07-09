@@ -23,8 +23,8 @@ module Docman
       assign_to_self
     end
 
-    def hash(object)
-      Digest::MD5.hexdigest(Marshal::dump(object))
+    def config_hash
+      Digest::MD5.hexdigest(Marshal::dump(self))
     end
 
   end

@@ -23,6 +23,7 @@ module Docman
           exec "git checkout tags/#{version}"
         end
       else
+        FileUtils.rm_rf path if File.directory? path
         exec "git clone #{repo} #{path}"
         Dir.chdir path
         exec "git checkout #{version}"

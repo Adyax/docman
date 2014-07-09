@@ -6,8 +6,12 @@ module Docman
 
       def execute
         if File.directory? @context['full_build_path']
-          FileUtils.rm_r(@context['full_build_path']) if GitUtil.repo? @context['full_build_path']
+          if GitUtil.repo? @context['full_build_path']
+            log("Removed dir: #{@context['full_build_path']} because directory is git repo")
+            FileUtils.rm_r(@context['full_build_path'])
+          end
         end
+        log("Created dir: #{@context['full_build_path']}")
         FileUtils::mkdir_p @context['full_build_path']
         @context['build_path']
       end

@@ -1,5 +1,6 @@
 require 'docman/commands/target_checker'
 require 'docman/commands/ssh_target_checker'
+require 'docman/exceptions/no_changes_error'
 require 'securerandom'
 
 module Docman
@@ -40,6 +41,19 @@ module Docman
         end
       end
 
+      before_execute do
+        stored_config_hash = read_version_file_param('config_hash')
+        @config_hash = Docman::Application.instance.config.config_hash
+        stored_docroot_config_hash = read_version_file_param('docroot_config_hash')
+        @docroot_config_hash = @docroot_config.config_hash
+        # config = Docman::Application.instance.config
+        # log(config.to_yaml)
+        if stored_config_hash != @config_hash or stored_docroot_config_hash != @docroot_config_hash
+          logger.info 'Forced rebuild as configuration was changed'
+          Docman::Application.instance.force = true
+        end
+      end
+
       def execute
         logger.info "Deploy started"
         if self['name'].nil?
@@ -49,12 +63,11 @@ module Docman
         end
 
         if @changed
-          @build_results['hash'] = hash @build_results
           filename = 'version.yaml'
           path = File.join(@docroot_config.root['full_build_path'], filename)
           version = SecureRandom.hex
           write_version_file version, path
-          push
+          run_with_hooks('push')
           raise 'Files are not deployed' unless files_deployed? version, filename
         else
           logger.info 'No changes in docroot'
@@ -64,13 +77,22 @@ module Docman
         logger.info 'Deploy finished'
       end
 
+      def read_version_file_param(param)
+        path = File.join(@docroot_config.root['full_build_path'], 'version.yaml')
+        return false unless File.file?(path)
+        content = YAML::load_file(path)
+        content[param] if content.has_key? param
+      end
 
       def write_version_file(version, path)
         to_write = Hash.new
         to_write['random'] = version
+        # config = Docman::Application.instance.config.raw_config
+        # log(config.to_yaml)
+        to_write['config_hash'] = @config_hash
+        to_write['docroot_config_hash'] = @docroot_config_hash
         File.open(path, 'w') {|f| f.write to_write.to_yaml}
       end
-
 
       def build_dir_chain(info)
         @docroot_config.chain(info).values.each do |item|
@@ -95,7 +117,6 @@ module Docman
 
         @builded << info['name']
       end
-
 
       def build_recursive(info = nil)
         info = info ? info : @docroot_config.structure
