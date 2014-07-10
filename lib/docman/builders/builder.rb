@@ -22,7 +22,7 @@ module Docman
 
       def config
         super
-        add_action('before_execute', {'type' => :clean_changed})
+        add_action('before_execute', {'type' => :clean_changed}, @context)
       end
 
       def validate_command
@@ -31,7 +31,6 @@ module Docman
       end
 
       before_execute do
-        #TODO: rebuld if config changed.
         if @context.need_rebuild?
           log("Need rebuild")
         else

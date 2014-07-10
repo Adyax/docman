@@ -89,5 +89,9 @@ module Docman
       Digest::MD5.hexdigest(Marshal::dump(@raw_infos))
     end
 
+    def root_path
+      @root['fuil_build_path']
+    end
+
   end
 end

@@ -8,11 +8,12 @@ module Docman
   module Deployers
     class Deployer < Docman::Command
 
-      attr_accessor :before, :after
-
-      define_hooks :before_push, :after_push
+      define_hooks :before_push, :after_push, :before_build, :after_build, :before_deploy, :after_deploy
 
       @@deployers = {}
+
+      #todo: prod ssh settings deploy target
+      #todo: docroot config in separate repos for projects
 
       def self.create(params, context = nil, caller = nil)
         c = @@deployers[params['handler']]
@@ -37,27 +38,26 @@ module Docman
       def config
         unless self['name'].nil?
           @docroot_config.chain(@docroot_config.info_by(self['name'])).values.each do |info|
-            add_actions(info)
+            add_actions(info, info)
           end
         end
-      end
 
-      before_execute do
         stored_config_hash = read_version_file_param('config_hash')
         @config_hash = Docman::Application.instance.config.config_hash
         @config_yaml = Docman::Application.instance.config.to_yaml
 
+        #TODO: need to refactor
         stored_docroot_config_hash = read_version_file_param('docroot_config_hash')
         @docroot_config_hash = @docroot_config.config_hash
         @docroot_config_yaml = @docroot_config.raw_infos.to_yaml
         if stored_config_hash != @config_hash
-          logger.info 'Forced rebuild as configuration was changed'
+          log 'Forced rebuild as configuration was changed', 'info'
           filename = File.join(@docroot_config.root['full_build_path'], 'config.yaml')
           log Diffy::Diff.new(read_file(filename), @config_yaml) if File.file? filename
           Docman::Application.instance.force = true
         end
         if stored_docroot_config_hash != @docroot_config_hash
-          logger.info 'Forced rebuild as configuration was changed'
+          log 'Forced rebuild as configuration was changed', 'info'
           filename = File.join(@docroot_config.root['full_build_path'], 'docroot_config.yaml')
           log Diffy::Diff.new(read_file(filename), @docroot_config_yaml) if File.file? filename
           Docman::Application.instance.force = true
@@ -65,28 +65,32 @@ module Docman
       end
 
       def execute
-        logger.info "Deploy started"
-        if self['name'].nil?
-          build_recursive
-        else
-          build_dir_chain(@docroot_config.info_by(self['name']))
-        end
-
+        run_with_hooks('build')
         if @changed
-          filename = 'version.yaml'
-          path = File.join(@docroot_config.root['full_build_path'], filename)
-          version = SecureRandom.hex
-          write_version_file version, path
-          write_config_file @config_yaml, File.join(@docroot_config.root['full_build_path'], 'config.yaml')
-          write_config_file @docroot_config_yaml, File.join(@docroot_config.root['full_build_path'], 'docroot_config.yaml')
-          run_with_hooks('push')
-          raise 'Files are not deployed' unless files_deployed? version, filename
+          run_with_hooks('deploy')
         else
-          logger.info 'No changes in docroot'
+          log 'No changes in docroot', 'info'
         end
-        logger.debug 'Deploy results:'
-        logger.debug @build_results.to_yaml
-        logger.info 'Deploy finished'
+        log "Deploy results:\n" + @build_results.to_yaml
+      end
+
+      def deploy
+        filename = 'version.yaml'
+        path = File.join(@docroot_config.root['full_build_path'], filename)
+        version = SecureRandom.hex
+        write_version_file version, path
+        write_config_file @config_yaml, File.join(@docroot_config.root['full_build_path'], 'config.yaml')
+        write_config_file @docroot_config_yaml, File.join(@docroot_config.root['full_build_path'], 'docroot_config.yaml')
+        run_with_hooks('push')
+        raise 'Files are not deployed' unless files_deployed? version, filename
+      end
+
+      def files_deployed?(version, filename)
+        return true unless self.has_key? 'target_checker'
+        params = self['target_checker']
+        params['version'] = version
+        params['filename'] = filename
+        Docman::TargetChecker.create(params, self).perform
       end
 
       def read_file(path)
@@ -112,6 +116,14 @@ module Docman
         File.open(path, 'w') {|f| f.write config.to_yaml}
       end
 
+      def build
+        if self['name'].nil?
+          build_recursive
+        else
+          build_dir_chain(@docroot_config.info_by(self['name']))
+        end
+      end
+
       def build_dir_chain(info)
         @docroot_config.chain(info).values.each do |item|
           item.state = self['state']
@@ -127,12 +139,10 @@ module Docman
       def build_dir(info)
         return if @builded.include? info['name']
         info.state = self['state']
-
         build_result = Docman::Builders::Builder.create(self['builders'][info['type']], info, self).perform
         logger.info '-------------------------------------------------------'
         @changed = true if build_result
         @build_results[info['name']] = build_result
-
         @builded << info['name']
       end
 
@@ -143,14 +153,6 @@ module Docman
         info['children'].each do |child|
           build_recursive(child)
         end
-      end
-
-      def files_deployed?(version, filename)
-        return true unless self.has_key? 'target_checker'
-        params = self['target_checker']
-        params['version'] = version
-        params['filename'] = filename
-        Docman::TargetChecker.create(params, self).perform
       end
 
       def describe(type = 'short')

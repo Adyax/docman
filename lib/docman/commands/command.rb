@@ -43,23 +43,29 @@ module Docman
     end
 
     def config
-      add_actions self
-      add_actions @context unless @context.nil?
+      add_actions(self, @context)
+      add_actions(@context, @context) if @context
     end
 
-    def add_actions(obj)
+    def add_actions(obj, context = nil)
       if obj.has_key? 'hooks' and obj['hooks'].has_key? @type
-        obj['hooks'][@type].each_pair do |name, hook|
+        obj['hooks'][@type].each_pair do |name, hooks|
+          hooks = hooks.clone
+          unless context.nil?
+            hooks.each do |hook|
+              hook['context'] = context
+            end
+          end
           if @hooks[name].nil?
-            @hooks[name] = hook
+            @hooks[name] = hooks
           else
-            @hooks[name].concat(hook)
+            @hooks[name].concat(hooks)
           end
         end
       end
     end
 
-    def add_action(name, hook)
+    def add_action(name, hook, context = nil)
       if @hooks.has_key? name
         @hooks[name] << {'type' => hook}
       else
@@ -70,22 +76,21 @@ module Docman
     def run_actions(name)
       if @hooks.has_key? name
         @hooks[name].each do |hook|
-          Docman::Command.create(hook, @context, self).perform
+          context = hook.has_key?('context') ? hook['context'] : @context
+          Docman::Command.create(hook, context, self).perform
         end
       end
     end
 
     def run_with_hooks(method)
        with_logging(method) do
+        run_actions("before_#{method}")
         run_hook "before_#{method}".to_sym
         result = self.send(method)
         @execute_result = result if method == 'execute'
         run_hook "after_#{method}".to_sym
+        run_actions("after_#{method}")
       end
-    end
-
-    before_execute do
-      run_actions('before_execute')
     end
 
     # @abstract
@@ -93,22 +98,19 @@ module Docman
       raise NoMethodError.new("Please define #execute for #{self.class.name}", '')
     end
 
-    after_execute do
-      run_actions('after_execute')
-    end
-
     def perform
       config if self.respond_to? :config
       validate_command if self.respond_to? :validate_command
-      @execute_result = run_with_hooks('execute')
+      run_with_hooks('execute')
+      @execute_result
     rescue CommandValidationError => e
-      logger.error "Command validation error: #{e.message}"
+      log "Command validation error: #{e.message}", 'error'
       return false
     rescue NoChangesError => e
-      logger.info "No changes: #{e.message}"
+      log "No changes: #{e.message}", 'error'
       return false
     rescue StandardError => e
-      logger.error e.message
+      log e.message, 'error'
       raise
     ensure
       @execute_result
@@ -130,7 +132,7 @@ module Docman
       value.gsub! '$DOCROOT$', @context['docroot_config'].docroot_dir
       value.gsub! '$PROJECT$', @context['full_build_path']
       value.gsub! '$INFO$', @context['full_path']
-      value.gsub! '$ENVIRONMENT$', @context['docroot_config'].deploy_target['environment']
+      value.gsub! '$ENVIRONMENT$', @context.environment
     end
 
   end

@@ -30,7 +30,7 @@ module Docman
       params.each do |param|
         case param
           when 'environment'
-            result << @context['docroot_config'].deploy_target['environment']
+            result << @context.environment
         end
       end
       result.join(' ')

@@ -65,7 +65,7 @@ module Docman
     end
 
     def execute(action, state, name = nil)
-      params = @deploy_target
+      params = @deploy_target.clone
       params['state'] = state
       params['action'] = action
       params['name'] = name
