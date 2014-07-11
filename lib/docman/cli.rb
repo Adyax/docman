@@ -1,20 +1,28 @@
 require 'thor'
 require 'application'
+require 'docman/git_util'
 
 module Docman
   class CLI < Thor
 
     # TODO: add proper descriptions.
 
-    desc 'init NAME', 'init to NAME'
+    desc 'init "dirname" "repo"', 'Initialize docroot in "dirname" from config repo "repo"'
     method_option :force, :aliases => '-f', :desc => 'Force init'
+    method_option :skip, :aliases => '-s', :desc => 'Skip if docroot initialized already'
     def init(name, repo)
-      if File.directory? "#{name}"
+      if File.directory? name
         say("Directory #{name} already exists")
         if options[:force]
           FileUtils.rm_r(name)
-        elsif
-        choice = ask('Are you sure you want do delete existing docroot? Type "yes" if you agree.')
+        elsif options[:skip]
+         if File.directory? File.join(name, 'config') and GitUtil.repo? File.join(name, 'config')
+           return
+         else
+           FileUtils.rm_r(name)
+         end
+        else
+          choice = ask('Are you sure you want do delete existing docroot? Type "yes" if you agree.')
           if choice == 'yes'
             FileUtils.rm_r(name)
           elsif
