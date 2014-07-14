@@ -11,11 +11,11 @@ deploy_targets:
         handler: :git_direct_builder
       dir:
         handler: :dir_builder
-    environments:
+    states:
       development: local
       staging: local
       stable: local
-  acquia:
+  git_target:
     handler: :git_deployer
     builders:
       root:
@@ -46,7 +46,11 @@ deploy_targets:
             after_execute:
               - type: :git_commit
                 execution_dir: $PROJECT$
-    environments:
+    states:
       development: dev
       staging: test
-      stable: test
+      stable: prod
+environments:
+  local:
+    deploy_target: local
+    state: development

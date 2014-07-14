@@ -98,8 +98,8 @@ module Docman
       []
     end
 
-    def environment
-      self['docroot_config'].deploy_target['environments'][self['state']]
+    def environment_name
+      self['docroot_config'].deploy_target['states'][self['state']]
     end
 
   end

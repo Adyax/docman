@@ -69,7 +69,8 @@ module Docman
       params['state'] = state
       params['action'] = action
       params['name'] = name
-      params['environment'] = @deploy_target['environments'][state]
+      params['environment'] = @config['environments'][@deploy_target['states'][state]]
+      params['environment_name'] = @deploy_target['states'][state]
       Docman::Deployers::Deployer.create(params, nil, self).perform
     end
 

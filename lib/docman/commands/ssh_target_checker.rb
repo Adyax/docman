@@ -6,7 +6,7 @@ module Docman
     register_checker :ssh
 
     def execute
-      filename = File.join(self['file_path'], @context['docroot_name'] + @context['environment'], self['filename'])
+      filename = File.join(self['file_path'], self['filename'])
       Net::SFTP.start(self['ssh_host'], self['ssh_user']) do |sftp|
         n = 0
         begin

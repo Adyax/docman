@@ -132,7 +132,7 @@ module Docman
       value.gsub! '$DOCROOT$', @context['docroot_config'].docroot_dir
       value.gsub! '$PROJECT$', @context['full_build_path']
       value.gsub! '$INFO$', @context['full_path']
-      value.gsub! '$ENVIRONMENT$', @context.environment
+      value.gsub! '$ENVIRONMENT$', @context.environment_name
     end
 
   end

@@ -1,4 +1,4 @@
-Feature: Docroot management - Acquia
+Feature: Docroot management - git_target
 
   In order to manage docroot
   As a developer using Cucumber
@@ -7,10 +7,10 @@ Feature: Docroot management - Acquia
   @announce
   @no-clobber
   @build
-  @acquia
-  Scenario: Acquia build development
+  @git_target
+  Scenario: git_target build development
     Given I cd to "sample-docroot"
-    Then I run `docman build acquia development`
+    Then I run `docman build git_target development`
     Then the exit status should be 0
     Then the following directories should exist:
       | master |
@@ -27,12 +27,12 @@ Feature: Docroot management - Acquia
 
   @announce
   @no-clobber
-  @acquia
+  @git_target
   @develop
   @deploy
-  Scenario: Acquia deploy sample project 1 develop
+  Scenario: git_target deploy sample project 1 develop
     Given I cd to "sample-docroot"
-    Then I run `docman deploy acquia sample_project1 branch develop`
+    Then I run `docman deploy git_target sample_project1 branch develop`
     Then the exit status should be 0
     Then the following directories should exist:
       | master |
@@ -46,13 +46,13 @@ Feature: Docroot management - Acquia
 
   @announce
   @no-clobber
-  @acquia
+  @git_target
   @deploy
   @master
   @sample_project2
-  Scenario: Acquia deploy sample project 2 master
+  Scenario: git_target deploy sample project 2 master
     Given I cd to "sample-docroot"
-    Then I run `docman deploy acquia sample_project2 branch master`
+    Then I run `docman deploy git_target sample_project2 branch master`
     Then the exit status should be 0
     Then the following directories should exist:
       | master |

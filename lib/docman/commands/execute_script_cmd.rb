@@ -30,7 +30,7 @@ module Docman
       params.each do |param|
         case param
           when 'environment'
-            result << @context.environment
+            result << @context.environment_name
         end
       end
       result.join(' ')

@@ -33,6 +33,7 @@ module Docman
         @docroot_config = caller.docroot_config
         @builded = []
         @build_results = {}
+        @environments = Docman::Application.instance.config['envoronments']
       end
 
       def config
@@ -94,8 +95,8 @@ module Docman
       end
 
       def files_deployed?(version, filename)
-        return true unless self.has_key? 'target_checker'
-        params = self['target_checker']
+        return true unless self['environment'].has_key? 'target_checker'
+        params = self['environment']['target_checker']
         params['version'] = version
         params['filename'] = filename
         Docman::TargetChecker.create(params, self).perform
