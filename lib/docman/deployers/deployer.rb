@@ -43,9 +43,11 @@ module Docman
         end
 
         path = @docroot_config.root['full_build_path']
-        Dir.chdir path
-        if GitUtil.repo_changed? path
-          GitUtil.reset_repo path
+        if File.directory? path
+          Dir.chdir path
+          if GitUtil.repo_changed? path
+            GitUtil.reset_repo path
+          end
         end
 
         stored_config_hash = read_version_file_param('config_hash')
