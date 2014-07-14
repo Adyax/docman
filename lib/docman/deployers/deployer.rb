@@ -43,7 +43,7 @@ module Docman
         end
 
         path = @docroot_config.root['full_build_path']
-        if File.directory? path
+        if File.directory?(path) and GitUtil.repo?(path)
           Dir.chdir path
           if GitUtil.repo_changed? path
             GitUtil.reset_repo path
