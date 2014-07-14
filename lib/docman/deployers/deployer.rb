@@ -42,6 +42,12 @@ module Docman
           end
         end
 
+        path = @docroot_config.root['full_build_path']
+        Dir.chdir path
+        if GitUtil.repo_changed? path
+          GitUtil.reset_repo path
+        end
+
         stored_config_hash = read_version_file_param('config_hash')
         @config_hash = Docman::Application.instance.config.config_hash
         @config_yaml = Docman::Application.instance.config.to_yaml
@@ -95,6 +101,8 @@ module Docman
 
       def read_file(path)
         YAML::load_file(path)
+      rescue
+        raise "Error in config file #{path}"
       end
 
       def read_version_file_param(param)

@@ -8,18 +8,30 @@ module Docman
 
     def self.exec(command)
       @logger.info command
-      @logger.info `#{command}`.delete!("\n")
+      result = `#{command}`.delete!("\n")
+      @logger.info result if result
+      raise result unless $?.exitstatus == 0
+      result
+    end
+
+    def self.reset_repo(path)
+      Dir.chdir path
+      exec 'git reset --hard'
+      exec 'git clean -f -d'
     end
 
     def self.get(repo, path, type, version)
       if File.directory? path and File.directory?(File.join(path, '.git'))
         Dir.chdir path
+
+        self.reset_repo(path) if self.repo_changed?(path)
+
         if type == 'branch'
           exec "git checkout #{version}"
           exec "git pull origin #{version}"
         end
         if type == 'tag'
-          exec "git fetch --tags"
+          exec 'git fetch --tags'
           exec "git checkout tags/#{version}"
         end
       else
