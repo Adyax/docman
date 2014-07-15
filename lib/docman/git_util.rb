@@ -10,7 +10,7 @@ module Docman
       @logger.info command
       result = `#{command}`.delete!("\n")
       @logger.info result if result
-      raise result unless $?.exitstatus == 0
+      raise "ERROR: #{result}" unless $?.exitstatus == 0
       result
     end
 
