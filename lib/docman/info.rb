@@ -5,7 +5,7 @@ module Docman
 
     include Docman::Context
 
-    attr_accessor :need_rebuild
+    attr_accessor :need_rebuild, :build_mode
 
     def initialize(hash = {})
       super
@@ -14,6 +14,7 @@ module Docman
       end
       self['build_type'] = self['docroot_config'].deploy_target['builders'][self['type']]['handler']
       @need_rebuild = Hash.new
+      @changed = Hash.new
     end
 
     def version
@@ -41,6 +42,16 @@ module Docman
       to_save
     end
 
+    def changed?
+      #TODO: need refactor
+      return @changed[self['state']] if not @changed.nil? and @changed.has_key? self['state'] and not @changed[self['state']].nil?
+      @changed[self['state']] = false
+      if need_rebuild?
+        @changed[self['state']] = true
+      end
+      @changed[self['state']]
+    end
+
     def need_rebuild?
       return @need_rebuild[self['state']] if not @need_rebuild.nil? and @need_rebuild.has_key? self['state'] and not @need_rebuild[self['state']].nil?
       @need_rebuild[self['state']] = _need_rebuild?
@@ -66,10 +77,12 @@ module Docman
       return true unless v
       return true if v['type'] != self['type']
       return true if v['build_type'] != self['build_type']
-      return true if (not v['version'].nil? and v['version'] != self.version)
+      # return true if (not v['version'].nil? and v['version'] != self.version)
+      @changed[self['state']] = true if (not v['version'].nil? and v['version'] != self.version)
       return true if (not v['version_type'].nil? and v['version_type'] != self.version_type)
       unless v['state'].nil?
-        return true if v['state'] != self['state']
+        # return true if v['state'] != self['state']
+        @changed[self['state']] = true if v['state'] != self['state']
       end
       false
     end

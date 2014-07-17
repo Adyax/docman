@@ -20,28 +20,37 @@ module Docman
       exec 'git clean -f -d'
     end
 
-    def self.get(repo, path, type, version)
+    def self.get(repo, path, type, version, force_return = false)
       if File.directory? path and File.directory?(File.join(path, '.git'))
         Dir.chdir path
 
-        self.reset_repo(path) if self.repo_changed?(path)
+        self.reset_repo(path) #if self.repo_changed?(path)
 
         if type == 'branch'
           exec "git checkout #{version}"
+          initial_revision = self.last_revision
           exec "git pull origin #{version}"
         end
         if type == 'tag'
           exec 'git fetch --tags'
+          initial_revision = self.last_revision
           exec "git checkout tags/#{version}"
         end
       else
+        initial_revision = nil
         FileUtils.rm_rf path if File.directory? path
         exec "git clone #{repo} #{path}"
         Dir.chdir path
         exec "git checkout #{version}"
       end
-      result = `git rev-parse --short HEAD`
+      result = self.last_revision
       @logger.info "Commit hash: #{result}"
+      # force_return or result != initial_revision ? result : false
+      result
+    end
+
+    def self.last_revision
+      result = `git rev-parse --short HEAD`
       result.delete!("\n")
     end
 
@@ -54,7 +63,7 @@ module Docman
         # puts message
         pull root_path
         exec %Q(git add --all #{path.slice "#{root_path}/"})
-        exec %Q(git commit -m "#{message}")
+        exec %Q(git commit -m "#{message}") if repo_changed? path
       end
     end
 

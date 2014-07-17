@@ -50,7 +50,7 @@ module Docman
     def add_actions(obj, context = nil)
       if obj.has_key? 'hooks' and obj['hooks'].has_key? @type
         obj['hooks'][@type].each_pair do |name, hooks|
-          hooks = hooks.clone
+          hooks = Marshal::load(Marshal.dump(hooks))
           unless context.nil?
             hooks.each do |hook|
               hook['context'] = context

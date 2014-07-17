@@ -53,7 +53,7 @@ module Docman
 
         stored_config_hash = read_version_file_param('config_hash')
         @config_hash = Docman::Application.instance.config.config_hash
-        @config_yaml = Docman::Application.instance.config.to_yaml
+        @config_yaml = Docman::Application.instance.config.unmutable_config.to_yaml
 
         #TODO: need to refactor
         stored_docroot_config_hash = read_version_file_param('docroot_config_hash')
@@ -66,7 +66,7 @@ module Docman
           Docman::Application.instance.force = true
         end
         if stored_docroot_config_hash != @docroot_config_hash
-          log 'Forced rebuild as configuration was changed', 'info'
+          log 'Forced rebuild as docroot configuration was changed', 'info'
           filename = File.join(@docroot_config.root['full_build_path'], 'docroot_config.yaml')
           log Diffy::Diff.new(read_file(filename), @docroot_config_yaml) if File.file? filename
           Docman::Application.instance.force = true
@@ -105,7 +105,8 @@ module Docman
       def read_file(path)
         YAML::load_file(path)
       rescue
-        raise "Error in config file #{path}"
+        log "Error in config file #{path}"
+        return false
       end
 
       def read_version_file_param(param)
@@ -124,7 +125,7 @@ module Docman
       end
 
       def write_config_file(config, path)
-        File.open(path, 'w') {|f| f.write config.to_yaml}
+        File.open(path, 'w') {|f| f.write config}
       end
 
       def build

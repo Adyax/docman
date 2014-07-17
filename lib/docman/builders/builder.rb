@@ -32,16 +32,24 @@ module Docman
 
       before_execute do
         if @context.need_rebuild?
-          log("Need rebuild")
+          @context.build_mode = :rebuild
         else
-          log("Rebuild not needed")
-          raise NoChangesError, 'This version already deployed' unless changed?
+          if @context.changed? or changed?
+            @context.build_mode = :update
+            log("Changed")
+          else
+            log("Not changed")
+            @context.build_mode = :none
+            raise NoChangesError, 'This version already deployed'
+          end
         end
 
       end
 
       after_execute do
-        @execute_result = @context.write_info(@execute_result)
+        if @execute_result
+          @execute_result = @context.write_info(@execute_result)
+        end
       end
 
       def changed?

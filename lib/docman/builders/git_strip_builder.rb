@@ -11,7 +11,7 @@ module Docman
         FileUtils.mkdir_p(@context['full_build_path'])
         FileUtils.cp_r(Dir["#{@context['temp_path']}/."], @context['full_build_path'])
         FileUtils.rm_r(File.join(@context['full_build_path'], '.git')) if File.directory?(File.join(@context['full_build_path'], '.git'))
-        result
+        GitUtil.repo_changed?(@context['full_build_path']) ? result : false
       end
 
       def changed?

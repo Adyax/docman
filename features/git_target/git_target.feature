@@ -63,3 +63,23 @@ Feature: Docroot management - git_target
       | master/profiles/sample_profile |
       | master/projects/sample_project1 |
       | master/projects/sample_project2 |
+
+  @announce
+  @no-clobber
+  @git_target
+  @master
+  @deploy
+  @sites
+  Scenario: git_target deploy sites master
+    Given I cd to "sample-docroot"
+    Then I run `docman deploy git_target sites branch master`
+    Then the exit status should be 0
+    Then the following directories should exist:
+      | master |
+      | master/docroot |
+      | master/docroot/sites |
+      | master/hooks |
+      | master/profiles |
+      | master/profiles/sample_profile |
+      | master/projects/sample_project1 |
+      | master/projects/sample_project2 |

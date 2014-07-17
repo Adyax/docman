@@ -7,7 +7,8 @@ module Docman
       register_builder :drupal_drush_builder
 
       def execute
-        return unless @context.need_rebuild?
+        return if @build_mode == :none
+        #return unless @context.need_rebuild?
         puts 'Download drupal through drush'
         FileUtils.mkdir_p(@context['temp_path'])
         Dir.chdir @context['temp_path']

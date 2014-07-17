@@ -10,9 +10,8 @@ module Docman
 
     before_execute do
       unless GitUtil.repo_changed? @context['root']['full_build_path']
-        raise NoChangesError, "Repo not changed needed, commit not needed"
+        raise NoChangesError, "Repo not changed, commit not needed" unless @context.need_rebuild?
       end
-      # @not_execute = true unless GitUtil.repo_changed? @context['root']['full_build_path']
     end
 
     def execute

@@ -57,6 +57,7 @@ module Docman
     def deploy(deploy_target_name, name, type, version, options = false)
       @options = options
       @deploy_target = @config['deploy_targets'][deploy_target_name]
+      raise "Wrong deploy target: #{deploy_target_name}" if @deploy_target.nil?
       @deploy_target['name'] = deploy_target_name
       @docroot_config = DocrootConfig.new(@workspace_dir, deploy_target)
       @docroot_config.states_dependin_on(name, version).keys.each do |state|
@@ -65,7 +66,7 @@ module Docman
     end
 
     def execute(action, state, name = nil)
-      params = @deploy_target.clone
+      params = Marshal.load(Marshal.dump(@deploy_target))
       params['state'] = state
       params['action'] = action
       params['name'] = name

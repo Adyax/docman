@@ -5,6 +5,8 @@ require 'digest/md5'
 module Docman
   class Config < Hash
 
+    attr_reader :unmutable_config
+
     def initialize(file)
       super
       @config = YAML::load_file(file)
@@ -15,6 +17,7 @@ module Docman
       @config.each_pair do |k, v|
         self[k] = v
       end
+      @unmutable_config = Marshal::load(Marshal.dump(@config))
     end
 
     def merge_config_from_file(file)
@@ -24,7 +27,7 @@ module Docman
     end
 
     def config_hash
-      Digest::MD5.hexdigest(Marshal::dump(self))
+      Digest::MD5.hexdigest(Marshal::dump(@unmutable_config))
     end
 
   end
