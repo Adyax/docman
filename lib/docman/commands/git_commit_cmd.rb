@@ -15,7 +15,7 @@ module Docman
     end
 
     def execute
-      message = "name: #{@context['name']} updated, state: #{@context['state']}"
+      message = "name: #{@context['name']} updated, state: #{@context.state_name}"
       with_logging(message) do
         GitUtil.commit(@context['root']['full_build_path'], @context['full_build_path'], message)
       end

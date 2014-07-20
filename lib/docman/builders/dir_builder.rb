@@ -16,6 +16,10 @@ module Docman
         @context['build_path']
       end
 
+      def version
+        @context['build_path']
+      end
+
     end
   end
 end

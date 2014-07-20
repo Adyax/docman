@@ -12,7 +12,6 @@ module Docman
 
       @@deployers = {}
 
-      #todo: prod ssh settings deploy target
       #todo: docroot config in separate repos for projects
 
       def self.create(params, context = nil, caller = nil)
@@ -33,7 +32,7 @@ module Docman
         @docroot_config = caller.docroot_config
         @builded = []
         @build_results = {}
-        @environments = Docman::Application.instance.config['envoronments']
+        @versions = {}
       end
 
       def config
@@ -41,6 +40,8 @@ module Docman
           @docroot_config.chain(@docroot_config.info_by(self['name'])).values.each do |info|
             add_actions(info, info)
           end
+        else
+          # add_actions()
         end
 
         path = @docroot_config.root['full_build_path']
@@ -121,6 +122,7 @@ module Docman
         to_write['random'] = version
         to_write['config_hash'] = @config_hash
         to_write['docroot_config_hash'] = @docroot_config_hash
+        to_write.deep_merge! @versions
         File.open(path, 'w') {|f| f.write to_write.to_yaml}
       end
 
@@ -138,7 +140,7 @@ module Docman
 
       def build_dir_chain(info)
         @docroot_config.chain(info).values.each do |item|
-          item.state = self['state']
+          item.state_name = self['state']
           if item.need_rebuild?
             build_recursive(item)
             return
@@ -150,11 +152,13 @@ module Docman
 
       def build_dir(info)
         return if @builded.include? info['name']
-        info.state = self['state']
-        build_result = Docman::Builders::Builder.create(self['builders'][info['type']], info, self).perform
+        info.state_name = self['state']
+        builder = Docman::Builders::Builder.create(self['builders'][info['type']], info, self)
+        build_result = builder.perform
         logger.info '-------------------------------------------------------'
         @changed = true if build_result
-        @build_results[info['name']] = build_result
+        @build_results[info['name']] = build_result ? build_result : 'Not builded'
+        @versions[info['name']] = builder.version
         @builded << info['name']
       end
 
@@ -167,6 +171,7 @@ module Docman
         end
       end
 
+      # TODO: need to refactor.
       def describe(type = 'short')
         properties_info(['handler'])
       end

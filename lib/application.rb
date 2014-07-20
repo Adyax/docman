@@ -25,6 +25,9 @@ require 'docman/commands/create_symlink_cmd'
 require 'docman/commands/execute_script_cmd'
 require 'docman/commands/clean_changed_cmd'
 require 'docman/commands/git_commit_cmd'
+require 'docman/taggers/tagger'
+require 'docman/taggers/incremental_tagger'
+require 'docman/taggers/option_tagger'
 
 module Docman
   class Application < Docman::Command
@@ -51,7 +54,7 @@ module Docman
       @deploy_target = @config['deploy_targets'][deploy_target_name]
       @deploy_target['name'] = deploy_target_name
       @docroot_config = DocrootConfig.new(@workspace_dir, deploy_target)
-      execute('build', state)
+      execute('build', state, nil, options['tag'])
     end
 
     def deploy(deploy_target_name, name, type, version, options = false)
@@ -65,14 +68,24 @@ module Docman
       end
     end
 
-    def execute(action, state, name = nil)
+    def execute(action, state, name = nil, tag = nil)
       params = Marshal.load(Marshal.dump(@deploy_target))
+      failed_filepath = File.join(@workspace_dir, 'failed')
+      if File.file?(failed_filepath)
+        log 'Last operation failed, forced rebuild mode'
+        FileUtils.rm_f failed_filepath
+        @force = true
+      end
       params['state'] = state
       params['action'] = action
       params['name'] = name
+      params['tag'] = tag
       params['environment'] = @config['environments'][@deploy_target['states'][state]]
       params['environment_name'] = @deploy_target['states'][state]
       Docman::Deployers::Deployer.create(params, nil, self).perform
+    rescue Exception => e
+      log "Operation failed: #{e.message}", 'error'
+      File.open(failed_filepath, 'w') {|f| f.write('Failed!') }
     end
 
     def force?

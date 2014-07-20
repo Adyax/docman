@@ -81,7 +81,7 @@ module Docman
       raise "There is no project with name '#{name}' exists in config" unless @names.has_key? name
 
       states = {}
-      @names[name]['states'].each do |state, info|
+      @names[name].states.each do |state, info|
         states[state] = info if info['version'] == version
       end
       states

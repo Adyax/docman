@@ -29,6 +29,7 @@ if [ -f VERSION ]; then
     fi
     echo "Will set new version to be $INPUT_STRING"
     echo $INPUT_STRING > VERSION
+    TAG=${INPUT_STRING}
     echo "Version $INPUT_STRING:" > tmpfile
     git log --pretty=format:" - %s" "$BASE_STRING"...HEAD >> tmpfile
     echo "" >> tmpfile
@@ -60,5 +61,21 @@ else
         git push origin --tags
         git push
     fi
- 
+    TAG="0.1.0"
+fi
+
+if [ -n "$1" ]; then
+  BRANCH="state_$1"
+  git show-ref --verify --quiet "refs/heads/${BRANCH}"
+  if [ $? == 0 ]; then
+    git checkout ${BRANCH}
+  else
+    git checkout -b ${BRANCH}
+  fi
+  echo "type: tag" > info.yaml
+  echo "version: $TAG" >> info.yaml
+  git add -A
+  git commit -m "Changed tag to: $TAG" & git push origin ${BRANCH}
+  git checkout -
+  echo ${TAG}
 fi

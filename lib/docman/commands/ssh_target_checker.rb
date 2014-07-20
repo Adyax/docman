@@ -3,6 +3,7 @@ require 'net/sftp'
 module Docman
 
   class SSHTargetChecker < Docman::TargetChecker
+
     register_checker :ssh
 
     def execute

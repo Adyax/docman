@@ -38,6 +38,7 @@ module Docman
 
     desc 'build NAME', 'init to NAME'
     method_option :force, :aliases => '-f', :desc => 'Force full rebuild'
+    option :tag
     def build(deploy_target, state)
       config_dir?
       if options[:force]

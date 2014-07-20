@@ -6,8 +6,20 @@ module Docman
 
       def push
         root = @docroot_config.root
-        root.state = self['state']
-        GitUtil.commit(root['full_build_path'], root['full_build_path'], 'Updated version.yaml')
+        root.state_name = self['state']
+        tag = nil
+
+        if self['environment'].has_key?('tagger')
+          filepath = File.join(root['full_build_path'], 'VERSION')
+          prev_version = File.file?(filepath) ? File.open(filepath) : nil
+          params = self['environment']['tagger']
+          params['prev_version'] = prev_version
+          version = Docman::Taggers::Tagger.create(params, root, self).perform
+          File.open(filepath, 'w') {|f| f.write(version) }
+          tag = version
+        end
+
+        GitUtil.commit(root['full_build_path'], root['full_build_path'], 'Updated version', tag)
         GitUtil.push(root['full_build_path'], root.version)
       end
 

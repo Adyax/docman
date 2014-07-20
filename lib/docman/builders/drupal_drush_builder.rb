@@ -18,6 +18,10 @@ module Docman
         @context.version
       end
 
+      def version
+        @context.version
+      end
+
     end
   end
 end

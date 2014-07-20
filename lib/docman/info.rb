@@ -5,7 +5,7 @@ module Docman
 
     include Docman::Context
 
-    attr_accessor :need_rebuild, :build_mode
+    attr_accessor :need_rebuild, :build_mode, :state_name
 
     def initialize(hash = {})
       super
@@ -15,14 +15,26 @@ module Docman
       self['build_type'] = self['docroot_config'].deploy_target['builders'][self['type']]['handler']
       @need_rebuild = Hash.new
       @changed = Hash.new
+      @state_name = nil
+      if self.has_key? 'states'
+        self['states'].each_pair do |name, state|
+          if state.has_key?('source')
+            if state['source']['type'] == :retrieve_from_repo
+              repo = state['source']['repo'] == :project_repo ? self['repo'] : state['source']['repo']
+              external_state_info = GitUtil.read_yaml_from_file(repo, self['temp_path'], state['source']['branch'], state['source']['file'])
+              state.deep_merge! external_state_info
+            end
+          end
+        end
+      end
     end
 
     def version
-      self['states'][self['state']].nil? ? nil : self['states'][self['state']]['version']
+      state.nil? ? nil : state['version']
     end
 
     def version_type
-      self['states'][self['state']].nil? ? nil : self['states'][self['state']]['type']
+      state.nil? ? nil : state['type']
     end
 
     def describe(type = 'short')
@@ -31,7 +43,7 @@ module Docman
 
     def write_info(result)
       to_save = {}
-      to_save['state'] = self['state']
+      to_save['state'] = @state_name
       to_save['version_type'] = self.version_type unless self.version_type.nil?
       to_save['version'] = self.version unless self.version.nil?
       to_save['result'] = result
@@ -44,25 +56,25 @@ module Docman
 
     def changed?
       #TODO: need refactor
-      return @changed[self['state']] if not @changed.nil? and @changed.has_key? self['state'] and not @changed[self['state']].nil?
-      @changed[self['state']] = false
+      return @changed[@state_name] if not @changed.nil? and @changed.has_key? @state_name and not @changed[@state_name].nil?
+      @changed[@state_name] = false
       if need_rebuild?
-        @changed[self['state']] = true
+        @changed[@state_name] = true
       end
-      @changed[self['state']]
+      @changed[@state_name]
     end
 
     def need_rebuild?
-      return @need_rebuild[self['state']] if not @need_rebuild.nil? and @need_rebuild.has_key? self['state'] and not @need_rebuild[self['state']].nil?
-      @need_rebuild[self['state']] = _need_rebuild?
-      if @need_rebuild[self['state']]
+      return @need_rebuild[@state_name] if not @need_rebuild.nil? and @need_rebuild.has_key? @state_name and not @need_rebuild[@state_name].nil?
+      @need_rebuild[@state_name] = _need_rebuild?
+      if @need_rebuild[@state_name]
         set_rebuild_recursive(self, true)
       end
-      @need_rebuild[self['state']]
+      @need_rebuild[@state_name]
     end
 
     def set_rebuild_recursive(obj, value)
-      obj.need_rebuild[self['state']] = value
+      obj.need_rebuild[@state_name] = value
       if obj.has_key?('children')
         obj['children'].each do |info|
           set_rebuild_recursive(info, value)
@@ -78,11 +90,11 @@ module Docman
       return true if v['type'] != self['type']
       return true if v['build_type'] != self['build_type']
       # return true if (not v['version'].nil? and v['version'] != self.version)
-      @changed[self['state']] = true if (not v['version'].nil? and v['version'] != self.version)
-      return true if (not v['version_type'].nil? and v['version_type'] != self.version_type)
+      @changed[@state_name] = true if (not v['version'].nil? and v['version'] != version)
+      return true if (not v['version_type'].nil? and v['version_type'] != version_type)
       unless v['state'].nil?
-        # return true if v['state'] != self['state']
-        @changed[self['state']] = true if v['state'] != self['state']
+        # return true if v['state'] != @state_name
+        @changed[@state_name] = true if v['state'] != @state_name
       end
       false
     end
@@ -93,8 +105,12 @@ module Docman
       YAML::load_file(info_filename)
     end
 
-    def state=(state)
-      self['state'] = state
+    def state
+      states[@state_name]
+    end
+
+    def states
+      self['states']
     end
 
     def disabled?
@@ -112,7 +128,7 @@ module Docman
     end
 
     def environment_name
-      self['docroot_config'].deploy_target['states'][self['state']]
+      self['docroot_config'].deploy_target['states'][@state_name]
     end
 
   end

@@ -22,12 +22,17 @@ module Docman
 
       def config
         super
+        @version = nil
         add_action('before_execute', {'type' => :clean_changed}, @context)
       end
 
       def validate_command
         raise "Please provide 'context'" if @context.nil?
         raise "Context should be of type 'Info'" unless @context.is_a? Docman::Info
+      end
+
+      def version
+        @version
       end
 
       before_execute do
