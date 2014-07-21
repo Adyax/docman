@@ -51,9 +51,14 @@ module Docman
     desc 'deploy NAME', 'init to NAME'
     method_option :force, :aliases => '-f', :desc => 'Force full deploy'
     def deploy(deploy_target, name, type, version)
-      config_dir?
-      Application.instance.deploy(deploy_target, name, type, version, options)
-      say('Complete!', :green)
+      if version.start_with?('state_')
+        state = version.partition('_').last
+        build(deploy_target, state)
+      else
+        config_dir?
+        Application.instance.deploy(deploy_target, name, type, version, options)
+        say('Complete!', :green)
+      end
     end
 
     desc 'state NAME', 'init to NAME'
