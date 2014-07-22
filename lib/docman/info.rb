@@ -21,12 +21,21 @@ module Docman
           if state.has_key?('source')
             if state['source']['type'] == :retrieve_from_repo
               repo = state['source']['repo'] == :project_repo ? self['repo'] : state['source']['repo']
-              external_state_info = GitUtil.read_yaml_from_file(repo, self['temp_path'], state['source']['branch'], state['source']['file'])
+              external_state_info = read_yaml_from_file(repo, self['temp_path'], state['source']['branch'], state['source']['file'])
               state.deep_merge! external_state_info
             end
           end
         end
       end
+    end
+
+    def read_yaml_from_file(repo, path, version, filename)
+      GitUtil.get(repo, path, 'branch', version, nil, nil, need_rebuild?)
+      filepath = File.join(path, filename)
+      return YAML::load_file(filepath) if File.file? filepath
+      nil
+    rescue StandardError => e
+      raise "Error in info file: #{filepath}, #{e.message}"
     end
 
     def version

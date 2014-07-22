@@ -12,8 +12,6 @@ module Docman
 
       @@deployers = {}
 
-      #todo: docroot config in separate repos for projects
-
       def self.create(params, context = nil, caller = nil)
         c = @@deployers[params['handler']]
         if c
@@ -150,6 +148,14 @@ module Docman
         end
       end
 
+      def build_recursive(info = nil)
+        info = info ? info : @docroot_config.structure
+        build_dir(info)
+        info['children'].each do |child|
+          build_recursive(child)
+        end
+      end
+
       def build_dir(info)
         return if @builded.include? info['name']
         info.state_name = self['state']
@@ -160,15 +166,6 @@ module Docman
         @build_results[info['name']] = build_result ? build_result : 'Not builded'
         @versions[info['name']] = builder.version
         @builded << info['name']
-      end
-
-      def build_recursive(info = nil)
-        info = info ? info : @docroot_config.structure
-        build_dir(info)
-
-        info['children'].each do |child|
-          build_recursive(child)
-        end
       end
 
       # TODO: need to refactor.

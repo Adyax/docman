@@ -36,7 +36,7 @@ module Docman
       say('Complete!', :green)
     end
 
-    desc 'build NAME', 'init to NAME'
+    desc 'build', 'Build docroot'
     method_option :force, :aliases => '-f', :desc => 'Force full rebuild'
     option :tag
     def build(deploy_target, state)
@@ -48,7 +48,7 @@ module Docman
       say('Complete!', :green)
     end
 
-    desc 'deploy NAME', 'init to NAME'
+    desc 'deploy', 'Deploy to target'
     method_option :force, :aliases => '-f', :desc => 'Force full deploy'
     def deploy(deploy_target, name, type, version)
       if version.start_with?('state_')
@@ -61,19 +61,9 @@ module Docman
       end
     end
 
-    desc 'state NAME', 'init to NAME'
-    def state(name, type, version)
-      config_dir?
-      Application.instance.state(name, type, version)
-      say('Complete!', :green)
-    end
-
     no_commands {
       def config_dir?
-        unless File.directory?('config')
-          $stderr.puts 'ERROR: No config directory in docroot'
-          exit 1
-        end
+        raise 'ERROR: No config directory in docroot' unless File.directory?('config')
       end
     }
   end

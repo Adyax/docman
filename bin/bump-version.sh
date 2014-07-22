@@ -57,7 +57,7 @@ else
         echo "" >> CHANGES
         git add VERSION CHANGES
         git commit -m "Added VERSION and CHANGES files, Version bump to 0.1.0"
-        git tag -a -m "[skip trigger] Tagging version 0.1.0" "0.1.0"
+        git tag -a -m "[skip] Tagging version 0.1.0" "0.1.0"
         git push origin --tags
         git push
     fi
@@ -77,7 +77,7 @@ if [ -n "$1" ]; then
   echo "type: tag" > info.yaml
   echo "version: $TAG" >> info.yaml
   git add -A
-  git commit -m "[skip trigger] Changed tag to: $TAG" & git push origin ${BRANCH}
+  git commit -m "[skip] Changed tag to: $TAG" & git push origin ${BRANCH}
   git checkout -
   echo ${TAG}
 fi

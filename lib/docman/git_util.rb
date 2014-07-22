@@ -20,7 +20,8 @@ module Docman
       exec 'git clean -f -d'
     end
 
-    def self.get(repo, path, type, version)
+    def self.get(repo, path, type, version, single_branch = nil, depth = nil, reset = false)
+      FileUtils.rm_rf path if reset and File.directory? path
       if File.directory? path and File.directory?(File.join(path, '.git'))
         Dir.chdir path
         self.reset_repo(path) #if self.repo_changed?(path)
@@ -35,7 +36,14 @@ module Docman
         end
       else
         FileUtils.rm_rf path if File.directory? path
-        exec "git clone #{repo} #{path}"
+        if type == 'branch'
+          single_branch = single_branch ? "-b #{version} --single-branch" : ''
+          depth = (depth and depth.is_a? Integer) ? "--depth #{depth}" : ''
+        else
+          single_branch=''
+          depth=''
+        end
+        exec "git clone #{single_branch} #{depth} #{repo} #{path}"
         Dir.chdir path
         exec "git checkout #{version}"
       end
@@ -43,14 +51,6 @@ module Docman
       result
     end
 
-    def self.read_yaml_from_file(repo, path, version, filename)
-      self.get(repo, path, 'branch', version)
-      filepath = File.join(path, filename)
-      return YAML::load_file(filepath) if File.file? filepath
-      nil
-    rescue StandardError => e
-      raise "Error in info file: #{filepath}, #{e.message}"
-    end
 
     def self.last_revision
       result = `git rev-parse --short HEAD`
