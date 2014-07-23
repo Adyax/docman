@@ -85,7 +85,7 @@ module Docman
     def set_rebuild_recursive(obj, value)
       obj.need_rebuild[@state_name] = value
       if obj.has_key?('children')
-        obj['children'].values.each do |info|
+        obj['children'].each do |info|
           set_rebuild_recursive(info, value)
         end
       end

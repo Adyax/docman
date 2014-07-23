@@ -27,7 +27,7 @@ module Docman
     def structure_build(path, prefix = '', parent = nil)
       return unless File.file? File.join(path, 'info.yaml')
 
-      children = {}
+      children = []
       info = YAML::load_file(File.join(path, 'info.yaml'))
       @raw_infos[File.basename path] = YAML::load_file(File.join(path, 'info.yaml'))
       unless info['status'].nil?
@@ -58,7 +58,7 @@ module Docman
         if File.directory?(full_path)
           dir_hash = structure_build(full_path, prefix, i)
           unless dir_hash == nil
-            children[dir_hash['order']] = dir_hash
+            children << dir_hash
           end
         end
       end
