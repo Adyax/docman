@@ -108,6 +108,7 @@ module Docman
       false
     end
 
+    #TODO: check if info.yaml needed for local state
     def stored_version
       info_filename = File.join(self['full_build_path'], 'info.yaml')
       return false unless File.file?(info_filename)

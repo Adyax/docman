@@ -10,6 +10,7 @@ module Docman
     desc 'init "dirname" "repo"', 'Initialize docroot in "dirname" from config repo "repo"'
     method_option :force, :aliases => '-f', :desc => 'Force init'
     method_option :skip, :aliases => '-s', :desc => 'Skip if docroot initialized already'
+    option :branch
     def init(name, repo)
       if File.directory? name
         say("Directory #{name} already exists")
@@ -32,7 +33,7 @@ module Docman
       end
 
       puts "Init docroot directory #{name} and retrieve config from provided repo."
-      Application.instance.init(name, repo)
+      Application.instance.init(name, repo, options)
       say('Complete!', :green)
     end
 

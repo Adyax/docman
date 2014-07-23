@@ -47,14 +47,19 @@ module Docman
         Dir.chdir path
         exec "git checkout #{version}"
       end
-      result = type == 'branch' ? self.last_revision : version
+      result = type == 'branch' ? self.last_revision(path) : version
       result
     end
 
 
-    def self.last_revision
-      result = `git rev-parse --short HEAD`
-      result.delete!("\n")
+    def self.last_revision(path = nil)
+      result = nil
+      if self.repo? path
+        Dir.chdir path unless path.nil?
+        result = `git rev-parse --short HEAD`
+        result.delete!("\n")
+      end
+      result
     end
 
     def self.update(path)

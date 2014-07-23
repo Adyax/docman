@@ -45,8 +45,11 @@ module Docman
       @force = false
     end
 
-    def init(name, repo)
-      `mkdir #{name} && cd #{name} && git clone --depth 1 #{repo} config`
+    def init(name, repo, options)
+      branch = options['branch'] ? options['branch'] : 'master'
+      `mkdir #{name} && cd #{name} && git clone -b #{branch} --single-branch --depth 1 #{repo} config`
+      #Dir.chdir File.join(name, 'config')
+      #`git checkout #{branch} & git branch -u origin #{branch}`
     end
 
     def with_rescue
