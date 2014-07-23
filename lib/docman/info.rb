@@ -21,7 +21,7 @@ module Docman
           if state.has_key?('source')
             if state['source']['type'] == :retrieve_from_repo
               repo = state['source']['repo'] == :project_repo ? self['repo'] : state['source']['repo']
-              external_state_info = read_yaml_from_file(repo, self['temp_path'], state['source']['branch'], state['source']['file'])
+              external_state_info = read_yaml_from_file(repo, self['states_path'], state['source']['branch'], state['source']['file'])
               state.deep_merge! external_state_info
             end
           end
@@ -30,7 +30,7 @@ module Docman
     end
 
     def read_yaml_from_file(repo, path, version, filename)
-      GitUtil.get(repo, path, 'branch', version, nil, nil, need_rebuild?)
+      GitUtil.get(repo, path, 'branch', version, true, 1, need_rebuild?)
       filepath = File.join(path, filename)
       return YAML::load_file(filepath) if File.file? filepath
       nil
@@ -85,7 +85,7 @@ module Docman
     def set_rebuild_recursive(obj, value)
       obj.need_rebuild[@state_name] = value
       if obj.has_key?('children')
-        obj['children'].each do |info|
+        obj['children'].values.each do |info|
           set_rebuild_recursive(info, value)
         end
       end

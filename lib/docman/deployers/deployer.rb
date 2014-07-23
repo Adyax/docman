@@ -151,7 +151,7 @@ module Docman
       def build_recursive(info = nil)
         info = info ? info : @docroot_config.structure
         build_dir(info)
-        info['children'].each do |child|
+        info['children'].sort.map do |key, child|
           build_recursive(child)
         end
       end

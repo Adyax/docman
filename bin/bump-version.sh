@@ -77,7 +77,7 @@ if [ -n "$1" ]; then
   echo "type: tag" > info.yaml
   echo "version: $TAG" >> info.yaml
   git add -A
-  git commit -m "[skip] Changed tag to: $TAG" & git push origin ${BRANCH}
-  git checkout -
+  git commit -m "[skip] Changed tag to: $TAG" & git push -u origin ${BRANCH}
+  #git checkout -
   echo ${TAG}
 fi
