@@ -7,7 +7,9 @@ module Docman
     @logger = Logger.new(STDOUT)
 
     def self.git
-      result = ENV['GIT_CMD'] ? ENV['git_cmd'] : 'git'
+      result = ENV.has_key?('GIT_CMD') ? ENV['GIT_CMD'] : 'git'
+      puts result
+      @logger.info ENV
       result
     end
 
