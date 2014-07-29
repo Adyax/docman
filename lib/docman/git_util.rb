@@ -6,9 +6,14 @@ module Docman
 
     @logger = Logger.new(STDOUT)
 
+    def self.git
+      result = ENV['GIT_CMD'] ? ENV['git_cmd'] : 'git'
+      result
+    end
+
     def self.exec(command)
       @logger.info command
-      result = `#{command}`.delete!("\n")
+      result = `#{git} #{command}`.delete!("\n")
       @logger.info result if result
       raise "ERROR: #{result}" unless $?.exitstatus == 0
       result
@@ -16,8 +21,8 @@ module Docman
 
     def self.reset_repo(path)
       Dir.chdir path
-      exec 'git reset --hard'
-      exec 'git clean -f -d'
+      exec 'reset --hard'
+      exec 'clean -f -d'
     end
 
     def self.get(repo, path, type, version, single_branch = nil, depth = nil, reset = false)
@@ -26,13 +31,13 @@ module Docman
         Dir.chdir path
         self.reset_repo(path) #if self.repo_changed?(path)
         if type == 'branch'
-          exec "git fetch"
-          exec "git checkout #{version}"
-          exec "git pull origin #{version}"
+          exec "fetch"
+          exec "checkout #{version}"
+          exec "pull origin #{version}"
         end
         if type == 'tag'
-          exec 'git fetch --tags'
-          exec "git checkout tags/#{version}"
+          exec 'fetch --tags'
+          exec "checkout tags/#{version}"
         end
       else
         FileUtils.rm_rf path if File.directory? path
@@ -43,9 +48,9 @@ module Docman
           single_branch=''
           depth=''
         end
-        exec "git clone #{single_branch} #{depth} #{repo} #{path}"
+        exec "clone #{single_branch} #{depth} #{repo} #{path}"
         Dir.chdir path
-        exec "git checkout #{version}"
+        exec "checkout #{version}"
       end
       result = type == 'branch' ? self.last_revision(path) : version
       result
@@ -70,15 +75,15 @@ module Docman
       if repo_changed? path
         # puts message
         pull root_path
-        exec %Q(git add --all #{path.slice "#{root_path}/"})
-        exec %Q(git commit -m "#{message}") if repo_changed? path
+        exec %Q(add --all #{path.slice "#{root_path}/"})
+        exec %Q(commit -m "#{message}") if repo_changed? path
         self.tag(root_path, tag) if tag
       end
     end
 
     def self.pull(path)
       Dir.chdir path
-      exec 'git pull'
+      exec 'pull'
     end
 
     def self.repo?(path)
@@ -97,14 +102,14 @@ module Docman
 
     def self.push(root_path, version)
       Dir.chdir root_path
-      exec "git pull origin #{version}"
-      exec "git push origin #{version}"
+      exec "pull origin #{version}"
+      exec "push origin #{version}"
     end
 
     def self.tag(root_path, tag)
       Dir.chdir root_path
-      exec %Q(git tag -a -m "Tagged to #{tag}" "#{tag}")
-      exec "git push origin #{tag}"
+      exec %Q(tag -a -m "Tagged to #{tag}" "#{tag}")
+      exec "push origin #{tag}"
     end
   end
 
