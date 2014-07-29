@@ -5,18 +5,12 @@ module Docman
   module GitUtil
 
     @logger = Logger.new(STDOUT)
+    @git = ENV.has_key?('GIT_CMD') ? ENV['GIT_CMD'] : 'git'
 
-    def self.git
-      result = ENV.has_key?('GIT_CMD') ? ENV['GIT_CMD'] : 'git'
-      puts result
-      @logger.info ENV
-      result
-    end
-
-    def self.exec(command)
-      @logger.info command
-      result = `#{git} #{command}`.delete!("\n")
-      @logger.info result if result
+    def self.exec(command, show_result = true)
+      @logger.info "#{@git} #{command}"
+      result = `#{@git} #{command}`.delete!("\n")
+      @logger.info result if show_result and result
       raise "ERROR: #{result}" unless $?.exitstatus == 0
       result
     end
@@ -43,14 +37,7 @@ module Docman
         end
       else
         FileUtils.rm_rf path if File.directory? path
-        if type == 'branch'
-          single_branch = single_branch ? "-b #{version} --single-branch" : ''
-          depth = (depth and depth.is_a? Integer) ? "--depth #{depth}" : ''
-        else
-          single_branch=''
-          depth=''
-        end
-        exec "clone #{single_branch} #{depth} #{repo} #{path}"
+        clone_repo(repo, path, type, version, single_branch, depth)
         Dir.chdir path
         exec "checkout #{version}"
       end
@@ -58,6 +45,16 @@ module Docman
       result
     end
 
+    def self.clone_repo(repo, path, type, version, single_branch = nil, depth = nil)
+      if type == 'branch'
+        single_branch = single_branch ? "-b #{version} --single-branch" : ''
+        depth = (depth and depth.is_a? Integer) ? "--depth #{depth}" : ''
+      else
+        single_branch=''
+        depth=''
+      end
+      exec("clone #{single_branch} #{depth} #{repo} #{path}")
+    end
 
     def self.last_revision(path = nil)
       result = nil

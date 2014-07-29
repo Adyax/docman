@@ -47,7 +47,9 @@ module Docman
 
     def init(name, repo, options)
       branch = options['branch'] ? options['branch'] : 'master'
-      `mkdir #{name} && cd #{name} && git clone -b #{branch} --single-branch --depth 1 #{repo} config`
+      `mkdir #{name}`
+      Dir.chdir name
+      GitUtil.clone_repo(repo, 'config', 'branch', branch, true, 1)
       #Dir.chdir File.join(name, 'config')
       #`git checkout #{branch} & git branch -u origin #{branch}`
     end
