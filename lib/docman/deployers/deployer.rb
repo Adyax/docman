@@ -55,6 +55,7 @@ module Docman
         @config_yaml = Docman::Application.instance.config.unmutable_config.to_yaml
 
         #TODO: need to refactor
+        #TODO: need to check changes in config repo too
         stored_docroot_config_hash = read_version_file_param('docroot_config_hash')
         @docroot_config_hash = @docroot_config.config_hash
         @docroot_config_yaml = @docroot_config.raw_infos.to_yaml
