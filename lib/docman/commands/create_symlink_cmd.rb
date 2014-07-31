@@ -13,8 +13,8 @@ module Docman
     end
 
     def execute
-      Dir.chdir source_path
       source_path = File.join(@context['docroot_config'].docroot_dir, self['target_dir'])
+      Dir.chdir source_path
       source_pathname = Pathname.new source_path
       target_pathname = Pathname.new @context['full_build_path']
       relative_path = target_pathname.relative_path_from source_pathname
