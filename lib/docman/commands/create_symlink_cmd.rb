@@ -18,7 +18,8 @@ module Docman
       source_pathname = Pathname.new source_path
       target_pathname = Pathname.new @context['full_build_path']
       relative_path = target_pathname.relative_path_from source_pathname
-      puts `ln -f -s #{relative_path} .`
+      `ln -f -s #{relative_path} .`
+      log "Created symlink in #{source_path} dir: '#{@context['name']}' to '#{relative_path}'"
     end
   end
 end
