@@ -39,7 +39,7 @@ if [ -f VERSION ]; then
     mv tmpfile CHANGES
     git add CHANGES VERSION
     git commit -m "[skip] Version bump to $INPUT_STRING"
-    git tag -a -m "Tagging version $INPUT_STRING" "$INPUT_STRING"
+    git tag -a -m "[skip] Tagging version $INPUT_STRING" "$INPUT_STRING"
     git push origin --tags
     git push
 else
@@ -58,7 +58,7 @@ else
         echo "" >> CHANGES
         git add VERSION CHANGES
         git commit -m "[skip] Added VERSION and CHANGES files, Version bump to 0.1.0"
-        git tag -a -m "Tagging version 0.1.0" "0.1.0"
+        git tag -a -m "[skip] Tagging version 0.1.0" "0.1.0"
         git push origin --tags
         git push
     fi
