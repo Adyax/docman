@@ -20,8 +20,9 @@ if [ -f VERSION ]; then
     V_MINOR=${BASE_LIST[1]}
     V_PATCH=${BASE_LIST[2]}
     echo "Current version : $BASE_STRING"
-    V_MINOR=$((V_MINOR + 1))
-    V_PATCH=0
+    #V_MINOR=$((V_MINOR + 1))
+    V_PATCH=$((V_PATCH + 1))
+    #V_PATCH=0
     SUGGESTED_VERSION="$V_MAJOR.$V_MINOR.$V_PATCH"
     read -p "Enter a version number [$SUGGESTED_VERSION]: " INPUT_STRING
     if [ "$INPUT_STRING" = "" ]; then
@@ -37,7 +38,7 @@ if [ -f VERSION ]; then
     cat CHANGES >> tmpfile
     mv tmpfile CHANGES
     git add CHANGES VERSION
-    git commit -m "Version bump to $INPUT_STRING"
+    git commit -m "[skip] Version bump to $INPUT_STRING"
     git tag -a -m "Tagging version $INPUT_STRING" "$INPUT_STRING"
     git push origin --tags
     git push
@@ -56,8 +57,8 @@ else
         echo "" >> CHANGES
         echo "" >> CHANGES
         git add VERSION CHANGES
-        git commit -m "Added VERSION and CHANGES files, Version bump to 0.1.0"
-        git tag -a -m "[skip] Tagging version 0.1.0" "0.1.0"
+        git commit -m "[skip] Added VERSION and CHANGES files, Version bump to 0.1.0"
+        git tag -a -m "Tagging version 0.1.0" "0.1.0"
         git push origin --tags
         git push
     fi
@@ -69,6 +70,7 @@ if [ -n "$1" ]; then
   git show-ref --verify --quiet "refs/heads/${BRANCH}"
   if [ $? == 0 ]; then
     git checkout ${BRANCH}
+    git pull
   else
     git checkout --orphan ${BRANCH}
     git rm --cached -r .
@@ -77,7 +79,7 @@ if [ -n "$1" ]; then
   echo "type: tag" > info.yaml
   echo "version: $TAG" >> info.yaml
   git add -A
-  git commit -m "[skip] Changed tag to: $TAG" & git push -u origin ${BRANCH}
-  #git checkout -
+  git commit -m "Changed tag to: $TAG" & git push -u origin ${BRANCH}
+  git checkout master
   echo ${TAG}
 fi

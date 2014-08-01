@@ -62,6 +62,17 @@ module Docman
       end
     end
 
+    desc 'bump', 'Bump version'
+    #option :state
+    def bump(state = nil)
+      if state
+        Exec.do "#{Application::bin}/bump-version.sh #{state}"
+      else
+        Exec.do "#{Application::bin}/bump-version.sh"
+      end
+      say('Complete!', :green)
+    end
+
     no_commands {
       def config_dir?
         raise 'ERROR: No config directory in docroot' unless File.directory?('config')
