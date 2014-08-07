@@ -102,8 +102,8 @@ module Docman
     end
 
     def write_environment(environment)
-      filepath = File.join(@workspace_dir, 'environment')
-      File.open(filepath, 'w') { |file| file.write(environment) }
+      filepath = File.join(@workspace_dir, 'last_deploy.properties')
+      File.open(filepath, 'w') { |file| file.write("ENV=#{environment}") }
     end
 
     def execute(action, state, name = nil, tag = nil)
