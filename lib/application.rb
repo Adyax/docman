@@ -79,6 +79,7 @@ module Docman
     end
 
     def deploy(deploy_target_name, name, type, version, options = false)
+      result = nil
       with_rescue do
         @options = options
         @deploy_target = @config['deploy_targets'][deploy_target_name]
@@ -87,8 +88,10 @@ module Docman
         @docroot_config = DocrootConfig.new(@workspace_dir, deploy_target)
         @docroot_config.states_dependin_on(name, version).keys.each do |state|
           execute('deploy', state, name)
+          result = state
         end
       end
+      result
     end
 
     def execute(action, state, name = nil, tag = nil)

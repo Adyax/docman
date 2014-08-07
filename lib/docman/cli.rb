@@ -57,8 +57,8 @@ module Docman
         build(deploy_target, state)
       else
         config_dir?
-        Application.instance.deploy(deploy_target, name, type, version, options)
-        say('Complete!', :green)
+        result = Application.instance.deploy(deploy_target, name, type, version, options)
+        say(result, :green)
       end
     end
 
