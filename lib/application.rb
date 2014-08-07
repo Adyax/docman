@@ -88,12 +88,22 @@ module Docman
         @docroot_config = DocrootConfig.new(@workspace_dir, deploy_target)
         @docroot_config.states_dependin_on(name, version).keys.each do |state|
           execute('deploy', state, name)
+          write_environment @deploy_target['states'][state]
+          write_state state
           result = state
-          filepath = File.join(@workspace_dir, 'state')
-          File.open(filepath, 'w') { |file| file.write(result) }
         end
       end
       result
+    end
+
+    def write_state state
+      filepath = File.join(@workspace_dir, 'state')
+      File.open(filepath, 'w') { |file| file.write(state) }
+    end
+
+    def write_environment(environment)
+      filepath = File.join(@workspace_dir, 'environment')
+      File.open(filepath, 'w') { |file| file.write(environment) }
     end
 
     def execute(action, state, name = nil, tag = nil)
