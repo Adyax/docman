@@ -89,6 +89,8 @@ module Docman
         @docroot_config.states_dependin_on(name, version).keys.each do |state|
           execute('deploy', state, name)
           result = state
+          filepath = File.join(@workspace_dir, 'state')
+          File.open(filepath, 'w') { |file| file.write(result) }
         end
       end
       result
