@@ -22,7 +22,7 @@ module Docman
             if state['source']['type'] == :retrieve_from_repo
               repo = state['source']['repo'] == :project_repo ? self['repo'] : state['source']['repo']
               external_state_info = read_yaml_from_file(repo, self['states_path'], state['source']['branch'], state['source']['file'])
-              state.deep_merge! external_state_info
+              state.deep_merge! external_state_info unless external_state_info.nil?
             end
           end
         end

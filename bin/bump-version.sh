@@ -66,8 +66,10 @@ else
 fi
 
 if [ -n "$1" ]; then
+  git fetch
   BRANCH="state_$1"
-  git show-ref --verify --quiet "refs/heads/${BRANCH}"
+  #git show-ref --verify --quiet "refs/heads/${BRANCH}"
+  git ls-remote --exit-code . origin/state_stable &> /dev/null
   if [ $? == 0 ]; then
     git checkout ${BRANCH}
     git pull
