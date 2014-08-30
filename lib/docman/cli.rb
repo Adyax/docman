@@ -64,12 +64,14 @@ module Docman
 
     desc 'bump', 'Bump version'
     #option :state
-    def bump(state = nil)
-      if state
-        Exec.do "#{Application::bin}/bump-version.sh #{state}"
-      else
-        Exec.do "#{Application::bin}/bump-version.sh"
-      end
+    #option :skip
+    def bump(state = nil, skip = nil)
+      # if state
+      #   Exec.do "#{Application::bin}/bump-version.sh #{state}"
+      # else
+      #   Exec.do "#{Application::bin}/bump-version.sh"
+      # end
+      Exec.do "#{Application::bin}/bump-version.sh #{state} #{skip}"
       say('Complete!', :green)
     end
 
