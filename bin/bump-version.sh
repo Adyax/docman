@@ -12,7 +12,9 @@
 # pull a list of changes from git history, prepend this to
 # a file called CHANGES (under the title of the new version
 # number) and create a GIT tag.
-set -vx
+
+git checkout master
+git pull origin master
 
 if [ -f VERSION ]; then
     BASE_STRING=`cat VERSION`
@@ -81,7 +83,7 @@ if [ -n "$1" ]; then
   fi
   echo "type: tag" > info.yaml
   echo "version: $TAG" >> info.yaml
-  git add -A
+  git add info.yaml
   if [ -n "$2" ] && [ "$2" == "skip" ]; then
     git commit -m "[skip] Changed tag to: $TAG" & git push -u origin ${BRANCH}
   else
