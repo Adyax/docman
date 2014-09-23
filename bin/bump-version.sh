@@ -15,6 +15,7 @@
 
 git checkout master
 git pull origin master
+git fetch
 
 if [ -f VERSION ]; then
     BASE_STRING=`cat VERSION`
@@ -44,7 +45,7 @@ if [ -f VERSION ]; then
     git commit -m "[skip] Version bump to $INPUT_STRING"
     git tag -a -m "[skip] Tagging version $INPUT_STRING" "$INPUT_STRING"
     git push origin ${INPUT_STRING}
-    git push
+    git push origin master
 else
     echo "Could not find a VERSION file"
     read -p "Do you want to create a version file and start from scratch? [y]" RESPONSE
@@ -63,7 +64,7 @@ else
         git commit -m "[skip] Added VERSION and CHANGES files, Version bump to 0.1.0"
         git tag -a -m "[skip] Tagging version 0.1.0" "0.1.0"
         git push origin --tags
-        git push
+        git push origin master
     fi
     TAG="0.1.0"
 fi
@@ -75,7 +76,7 @@ if [ -n "$1" ]; then
   git ls-remote --exit-code . origin/state_stable &> /dev/null
   if [ $? == 0 ]; then
     git checkout ${BRANCH}
-    git pull
+    git pull origin ${BRANCH}
   else
     git checkout --orphan ${BRANCH}
     git rm --cached -r .
