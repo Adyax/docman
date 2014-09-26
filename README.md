@@ -10,25 +10,23 @@ Notes: we are speaking about the code only, media files should be managed separa
 
 ## Usage (in process of documentation)
 
-1. Init local environment:
+Init local environment:
 
     $ docman init <project-dir> <config-repo> # Template: https://github.com/Adyax/docman-config
 
-2. Build local environment:
+Build local environment:
 
     $ docman build local environment
 
-...
 
-3. Work on your website!
+Work on your website!
 
-...
 
-4. Bump your production version:
+Bump your production version:
 
     $ docman bump 
 
-5. Build the destination docroot using your settings:
+Build the destination docroot using your settings:
 
     $ docman build <docroot> stable
 
