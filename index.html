@@ -37,7 +37,6 @@
           <li><a href="https://github.com/Adyax/docman">View On <strong>GitHub</strong></a></li>
         </ul>
       </header>
-      <section>
         <h2>Overview</h2>
         <p>Introducing Docman: the Swiss Army Knife for Drupal multisite docroot management and deployment. Docman acts as a layer between your docroot – usually a git repository somewhere, but not limited to it– and multiple vendors working on different websites using your standards and predefined sets of modules.</p>
 
@@ -51,9 +50,7 @@
         <p>You have a docroot at Acquia Cloud
         You have a small governance team setting up standards (Drupal core, list of contrib modules)
         You have 3 vendors working on three different websites in multisite environment</p>
-      </section>
-      <section>
-      <h2>
+        <h2>
         <a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
 
         <p>First, make sure you have Ruby installed.</p>
@@ -91,7 +88,29 @@
 
         <pre><code>gem install docman
         </code></pre>
-      </section>
+        <h2>
+        <a name="supported-ruby-versions" class="anchor" href="#supported-ruby-versions"><span class="octicon octicon-link"></span></a>Supported Ruby Versions</h2>
+
+        <p>This library aims to support and is <a href="http://travis-ci.org/sferik/t">tested against</a> the following Ruby
+        implementations:</p>
+
+        <ul>
+        <li>Ruby 1.9.2</li>
+        <li>Ruby 1.9.3</li>
+        <li>Ruby 2.0.0</li>
+        <li>Ruby 2.1.0</li>
+        </ul><p>If something doesn't work on one of these Ruby versions, it's a bug.</p>
+
+        <p>This library may inadvertently work (or seem to work) on other Ruby
+        implementations, however support will only be provided for the versions listed
+        above.</p>
+
+        <p>If you would like this library to support another Ruby version, you may
+        volunteer to be a maintainer. Being a maintainer entails making sure all tests
+        run and pass on that implementation. When something breaks on your
+        implementation, you will be responsible for providing patches in a timely
+        fashion. If critical issues for a particular implementation exist at the time
+        of a major release, support for that Ruby version may be dropped.</p>
       <footer>
         <p>This project is maintained by <a href="https://github.com/Adyax">Adyax</a></p>
         <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
