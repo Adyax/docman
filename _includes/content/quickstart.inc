@@ -30,7 +30,7 @@
 <p>Config files are .yaml files</p>
 <p>The most important configuration file is config.yaml, which is located in the root of the config repository, lets create it:</p>
 <pre><code>$ touch config.yaml</pre></code>
-<p>Now lets feel it with basic config that suits our needs:</p>
+<p>Now lets fill it with basic config that suits our needs:</p>
 <pre><code>---
 environments:
   dev:
