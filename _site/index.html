@@ -1,0 +1,273 @@
+<!doctype html>
+<html>
+   <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Docman by Adyax</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+   <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-1535257-20', 'auto');
+  ga('send', 'pageview');
+
+</script>
+  
+    <div class="wrapper">
+         <header>
+        <h1>Docman</h1>
+        <p>The Swiss Army Knife for Drupal Multisite Docroot Management and Deployment</p>
+
+        <p class="view"><a href="https://github.com/Adyax/docman">View the Project on GitHub <small>Adyax/docman</small></a></p>
+
+        <ul>
+          <li><a href="https://github.com/Adyax/docman/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/Adyax/docman/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/Adyax/docman">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h2>Overview</h2>
+<p>Introducing Docman: the Swiss Army Knife for Drupal multisite docroot management and deployment. Docman acts as a layer between your docroot - usually a git repository somewhere, but not limited to it- and multiple vendors working on different websites using your standards and predefined sets of modules.</p>
+
+<p>Remember how hosting sales teams always tried to push you to buy more docroots "because otherwise it would be hard to manage websites in a Drupal multisite environment"? Docman can simplify your life so you will be able to stick to one docroot and multiple independent websites in it using the same Drupal core.</p>
+
+<p>Have you ever tried to oblige different vendors to work with one Drupal core for completely different websites, inside a multisite environment, without making them break everything and with clear deployment schema? Find out how docman can make the once daunting task of multisite deployment more efficient.</p>
+
+<p>Does the governance of multiple projects in one multisite environment scare you? Docman has hooks, like Drupal, to launch your tests whenever needed and for each website in multisite environment independently.
+Real-world example:</p>
+
+<p>You have a docroot at Acquia Cloud
+You have a small governance team setting up standards (Drupal core, list of contrib modules)
+You have 3 vendors working on three different websites in multisite environment</p>
+
+<h2>
+<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>First, make sure you have Ruby installed.</p>
+
+<p><strong>On a Mac</strong>, open <code>/Applications/Utilities/Terminal.app</code> and type:</p>
+
+<pre><code>ruby -v
+</code></pre>
+
+<p>If the output looks something like this, you're in good shape:</p>
+
+<pre><code>ruby 1.9.3p484 (2013-11-22 revision 43786) [x86_64-darwin13.0.0]
+</code></pre>
+
+<p>If the output looks more like this, you need to <a href="http://www.ruby-lang.org/en/downloads/">install Ruby</a>:</p>
+
+<pre><code>ruby: command not found
+</code></pre>
+
+<p><strong>On Linux</strong>, for Debian-based systems, open a terminal and type:</p>
+
+<pre><code>sudo apt-get install ruby-dev
+</code></pre>
+
+<p>or for Red Hat-based distros like Fedora and CentOS, type:</p>
+
+<pre><code>sudo yum install ruby-devel
+</code></pre>
+
+<p>(if necessary, adapt for your package manager)</p>
+
+<p><strong>On Windows</strong>, you can install Ruby with <a href="http://rubyinstaller.org/">RubyInstaller</a>.</p>
+
+<p>Once you've verified that Ruby is installed:</p>
+
+<pre><code>gem install docman
+</code></pre>
+<h2>Quickstart</h2>
+<h3>Example 1: multisite environment, two websites, Acquia hosting, Drupal 7</h3>
+<h4>Step 1: directory structure creation</h4>
+<p>The important thing to understand - Docman doesn't really care about your directory structure, it scans your master directory for subdirectories and config files and then it will build what you want him to build. In this example we are replication Acquia docroot structure, but feel free to adapt it to your needs.</p>
+<p>This is why the tool is Drupal-version agnostic, you can easily adapt your Drupal 8 websites, because it is you who decide how to build the docroot, not Docman.</p>
+<p>First of all you will need a config repository for this configuration. For now, you can just use local repositories, but just use external git links when you're ready. First, lets create a config repository:</p>
+<pre><code>mkdir docroot-config
+</code></pre>
+<p>Lets init a git repository:</p>
+<pre><code>cd docroot-config; git init
+</code></pre>
+<p>We now have a local git repository, lets create an initial directory structure and config file:</p>
+<pre><code>$ mkdir master</code></pre>
+<p>Then we will need your common modules for all the projects:</p>
+<pre><code>$ mkdir master/common</pre></code>
+<p>Then we will need a directory for Drupal core :</p>
+<pre><code>$ mkdir master/docroot </pre></code>
+<p>Then we will need an empty profiles directory:</p>
+<pre><code>$ mkdir master/profiles </pre></code>
+<p>Then we will need a projects directory, where all your websites will go:</p>
+<pre><code>$ mkdir master/projects </pre></code>
+<p>Then we will need a project 1 directory</p>
+<pre><code>$ mkdir master/projects/project1 </pre></code>
+<p>Then we will need a project 2 directory:</p>
+<pre><code>$ mkdir master/projects/project2 </pre></code>
+<p>Then we will need sites repository, which basically represents Drupal default /sites directory:</p>
+<pre><code>$ mkdir master/sites </pre></code>
+<h4>Step 2: main config file creation</h4>
+<p>Config files are important files that Docman uses in order to understand what kind of content the directory contain, where he should take the code, and what to run after along with environments.<p>
+<p>Config files are .yaml files</p>
+<p>The most important configuration file is config.yaml, which is located in the root of the config repository, lets create it:</p>
+<pre><code>$ touch config.yaml</pre></code>
+<p>Now lets feel it with basic config that suits our needs:</p>
+<pre><code>---
+environments:
+  dev:
+    deploy_target: git_target
+    state: development
+    target_checker:
+      handler: :ssh
+      file_path: /mnt/www/html/docman1.dev
+      ssh_host: free-3588.devcloud.hosting.acquia.com 
+      ssh_user: docman1 # Edit this!
+  test:
+    deploy_target: git_target
+    state: staging
+    target_checker:
+      handler: :ssh
+      file_path: /mnt/www/html/docman1.test
+      ssh_host: free-3588.prod.hosting.acquia.com
+      ssh_user: docman1 # Edit this!
+  prod:
+    deploy_target: git_target
+    state: stable
+    tagger:
+      enabled: true
+      handler: :option
+</pre></code>
+<p>Please note the structure, here we define the list of environments. You can have as many environments as you need, but here you see the default Acquia hosting structure with 3 environments, all of them are managed by git. Variables are pretty self explanatory:</p>
+<pre>deploy_target: git_target</pre>
+<p>This is important to say to docman, it set the environment to be built and pushed to git.</p>
+<pre>state: development</pre>
+<p>This is the name that you will use for docman build command.</p>
+<pre>target_checker: </pre>
+<p>Important part to say to docman about how to check if the code was correctly deployed. In this case after each push to git the tool will use the following parameters to connect to the environnement and check if the code is in place.</p>
+<pre>handler: :ssh </pre>
+<p>We are using ssh protocol to check</p>
+<pre>file_path: :ssh </pre>
+<p>Where to look for deployed files</p>
+<pre>ssh_host:free-3588.devcloud.hosting.acquia.com </pre>
+<p>SSH host</p>
+<pre>ssh_user:docman1 </pre>
+<p>SSH user</p>
+<pre>tagger: </pre>
+<p>Subsystem for production environment, create stable docroot tags by checking all the stable tags from all the repositories and merging them into one.</p>
+<pre>enabled: true</pre>
+<p>Enabling the tagger</p>
+<pre>handler: option </pre>
+<p>@Todo: description</p>
+<p>As you can see, your environments can be anywhere, you do not need to stick to the same hosting system, you can get the code from your local development server dev environment and your staging environment will be in the real hosting. Continuous integration!
+
+<h4>Step 3: common files config file creation</h4>
+<p>In this example we have common modules reposiroty which resides in master/common directory. Lets create a config file for it:</p>
+<pre><code>$ touch master/common/info.yaml</pre></code>
+<p>We are using info.yaml here instead of config.yaml, because docman will search for info.yaml files in each directory to get its config.</p>
+<p>Now lets put the basic configuration inside:</p>
+<pre><code>status: enabled
+type: repo
+repo: /Users/Adyax/Code/docman-common-test/
+order: 30
+states:
+  development:
+    type: branch
+    version: develop
+  staging:
+    type: branch
+    version: master
+  stable:
+    source:
+      type: :retrieve_from_repo
+      repo: :project_repo
+      branch: state_stable
+      file: info.yaml
+hooks:
+  builder:
+    after_execute:
+      - type: :script
+        location: $INFO$/after_build.sh
+        execution_dir: $PROJECT$
+        params:
+          - environment
+</pre></code>
+<p>Again, see below the quick explanation of what is what here. The config file consists of main settings and states part, states are needed to describe to docman from which part of repository it needs to get the code to build for the specific environment (see config.yaml for the list of environments):</p>
+<pre>type: repo</pre>
+<p>Docman needs to know where to look for the code. This time it is a git repository.</p>
+<pre>repo: /Users/Adyax/Code/docman-common-test/</pre>
+<p>Git URL which you normally use in git clone command. In this example - local repository.</p>
+<pre>order: 30</pre>
+<p>@Todo: description</p>
+<pre>states: </pre>
+<p>Starts the states description part</p>
+<pre>development: </pre>
+<p>The state that correspond to the environment in the main config.yaml file</p>
+<pre>type: branch</pre>
+<p>Which branch from the original repository should be taken for this state</p>
+<pre>version: develop</pre>
+<p>Ddevelop branch for development state in development environment in this example</p>
+<pre>stable:</pre>
+<p>Starts the stable part for this state</p>
+<pre>source:</pre>
+<p>Starts the source description for the stable version</p>
+<pre>type: :retrieve_from_repo</pre>
+<p>In this example it will get the information from the same repository. But guess what - you can get it from other places too, like a specific file somewhere.</p>
+<pre>repo: :project_repo</pre>
+<p>Says that we are using the same repository as defined in the beginning of the file</p>
+<pre>branch: state_stable</pre>
+<p>Says that we are using the branch state_stable to get the release information (the name of the stable tag for this reposiroty)</p>
+<pre>file: info.yml</pre>
+<p>The file in which docman will search for the stable tag name for this repository. Ex. v.0.0.2</p>
+<pre>hooks: </pre>
+<p>Starts the hooks part that we be run during the build</p>
+<pre>builder: </pre>
+<p>Starts the builder configuration part</p>
+<pre>after: </pre>
+<p>Starts the hooks part that we be run during the build</p>
+
+
+
+<h2><a name="supported-ruby-versions" class="anchor" href="#supported-ruby-versions"><span class="octicon octicon-link"></span></a>Supported Ruby Versions</h2>
+
+<p>This library aims to support and is tested against the following Ruby
+implementations:</p>
+
+<ul>
+<li>Ruby 1.9.2</li>
+<li>Ruby 1.9.3</li>
+<li>Ruby 2.0.0</li>
+<li>Ruby 2.1.0</li>
+</ul><p>If something doesn't work on one of these Ruby versions, it's a bug.</p>
+
+<p>This library may inadvertently work (or seem to work) on other Ruby
+implementations, however support will only be provided for the versions listed
+above.</p>
+
+<p>If you would like this library to support another Ruby version, you may
+volunteer to be a maintainer. Being a maintainer entails making sure all tests
+run and pass on that implementation. When something breaks on your
+implementation, you will be responsible for providing patches in a timely
+fashion. If critical issues for a particular implementation exist at the time
+of a major release, support for that Ruby version may be dropped.</p>
+      </section>
+      <footer>
+  <p>This project is maintained by <a href="https://github.com/Adyax">Adyax</a></p>
+  <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+</footer>
+
+    </div>
+    <script src="javascripts/scale.fix.js"></script>    
+  </body>
+</html>

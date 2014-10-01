@@ -1,0 +1,15 @@
+<!doctype html>
+<html>
+  {% include head.inc %}
+  <body>
+   {% include ga.inc %}
+    <div class="wrapper">
+      {% include header.inc %}
+      <section>
+        {{ content }}
+      </section>
+      {% include footer.inc %}
+    </div>
+    <script src="javascripts/scale.fix.js"></script>    
+  </body>
+</html>
