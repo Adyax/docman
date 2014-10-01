@@ -45,7 +45,7 @@ environments:
     target_checker:
       handler: :ssh
       file_path: /mnt/www/html/docman1.dev
-      ssh_host: free-3588.devcloud.hosting.acquia.com 
+      ssh_host: xxxxxxxx.devcloud.hosting.acquia.com 
       ssh_user: docman1 # Edit this!
   test:
     deploy_target: git_target
@@ -53,7 +53,7 @@ environments:
     target_checker:
       handler: :ssh
       file_path: /mnt/www/html/docman1.test
-      ssh_host: free-3588.prod.hosting.acquia.com
+      ssh_host: xxxxxxxxx.prod.hosting.acquia.com
       ssh_user: docman1 # Edit this!
   prod:
     deploy_target: git_target
@@ -73,8 +73,8 @@ environments:
 <p>We are using ssh protocol to check</p>
 <pre>file_path: :ssh </pre>
 <p>Where to look for deployed files</p>
-<pre>ssh_host:free-3588.devcloud.hosting.acquia.com </pre>
-<p>SSH host</p>
+<pre>ssh_host:xxxxxxx.devcloud.hosting.acquia.com </pre>
+<p>SSH host. Put the one that is shown to you in your hosting dashboard</p>
 <pre>ssh_user:docman1 </pre>
 <p>SSH user</p>
 <pre>tagger: </pre>
