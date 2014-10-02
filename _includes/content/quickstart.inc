@@ -7,7 +7,7 @@
 	<li>Acquia hosting as target</li>
 </ul>
 <h4>Step 1: Directory structure creation</h4>
-<p>The important thing to understand - Docman doesn't really care about your directory structure, it scans your master directory for subdirectories and config files and then it will build what you want him to build. In this example we are replication Acquia docroot structure, but feel free to adapt it to your needs.</p>
+<p>The important thing to understand - Docman doesn't really care about your directory structure, it scans your master directory for subdirectories and config files and then it will build what you want him to build. In this example we are replicating Acquia docroot structure, but feel free to adapt it to your needs.</p>
 <p>This is why the tool is Drupal-version agnostic, you can easily adapt your Drupal 8 websites, because it is you who decide how to build the docroot, not Docman.</p>
 <p>First of all you will need a config repository for this configuration. For now, you can just use local repositories, but just use external git links when you're ready. First, lets create a config repository:</p>
 <pre><code>mkdir docroot-config
