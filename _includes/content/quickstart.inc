@@ -9,11 +9,11 @@
 <h4>Step 1: Directory structure creation</h4>
 <p>The important thing to understand - Docman doesn't really care about your directory structure, it scans your master directory for subdirectories and config files and then it will build what you want him to build. In this example we are replicating Acquia docroot structure, but feel free to adapt it to your needs.</p>
 <p>This is why the tool is Drupal-version agnostic, you can easily adapt your Drupal 8 websites, because it is you who decide how to build the docroot, not Docman.</p>
-<p>First of all you will need a config repository for this configuration. For now, you can just use local repositories, but just use external git links when you're ready. First, lets create a config repository:</p>
-<pre><code>mkdir docroot-config
+<p>First of all you will need a config repository for this configuration. For testing purposes you can just use local repositories and then use external git links when you're ready. Remember, all your repositories (except master config) should have a state_stable branch created as an orphan. Docman uses this branch internally to keep stable version inside. First, lets create a config repository:</p>
+<pre><code>$ mkdir docroot-config
 </code></pre>
 <p>Lets init a git repository:</p>
-<pre><code>cd docroot-config; git init
+<pre><code>$ cd docroot-config; git init
 </code></pre>
 <p>We now have a local git repository, lets create an initial directory structure and config file:</p>
 <pre><code>$ mkdir master</code></pre>
@@ -30,6 +30,7 @@
 <p>Then we will need a project 2 directory:</p>
 <pre><code>$ mkdir master/projects/project2 </pre></code>
 <p>Then we will need sites repository, which basically represents Drupal default /sites directory:</p>
+
 <pre><code>$ mkdir master/sites </pre></code>
 <h4>Step 2: main config file creation</h4>
 <p>Config files are important files that Docman uses in order to understand what kind of content the directory contain, where he should take the code, and what to run after along with environments.<p>
@@ -116,6 +117,7 @@ hooks:
         params:
           - environment
 </pre></code>
+<p><b>Important: your remote repository should containt orphaned state_stable branch, it can be empty initially.</b></p>
 <p>Again, see below the quick explanation of what is what here. The config file consists of main settings and states part, states are needed to describe to docman from which part of repository it needs to get the code to build for the specific environment (see config.yaml for the list of environments):</p>
 <pre>type: repo</pre>
 <p>Docman needs to know where to look for the code. This time it is a git repository.</p>
@@ -193,6 +195,8 @@ hooks:
           - environment
 </code></pre>
 
+<p><b>Important: your remote repository should containt orphaned state_stable branch, it can be empty initially.</b></p>
+
 <h4>Step 5: Profiles config file creation</h4>
 <p>In this example we have profiles directory empty, and it resides in master/docroot directory. Lets create a config file for it:</p>
 <pre><code>$ touch master/profiles/info.yaml</code></pre>
@@ -200,6 +204,7 @@ hooks:
 <pre><code>status: disabled
 type: dir
 </code></pre>
+<p><b>Important: your remote repository should containt orphaned state_stable branch, it can be empty initially.</b></p>
 
 <h4>Step 6: Project directories config file creation</h4>
 <p>We have two projects (websites), so lets create two subfolders:</p>
@@ -257,6 +262,7 @@ hooks:
           - environment
 
 </code></pre>
+<p><b>Important: your remote repository should containt orphaned state_stable branch, it can be empty initially.</b></p>
 
 <h4>Step 7: Sites directory config file creation</h4>
 <p>Sites directory represents Drupal default sites/ directory, lets create it and put the proper config file:</p>
@@ -292,13 +298,14 @@ hooks:
         params:
           - environment
 </code></pre>
+<p><b>Important: your remote repository should containt orphaned state_stable branch, it can be empty initially.</b></p>
 <p>Note additional after_execute configuration, we are saying to docman that after getting the repository it needs to create a symlink to sites in master/docroot directory.</p>
 <p>Put also the after_build.sh file:</p>
 <pre><code>$ touch master/docroot/sites/after_build.sh</code></pre>
 <p>With the following content: </p>
 <pre><code>#!/bin/sh
 
-PREFIX="<?php"
-ENV_PREFIX='$ENVIRONMENT'
 ln -s ../common all
+
 </pre></code>
+<p>This will effectively link common directory to /all after the docroot build has beedn finished</p>
