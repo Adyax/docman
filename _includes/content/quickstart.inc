@@ -193,7 +193,7 @@ hooks:
           - environment
 </code></pre>
 
-<h4>Step 5: profiles config file creation</h4>
+<h4>Step 5: Profiles config file creation</h4>
 <p>In this example we have profiles directory empty, and it resides in master/docroot directory. Lets create a config file for it:</p>
 <pre><code>$ touch master/profiles/info.yaml</code></pre>
 <p>We do not have anything to put here, so lets disable this directory for docman. Put the following into this file:</p>
