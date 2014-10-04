@@ -309,3 +309,23 @@ ln -s ../common all
 
 </pre></code>
 <p>This will effectively link common directory to /all after the docroot build has beedn finished</p>
+
+<h2>Step 8: Building local environment</h2>
+
+<p>Now, as everything is ready, lets build a local development environment. In the directory with your main config.yaml file launch this:</p>
+<pre><code>$ docman build local development</pre></code>
+<p>If you see 'Complete!' in the end of the output of this command - switch to the master directory - your docroot directory will be there and ready to be configured for your local web server.
+
+<h2>Step 9: Building and pushing to hosting environment (dev/stage)</h2>
+<pre><code>$ docman build git_target development</pre></code>
+<p>This will effectively build the docroot and push it to git repository of a target hosting in development environment.
+
+<pre><code>$ docman build git_target staging</pre></code>
+<p>This will effectively build the docroot and push it to git repository of a target hosting in staging environment.
+
+<h2>Step 10: Building and pushing to hosting environment (prod)</h2>
+<p>When your changes are in the master branch in one of the used repositories you need to say to docman that there is a new stable version:</p>
+<pre><code>$ docman bump stable</pre></code>
+<p>This will effectively increase your code version number (or propose one, or ask you for the version, depends on the repository state)</p>
+<p>And to generate a new stable docroot tag and push it to remote reposiroty launch this command:</p>
+<pre><code>$ docman build git_target stable</pre></code>
