@@ -324,7 +324,7 @@ ln -s ../common all
 <p>This will effectively build the docroot and push it to git repository of a target hosting in staging environment.
 
 <h2>Step 10: Building and pushing to hosting environment (prod)</h2>
-<p>When your changes are in the master branch in one of the used repositories you need to say to docman that there is a new stable version:</p>
+<p>When your changes are in the master branch in one of the used repositories you need to say to docman that there is a new stable version. In the needed repository launch:</p>
 <pre><code>$ docman bump stable</pre></code>
 <p>This will effectively increase your code version number (or propose one, or ask you for the version, depends on the repository state)</p>
 <p>And to generate a new stable docroot tag and push it to remote reposiroty launch this command:</p>
