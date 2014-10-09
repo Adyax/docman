@@ -6,31 +6,30 @@ Notes: we are speaking about the code only, media files should be managed separa
 
 ## Installation
 
-Add this line to your application's Gemfile:
-
-    gem 'docman'
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
     $ gem install docman
 
 ## Usage (in process of documentation)
+
+Init local environment:
+
+    $ docman init <project-dir> <config-repo> # Template: https://github.com/Adyax/docman-config
 
 Build local environment:
 
     $ docman build local environment
 
+
+Work on your website!
+
+
+Bump your production version:
+
+    $ docman bump 
+
 Build the destination docroot using your settings:
 
     $ docman build <docroot> stable
 
-Deploy built docroot (Drupal core with multiple websites in multisite) to your environment:
-
-    $ docman deploy <docroot>
 
 ## Contributing
 
