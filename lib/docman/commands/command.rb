@@ -129,11 +129,11 @@ module Docman
     end
 
     def replace_placeholder(value)
-      value.gsub! '$ROOT$', @context['docroot_config'].root['full_build_path']
-      value.gsub! '$DOCROOT$', @context['docroot_config'].docroot_dir
-      value.gsub! '$PROJECT$', @context['full_build_path']
-      value.gsub! '$INFO$', @context['full_path']
-      value.gsub! '$ENVIRONMENT$', @context.environment_name
+      value.gsub!('$ROOT$', @context['docroot_config'].root['full_build_path']) unless @context['docroot_config'].root['full_build_path'].nil?
+      value.gsub!('$DOCROOT$', @context['docroot_config'].docroot_dir) unless @context['docroot_config'].docroot_dir.nil?
+      value.gsub!('$PROJECT$', @context['full_build_path']) unless @context['full_build_path'].nil?
+      value.gsub!('$INFO$', @context['full_path']) unless @context['full_path'].nil?
+      value.gsub!('$ENVIRONMENT$', @context.environment_name) unless @context.environment_name.nil?
     end
 
   end
