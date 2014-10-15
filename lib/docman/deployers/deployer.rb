@@ -34,6 +34,7 @@ module Docman
       end
 
       def config
+        log 'Configuration started', 'info'
         unless self['name'].nil?
           @docroot_config.chain(@docroot_config.info_by(self['name'])).values.each do |info|
             add_actions(info, info)
