@@ -67,7 +67,8 @@ module Docman
     end
 
     def self.update(path)
-      pull path
+      @logger.info "Update #{path}"
+      exec("pull #{path}")
     end
 
     def self.commit(root_path, path, message, tag = nil)
