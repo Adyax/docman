@@ -5,8 +5,9 @@
 
 <p>Have you ever tried to oblige different vendors to work with one Drupal core for completely different websites, inside a multisite environment, without making them break everything and with clear deployment schema? Find out how docman can make the once daunting task of multisite deployment more efficient.</p>
 
-<p>Does the governance of multiple projects in one multisite environment scare you? Docman has hooks, like Drupal, to launch your tests whenever needed and for each website in multisite environment independently.
-Real-world example:</p>
+<p>Does the governance of multiple projects in one multisite environment scare you? Docman has hooks, like Drupal, to launch your tests whenever needed and for each website in multisite environment independently.</p>
+
+<p>Real-world example:</p>
 
 <p>You have a docroot at Acquia Cloud
 You have a small governance team setting up standards (Drupal core, list of contrib modules)
