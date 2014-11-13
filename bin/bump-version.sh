@@ -88,7 +88,8 @@ if [ -n "$1" ]; then
   if [ -n "$2" ] && [ "$2" == "skip" ]; then
     git commit -m "[skip] Changed tag to: $TAG" & git push -u origin ${BRANCH}
   else
-    git commit -m "Changed tag to: $TAG" & git push -u origin ${BRANCH}
+    git commit -m "Changed tag to: $TAG"
+    git push -u origin ${BRANCH}
   fi
   git checkout master
   echo ${TAG}
