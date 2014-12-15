@@ -96,7 +96,7 @@ module Docman
       end
 
       def files_deployed?(version, filename)
-        return true unless self['environment'].has_key? 'target_checker'
+        return true unless self['environment'] && (self['environment'].has_key? 'target_checker')
         params = self['environment']['target_checker']
         params['version'] = version
         params['filename'] = filename
