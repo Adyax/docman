@@ -4,6 +4,8 @@ Docman made for DOCroot MANagement for Drupal projects. Useful to manage multipl
 
 Notes: we are speaking about the code only, media files should be managed separately and for now are out of scope of this tool.
 
+Docman requires Linux or OS X.
+
 ## Installation
 
     $ gem install docman
