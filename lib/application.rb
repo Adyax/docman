@@ -54,7 +54,7 @@ module Docman
       #`git checkout #{branch} & git branch -u origin #{branch}`
     end
 
-    def with_rescue
+    def with_rescue(write_to_file = true)
       failed_filepath = File.join(@workspace_dir, 'failed')
       if File.file?(failed_filepath)
         log 'Last operation failed, forced rebuild mode'
@@ -64,7 +64,9 @@ module Docman
       yield
     rescue Exception => e
       log "Operation failed: #{e.message}", 'error'
-      File.open(failed_filepath, 'w') {|f| f.write('Failed!') }
+      if write_to_file
+        File.open(failed_filepath, 'w') {|f| f.write(e.message) }
+      end
       raise e
     end
 
@@ -96,6 +98,19 @@ module Docman
       result
     end
 
+    def template(name, options = false)
+      with_rescue(false) do
+        @options = options
+        @docroot_config = DocrootConfig.new(@workspace_dir, nil)
+        project = @docroot_config.project(name)
+        unless project['template'].nil?
+          Dir.chdir project['full_build_path']
+          Exec.do "#{Application::bin}/project-template.sh #{project['template']}"
+          log "Project had been initialized with template: #{project['template']}"
+        end
+      end
+    end
+
     def write_state state
       filepath = File.join(@workspace_dir, 'state')
       File.open(filepath, 'w') { |file| file.write(state) }
@@ -123,6 +138,10 @@ module Docman
 
     def self.root
       Pathname(__FILE__).dirname.parent
+    end
+
+    def environment(name)
+      @config['environments'][name]
     end
 
     def self.bin

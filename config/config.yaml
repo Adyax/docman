@@ -54,3 +54,4 @@ environments:
   local:
     deploy_target: local
     state: development
+    clean_changed: true

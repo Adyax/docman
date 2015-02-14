@@ -79,11 +79,14 @@ module Docman
       @names[name]
     end
 
-    def states_dependin_on(name, version)
+    def project(name)
       raise "There is no project with name '#{name}' exists in config" unless @names.has_key? name
+      @names[name]
+    end
 
+    def states_dependin_on(name, version)
       states = {}
-      @names[name].states.each do |state, info|
+      project(name).states.each do |state, info|
         states[state] = info if info['version'] == version
       end
       states
@@ -95,6 +98,10 @@ module Docman
 
     def root_path
       @root['fuil_build_path']
+    end
+
+    def deploy_target_name
+      @deploy_target.name
     end
 
   end

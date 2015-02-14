@@ -41,7 +41,7 @@ module Docman
     method_option :force, :aliases => '-f', :desc => 'Force full rebuild'
     option :tag
     def build(deploy_target, state)
-      config_dir?
+      get_to_root_dir
       if options[:force]
         FileUtils.rm_r('master') if File.directory? 'master'
       end
@@ -52,11 +52,11 @@ module Docman
     desc 'deploy', 'Deploy to target'
     method_option :force, :aliases => '-f', :desc => 'Force full deploy'
     def deploy(deploy_target, name, type, version)
+      get_to_root_dir
       if version.start_with?('state_')
         state = version.partition('_').last
         build(deploy_target, state)
       else
-        config_dir?
         result = Application.instance.deploy(deploy_target, name, type, version, options)
         say(result, :green)
       end
@@ -75,9 +75,31 @@ module Docman
       say('Complete!', :green)
     end
 
+    desc 'template', 'Reinit project from template'
+    method_option :force, :aliases => '-f', :desc => 'Force project override with template'
+    option :name
+    def template(name = nil)
+      current_dir_name = File.basename(Dir.pwd)
+      get_to_root_dir
+      name = current_dir_name if name.nil?
+      Application.instance.template(name, options)
+      say('Complete!', :green)
+    end
+
     no_commands {
+      def current_dir_has_config_dir
+        File.directory?('config')
+      end
+
       def config_dir?
-        raise 'ERROR: No config directory in docroot' unless File.directory?('config')
+        raise 'ERROR: No config directory in docroot' unless current_dir_has_config_dir
+      end
+
+      def get_to_root_dir
+        until current_dir_has_config_dir
+          raise 'ERROR: No config directory in docroot' if File.basename(Dir.pwd) == '/'
+          Dir.chdir('..')
+        end
       end
     }
   end

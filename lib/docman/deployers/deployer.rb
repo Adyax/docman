@@ -40,6 +40,8 @@ module Docman
             add_actions(info, info)
           end
         else
+          # If no name then "state_*" branch is deployed, e.g. "state_stable"
+          # No actions (hooks) should be performed in this case.
           # add_actions()
         end
 

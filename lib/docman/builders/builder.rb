@@ -23,7 +23,9 @@ module Docman
       def config
         super
         @version = nil
-        add_action('before_execute', {'type' => :clean_changed}, @context)
+        environment = Application.instance.environment(@context.environment_name)
+        clean_changed = environment['clean_changed'].nil? ? true : environment['clean_changed']
+        add_action('before_execute', {'type' => :clean_changed}, @context) if clean_changed
       end
 
       def validate_command

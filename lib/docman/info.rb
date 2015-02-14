@@ -12,17 +12,19 @@ module Docman
       hash.each_pair do |k, v|
         self[k] = v
       end
-      self['build_type'] = self['docroot_config'].deploy_target['builders'][self['type']]['handler']
+      self['build_type'] = self['docroot_config'].deploy_target['builders'][self['type']]['handler'] unless self['docroot_config'].deploy_target.nil?
       @need_rebuild = Hash.new
       @changed = Hash.new
       @state_name = nil
-      if self.has_key? 'states'
-        self['states'].each_pair do |name, state|
-          if state.has_key?('source')
-            if state['source']['type'] == :retrieve_from_repo
-              repo = state['source']['repo'] == :project_repo ? self['repo'] : state['source']['repo']
-              external_state_info = read_yaml_from_file(repo, self['states_path'], state['source']['branch'], state['source']['file'])
-              state.deep_merge! external_state_info unless external_state_info.nil? or state.nil?
+      unless self['docroot_config'].deploy_target.nil?
+        if self.has_key? 'states'
+          self['states'].each_pair do |name, state|
+            if state.has_key?('source')
+              if state['source']['type'] == :retrieve_from_repo
+                repo = state['source']['repo'] == :project_repo ? self['repo'] : state['source']['repo']
+                external_state_info = read_yaml_from_file(repo, self['states_path'], state['source']['branch'], state['source']['file'])
+                state.deep_merge! external_state_info unless external_state_info.nil? or state.nil?
+              end
             end
           end
         end
@@ -138,7 +140,7 @@ module Docman
     end
 
     def environment_name
-      self['docroot_config'].deploy_target['states'][@state_name]
+      self['docroot_config'].deploy_target['states'][@state_name] unless self['docroot_config'].deploy_target.nil?
     end
 
   end
