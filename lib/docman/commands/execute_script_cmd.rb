@@ -20,6 +20,7 @@ module Docman
       Dir.chdir self['execution_dir']
       logger.info "Script execution: #{self['location']}"
       params = self['params'].nil? ? '' : prepare_params(self['params'])
+      `chmod 777 #{self['location']}`
       `chmod a+x #{self['location']}`
       logger.info `#{self['location']} #{params}`
       $?.exitstatus
