@@ -90,7 +90,7 @@ module Docman
         @docroot_config = DocrootConfig.new(@workspace_dir, deploy_target)
         @docroot_config.states_dependin_on(name, version).keys.each do |state|
           execute('deploy', state, name)
-          write_environment @deploy_target['states'][state]
+          write_environment(@deploy_target['states'][state], name)
           write_state state
           result = state
         end
@@ -116,9 +116,18 @@ module Docman
       File.open(filepath, 'w') { |file| file.write(state) }
     end
 
-    def write_environment(environment)
+    def write_environment(env, name)
+      environment = environment(env)
+
+      properties = {}
+      properties['ENV'] = env
+      properties['project_last_result'] = environment['previous'][name]['result'] unless environment['previous'][name]['result'].nil?
+      properties['last_project'] = name
+
       filepath = File.join(@workspace_dir, 'last_deploy.properties')
-      File.open(filepath, 'w') { |file| file.write("ENV=#{environment}") }
+      File.open(filepath, 'w') do |file|
+        properties.each {|key, value| file.puts "#{key}=#{value}\n" }
+      end
     end
 
     def execute(action, state, name = nil, tag = nil)

@@ -24,8 +24,18 @@ module Docman
         super
         @version = nil
         environment = Application.instance.environment(@context.environment_name)
+
         clean_changed = environment['clean_changed'].nil? ? true : environment['clean_changed']
         add_action('before_execute', {'type' => :clean_changed}, @context) if clean_changed
+
+        info_file = File.join(@context['full_build_path'], 'info.yaml')
+        info = YAML::load_file(info_file) if File.file? info_file
+        if info
+          name = @context['name']
+          environment['previous'] = {}
+          environment['previous'][name] = info
+        end
+
       end
 
       def validate_command
