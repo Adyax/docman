@@ -121,9 +121,15 @@ module Docman
 
       properties = {}
       properties['ENV'] = env
-      properties['project_last_result'] = environment['previous'][name]['result'] unless environment['previous'][name]['result'].nil?
-      properties['last_project'] = name
+      unless environment.nil?
+        unless environment['previous'].nil?
+          unless environment['previous'][name].nil?
+            properties['project_last_result'] = environment['previous'][name]['result'] unless environment['previous'][name]['result'].nil?
+          end
+        end
+      end
 
+      properties['last_project'] = name
       filepath = File.join(@workspace_dir, 'last_deploy.properties')
       File.open(filepath, 'w') do |file|
         properties.each {|key, value| file.puts "#{key}=#{value}\n" }
