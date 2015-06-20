@@ -32,7 +32,7 @@ module Docman
         info = YAML::load_file(info_file) if File.file? info_file
         if info
           name = @context['name']
-          environment['previous'] = {}
+          environment['previous'] = {} if environment['previous'].nil?
           environment['previous'][name] = info
         end
 
