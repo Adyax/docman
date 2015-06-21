@@ -30,6 +30,7 @@ module Docman
 
         info_file = File.join(@context['full_build_path'], 'info.yaml')
         info = YAML::load_file(info_file) if File.file? info_file
+        info['context'] = @context
         if info
           name = @context['name']
           environment['previous'] = {} if environment['previous'].nil?

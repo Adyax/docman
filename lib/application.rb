@@ -125,6 +125,9 @@ module Docman
         unless environment['previous'].nil?
           unless environment['previous'][name].nil?
             properties['project_last_result'] = environment['previous'][name]['result'] unless environment['previous'][name]['result'].nil?
+            unless environment['previous'][name]['context'].nil?
+              properties['temp_path'] = environment['previous'][name]['context']['temp_path'] unless environment['previous'][name]['context']['temp_path'].nil?
+            end
           end
         end
       end
