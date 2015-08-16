@@ -16,6 +16,10 @@ module Docman
           params['prev_version'] = prev_version
           version = Docman::Taggers::Tagger.create(params, root, self).perform
           File.open(filepath, 'w') {|f| f.write(version) }
+
+          filepath = File.join(root['full_build_path'], 'version.properties')
+          File.open(filepath, 'w') {|f| f.write("version=#{version}") }
+
           tag = version
         end
 
