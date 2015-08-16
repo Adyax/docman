@@ -18,7 +18,7 @@ module Docman
           File.open(filepath, 'w') {|f| f.write(version) }
 
           filepath = File.join(root['full_build_path'], 'version.properties')
-          File.open(filepath, 'w') {|f| f.write("version=#{version}") }
+          File.open(filepath, 'w') {|f| f.write("tag=#{version}") }
 
           tag = version
         end
