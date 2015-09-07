@@ -74,7 +74,7 @@ module Docman
     end
 
     def run_actions(name)
-      if @hooks.has_key? name
+      if @hooks.has_key?(name) and not @hooks[name].nil?
         @hooks[name].each do |hook|
           next if hook.has_key?('run_on_success_only') and hook['run_on_success_only'] and not @execute_result
           context = hook.has_key?('context') ? hook['context'] : @context
