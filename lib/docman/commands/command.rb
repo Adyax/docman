@@ -48,7 +48,7 @@ module Docman
     end
 
     def add_actions(obj, context = nil)
-      if obj.has_key? 'hooks' and obj['hooks'].has_key? @type and obj['hooks'][@type]
+      if obj.has_key? 'hooks' and obj['hooks'].has_key? @type and not obj['hooks'][@type].nil?
         obj['hooks'][@type].each_pair do |name, hooks|
           hooks = Marshal::load(Marshal.dump(hooks))
           unless context.nil?
