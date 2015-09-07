@@ -51,7 +51,7 @@ module Docman
       if obj.has_key? 'hooks' and obj['hooks'].has_key? @type and not obj['hooks'][@type].nil?
         obj['hooks'][@type].each_pair do |name, hooks|
           hooks = Marshal::load(Marshal.dump(hooks))
-          unless context.nil?
+          unless context.nil? or hooks.nil?
             hooks.each do |hook|
               hook['context'] = context
             end
