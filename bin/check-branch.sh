@@ -12,4 +12,5 @@ if [ -n "$1" ]; then
     git rm --cached -r .
     git clean -f -d
   fi
+  git push -u origin ${BRANCH}
 fi

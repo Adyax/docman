@@ -105,10 +105,10 @@ module Docman
       result.delete!("\n")
     end
 
-    def self.push(root_path, version, show_result = true)
+    def self.push(root_path, version, no_pull = false)
       Dir.chdir root_path
-      exec "pull origin #{version}", show_result
-      exec "push origin #{version}", show_result
+      exec "pull origin #{version}" unless no_pull
+      exec "push origin #{version}"
     end
 
     def self.tag(root_path, tag)
