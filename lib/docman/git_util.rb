@@ -82,9 +82,13 @@ module Docman
       end
     end
 
-    def self.pull(path)
+    def self.pull(path, options = nil)
       Dir.chdir path
-      exec 'pull'
+      exec "pull#{options}"
+    end
+
+    def self.branch()
+      exec "rev-parse --abbrev-ref HEAD", false
     end
 
     def self.repo?(path)
@@ -101,10 +105,10 @@ module Docman
       result.delete!("\n")
     end
 
-    def self.push(root_path, version)
+    def self.push(root_path, version, show_result = true)
       Dir.chdir root_path
-      exec "pull origin #{version}"
-      exec "push origin #{version}"
+      exec "pull origin #{version}", show_result
+      exec "push origin #{version}", show_result
     end
 
     def self.tag(root_path, tag)

@@ -111,6 +111,22 @@ module Docman
       end
     end
 
+    def drush(env, site, command)
+      with_rescue(false) do
+        cmd = "drush env: '#{env}', site: '#{site}', '#{command}'"
+        log cmd
+        path = Dir.pwd
+        branch = 'commands'
+        currentBranch = GitUtil.branch
+        Exec.do "#{Application::bin}/check-branch.sh #{branch}"
+        File.open(File.join(path, 'commands'), 'w') {|f| f.write cmd}
+        GitUtil.exec("add commands")
+        GitUtil.exec("commit -m 'Added command'")
+        GitUtil.push(path, branch)
+        GitUtil.exec("checkout #{currentBranch}")
+      end
+    end
+
     def write_state state
       filepath = File.join(@workspace_dir, 'state')
       File.open(filepath, 'w') { |file| file.write(state) }

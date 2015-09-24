@@ -86,6 +86,14 @@ module Docman
       say('Complete!', :green)
     end
 
+    desc 'drush', 'Execute remote drush commands'
+    def drush(drush_alias, command)
+      env = drush_alias.partition('.').first.partition('@').last
+      site = drush_alias.partition('.').last
+      Application.instance.drush(env, site, command)
+      say('Complete!', :green)
+    end
+
     no_commands {
       def current_dir_has_config_dir
         File.directory?('config')
