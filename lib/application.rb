@@ -119,7 +119,7 @@ module Docman
         branch = 'commands'
         currentBranch = GitUtil.branch
         Exec.do "#{Application::bin}/check-branch.sh #{branch}"
-        File.open(File.join(path, 'commands'), 'w') {|f| f.write cmd}
+        File.open(File.join(path, 'commands'), 'a') {|f| f.puts cmd}
         GitUtil.exec("add commands")
         GitUtil.exec("commit -m 'Added command'")
         GitUtil.push(path, branch, true)
