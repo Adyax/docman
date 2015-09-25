@@ -132,7 +132,7 @@ module Docman
         File.open(File.join(path, 'commands'), 'a') {|f| f.puts cmd}
         GitUtil.exec("add commands")
         GitUtil.exec("commit -m 'Added command'")
-        GitUtil.push(path, branch, true)
+        GitUtil.exec("push origin #{branch}")
         GitUtil.exec("checkout #{current_branch}")
       end
     end
