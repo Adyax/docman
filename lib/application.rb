@@ -117,13 +117,23 @@ module Docman
         log cmd
         path = Dir.pwd
         branch = 'commands'
-        currentBranch = GitUtil.branch
-        Exec.do "#{Application::bin}/check-branch.sh #{branch}"
+        current_branch = GitUtil.branch
+        GitUtil.exec("fetch")
+        have_branch = Exec.do("git ls-remote --exit-code . origin/#{branch} &> /dev/null")
+        log have_branch
+        if have_branch
+          GitUtil.exec("checkout #{branch}")
+          GitUtil.exec("pull origin #{branch}")
+        else
+          GitUtil.exec("checkout --orphan #{branch}")
+          GitUtil.exec("rm --cached -r .", false)
+          GitUtil.exec("clean -f -d", false)
+        end
         File.open(File.join(path, 'commands'), 'a') {|f| f.puts cmd}
         GitUtil.exec("add commands")
         GitUtil.exec("commit -m 'Added command'")
         GitUtil.push(path, branch, true)
-        GitUtil.exec("checkout #{currentBranch}")
+        GitUtil.exec("checkout #{current_branch}")
       end
     end
 
