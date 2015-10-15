@@ -30,9 +30,8 @@
 
 <p>(if necessary, adapt for your package manager)</p>
 
-<p><strong>On Windows</strong>, you can install Ruby with <a href="http://rubyinstaller.org/">RubyInstaller</a>.</p>
+<p><strong>Windows</strong>, is not supported for now.</p>
 
 <p>Once you've verified that Ruby is installed:</p>
 
-<pre><code>gem install docman
-</code></pre>
+<pre><code>gem install docman</code></pre>
