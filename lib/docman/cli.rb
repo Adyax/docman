@@ -63,15 +63,13 @@ module Docman
     end
 
     desc 'bump', 'Bump version'
+    method_option :next, :aliases => '-n', :desc => 'Automatically use next version number'
     #option :state
     #option :skip
     def bump(state = nil, skip = nil)
-      # if state
-      #   Exec.do "#{Application::bin}/bump-version.sh #{state}"
-      # else
-      #   Exec.do "#{Application::bin}/bump-version.sh"
-      # end
-      Exec.do "#{Application::bin}/bump-version.sh #{state} #{skip}"
+      version_number = options[:next] ? 'next' : 'ask'
+
+      Exec.do "#{Application::bin}/bump-version.sh #{state} #{version_number} #{skip}"
       say('Complete!', :green)
     end
 

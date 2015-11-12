@@ -28,10 +28,16 @@ if [ -f VERSION ]; then
     V_PATCH=$((V_PATCH + 1))
     #V_PATCH=0
     SUGGESTED_VERSION="$V_MAJOR.$V_MINOR.$V_PATCH"
-    read -p "Enter a version number [$SUGGESTED_VERSION]: " INPUT_STRING
-    if [ "$INPUT_STRING" = "" ]; then
+
+    if [ -n "$2" ] && [ "$2" == "next" ]; then
         INPUT_STRING=$SUGGESTED_VERSION
+    else
+      read -p "Enter a version number [$SUGGESTED_VERSION]: " INPUT_STRING
+      if [ "$INPUT_STRING" = "" ]; then
+          INPUT_STRING=$SUGGESTED_VERSION
+      fi
     fi
+
     echo "Will set new version to be $INPUT_STRING"
     echo $INPUT_STRING > VERSION
     TAG=${INPUT_STRING}
@@ -85,7 +91,7 @@ if [ -n "$1" ]; then
   echo "type: tag" > info.yaml
   echo "version: $TAG" >> info.yaml
   git add info.yaml
-  if [ -n "$2" ] && [ "$2" == "skip" ]; then
+  if [ -n "$3" ] && [ "$3" == "skip" ]; then
     git commit -m "[skip] Changed tag to: $TAG" & git push -u origin ${BRANCH}
   else
     git commit -m "Changed tag to: $TAG"
