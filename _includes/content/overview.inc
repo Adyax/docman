@@ -9,6 +9,8 @@
 
 <p>Real-world example:</p>
 
-<p>You have a docroot at Acquia Cloud
-You have a small governance team setting up standards (Drupal core, list of contrib modules)
-You have 3 vendors working on three different websites in multisite environment</p>
+<ul>
+<li>You have a docroot at Acquia Cloud</li>
+<li>You have a small governance team setting up standards (Drupal core, list of contrib modules)</li>
+<li>You have 3 vendors working on three different websites in multisite environment</li>
+</ul>
