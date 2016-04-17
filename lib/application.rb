@@ -10,6 +10,7 @@ require 'docman/logging'
 require 'docman/context'
 require 'singleton'
 require 'logger'
+require 'json'
 
 require 'docman/builders/builder'
 require 'docman/builders/dir_builder'
@@ -147,7 +148,7 @@ module Docman
           result.merge! info_recursive(item)
         end
       end
-      File.open(file, 'w') {|f| f.write result}
+      File.open(file, 'w') {|f| f.write result.to_json}
       result
     end
 
