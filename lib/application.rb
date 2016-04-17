@@ -137,6 +137,29 @@ module Docman
       end
     end
 
+    def info(command, file, options = false)
+      result = {}
+      with_rescue(false) do
+        @docroot_config = DocrootConfig.new(@workspace_dir, deploy_target)
+        info = info ? info : @docroot_config.structure
+        @docroot_config.chain(info).values.each do |item|
+          #result[item['name']] = item['repo']
+          result.merge! info_recursive(item)
+        end
+      end
+      File.open(file, 'w') {|f| f.write result}
+      result
+    end
+
+    def info_recursive(info)
+      result = {}
+      result[info['name']] = info['repo'] if info.key?('repo')
+      info['children'].each do |child|
+        result.merge! info_recursive(child)
+      end
+      result
+    end
+
     def write_state state
       filepath = File.join(@workspace_dir, 'state')
       File.open(filepath, 'w') { |file| file.write(state) }

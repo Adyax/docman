@@ -1,6 +1,7 @@
 require 'thor'
 require 'application'
 require 'docman/git_util'
+require 'json'
 
 module Docman
   class CLI < Thor
@@ -90,6 +91,14 @@ module Docman
       site = drush_alias.partition('.').last
       Application.instance.drush(env, site, command)
       say('Complete!', :green)
+    end
+
+    desc 'info', 'Get info'
+    method_option :force, :aliases => '-f', :desc => 'Force full rebuild'
+    option :tag
+    def info(command, file)
+      say(Application.instance.info(command, file, options).to_json);
+      # say('Complete!', :green)
     end
 
     no_commands {
