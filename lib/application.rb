@@ -142,21 +142,30 @@ module Docman
       result = {}
       with_rescue(false) do
         @docroot_config = DocrootConfig.new(@workspace_dir, deploy_target)
-        info = info ? info : @docroot_config.structure
+        info = @docroot_config.structure
         @docroot_config.chain(info).values.each do |item|
-          #result[item['name']] = item['repo']
-          result.merge! info_recursive(item)
+          result.merge! info_recursive(item, command)
         end
       end
       File.open(file, 'w') {|f| f.write result.to_json}
       result
     end
 
-    def info_recursive(info)
+    def info_recursive(info, command)
       result = {}
-      result[info['name']] = info['repo'] if info.key?('repo')
+      case command
+        when 'list'
+          result[info['name']] = info['repo'] if info.key?('repo')
+        when 'full'
+          info_clone = info.clone
+          info_clone.delete('docroot_config')
+          info_clone.delete('children')
+          info_clone.delete('parent')
+          info_clone.delete('root')
+          result[info['name']] = info_clone
+      end
       info['children'].each do |child|
-        result.merge! info_recursive(child)
+        result.merge! info_recursive(child, command)
       end
       result
     end
