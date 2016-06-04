@@ -22,6 +22,10 @@ module Docman
     end
 
     def self.get(repo, path, type, version, single_branch = nil, depth = nil, reset = false)
+      current_dir = Dir.pwd
+      if current_dir == path
+        Dir.chdir(File.expand_path("..", Dir.pwd))
+      end
       FileUtils.rm_rf path if reset and File.directory? path
       if File.directory? path and File.directory?(File.join(path, '.git'))
         Dir.chdir path
