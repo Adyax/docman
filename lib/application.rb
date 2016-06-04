@@ -142,9 +142,13 @@ module Docman
       result = {}
       with_rescue(false) do
         @docroot_config = DocrootConfig.new(@workspace_dir, deploy_target)
-        info = @docroot_config.structure
-        @docroot_config.chain(info).values.each do |item|
-          result.merge! info_recursive(item, command)
+        if (command == 'states')
+          result = Docman::Application.instance.config['deploy_targets']['git_target']['states']
+        else
+          info = @docroot_config.structure
+          @docroot_config.chain(info).values.each do |item|
+            result.merge! info_recursive(item, command)
+          end
         end
       end
       File.open(file, 'w') {|f| f.write result.to_json}

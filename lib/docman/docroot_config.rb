@@ -104,5 +104,9 @@ module Docman
       @deploy_target.name
     end
 
+    def root_states
+      @root.states
+    end
+
   end
 end
