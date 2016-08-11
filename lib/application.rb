@@ -14,6 +14,7 @@ require 'json'
 
 require 'docman/builders/builder'
 require 'docman/builders/dir_builder'
+require 'docman/builders/symlink_builder'
 require 'docman/builders/git_direct_builder'
 require 'docman/builders/git_strip_builder'
 require 'docman/builders/drupal_drush_builder'

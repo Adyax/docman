@@ -11,6 +11,8 @@ deploy_targets:
         handler: :git_direct_builder
       dir:
         handler: :dir_builder
+      symlink:
+        handler: :symlink_builder
     states:
       development: local
       staging: local
@@ -41,6 +43,13 @@ deploy_targets:
                 execution_dir: $PROJECT$
       dir:
         handler: :dir_builder
+        hooks:
+          builder:
+            after_execute:
+              - type: :git_commit
+                execution_dir: $PROJECT$
+      symlink:
+        handler: :symlink_builder
         hooks:
           builder:
             after_execute:
