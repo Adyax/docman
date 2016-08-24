@@ -1,17 +1,12 @@
 require 'docman/builders/builder'
 require 'docman/builders/dir_builder'
 require 'docman/builders/git_direct_builder'
+require 'docman/builders/git_root_chain_builder'
 require 'docman/builders/git_strip_builder'
 require 'docman/builders/drupal_drush_builder'
 require 'docman/deployers/deployer'
 require 'docman/deployers/git_deployer'
 require 'docman/deployers/common_deployer'
-require 'docman/command'
-require 'docman/composite_command'
-require 'docman/builders/commands/create_symlink_cmd'
-require 'docman/builders/commands/execute_script_cmd'
-require 'docman/builders/commands/clean_changed_cmd'
-require 'docman/builders/commands/git_commit_cmd'
 
 # TODO: make universal logging class.
 

@@ -146,8 +146,8 @@ module Docman
           if item.need_rebuild?
             build_recursive(item)
             return
-          elsif
-          build_dir(item)
+          else
+            build_dir(item)
           end
         end
       end
@@ -171,6 +171,12 @@ module Docman
         @build_results[info['name']] = build_result ? build_result : 'Not builded'
         @versions[info['name']] = builder.version
         @builded << info['name']
+        if (build_result)
+          info['children'].sort_by!{|a| a['order']}
+          info['children'].each do |child|
+            build_recursive(child)
+          end
+        end
       end
 
       # TODO: need to refactor.

@@ -15,6 +15,12 @@ module Docman
       result
     end
 
+    def self.squash_commits(commit_count, message = nil)
+      message = "$(git log --format=%B --reverse HEAD..HEAD@{1})" unless message
+      exec "reset --soft HEAD~#{commit_count}"
+      exec "commit -m \"#{message}\""
+    end
+
     def self.reset_repo(path)
       Dir.chdir path
       exec 'reset --hard'
@@ -74,11 +80,11 @@ module Docman
 
     def self.commit(root_path, path, message, tag = nil)
       if repo_changed? path
-        # puts message
         pull root_path
         exec %Q(add --all #{path.slice "#{root_path}/"})
         exec %Q(commit -m "#{message}") if repo_changed? path
         self.tag(root_path, tag) if tag
+        Docman::Application.instance.commit_count = Docman::Application.instance.commit_count + 1
       end
     end
 

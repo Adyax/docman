@@ -21,6 +21,7 @@ module Docman
           self['states'].each_pair do |name, state|
             if state.has_key?('source')
               if state['source']['type'] == :retrieve_from_repo
+                @state_name = name
                 repo = state['source']['repo'] == :project_repo ? self['repo'] : state['source']['repo']
                 external_state_info = read_yaml_from_file(repo, self['states_path'], state['source']['branch'], state['source']['file'])
                 state.deep_merge! external_state_info unless external_state_info.nil? or state.nil?
@@ -32,7 +33,7 @@ module Docman
     end
 
     def read_yaml_from_file(repo, path, version, filename)
-      GitUtil.get(repo, path, 'branch', version, true, 1, need_rebuild?)
+      GitUtil.get(repo, path, 'branch', version, true, 1, true)
       filepath = File.join(path, filename)
       return YAML::load_file(filepath) if File.file? filepath
       nil
@@ -40,12 +41,12 @@ module Docman
       raise "Error in info file: #{filepath}, #{e.message}"
     end
 
-    def version
-      state.nil? ? nil : state['version']
+    def version(options = {})
+      state(options).nil? ? nil : state(options)['version']
     end
 
-    def version_type
-      state.nil? ? nil : state['type']
+    def version_type(options = {})
+      state(options).nil? ? nil : state(options)['type']
     end
 
     def describe(type = 'short')
@@ -117,12 +118,16 @@ module Docman
       YAML::load_file(info_filename)
     end
 
-    def state
-      states[@state_name]
+    def state(options = {})
+      states(options)[@state_name]
     end
 
-    def states
-      self['states']
+    def states(options = {})
+      if options[:type] == 'root' and self['type'] == 'root_chain'
+        self['root_repo_states']
+      else
+        self['states']
+      end
     end
 
     def disabled?

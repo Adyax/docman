@@ -5,6 +5,8 @@ deploy_targets:
     builders:
       root:
         handler: :dir_builder
+      root_chain:
+        handler: :git_direct_builder
       drupal:
         handler: :drupal_drush_builder
       repo:
@@ -26,6 +28,15 @@ deploy_targets:
           builder:
             after_execute:
               - type: :git_commit
+                order: 100
+                execution_dir: $PROJECT$
+      root_chain:
+        handler: :git_root_chain_builder
+        hooks:
+          builder:
+            after_execute:
+              - type: :git_commit
+                order: 100
                 execution_dir: $PROJECT$
       drupal:
         handler: :drupal_drush_builder
@@ -33,6 +44,7 @@ deploy_targets:
           builder:
             after_execute:
               - type: :git_commit
+                order: 100
                 execution_dir: $PROJECT$
       repo:
         handler: :git_strip_builder
@@ -40,6 +52,7 @@ deploy_targets:
           builder:
             after_execute:
               - type: :git_commit
+                order: 100
                 execution_dir: $PROJECT$
       dir:
         handler: :dir_builder
@@ -47,6 +60,7 @@ deploy_targets:
           builder:
             after_execute:
               - type: :git_commit
+                order: 100
                 execution_dir: $PROJECT$
       symlink:
         handler: :symlink_builder
@@ -54,6 +68,7 @@ deploy_targets:
           builder:
             after_execute:
               - type: :git_commit
+                order: 100
                 execution_dir: $PROJECT$
     states:
       development: dev

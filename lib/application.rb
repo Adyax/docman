@@ -16,6 +16,7 @@ require 'docman/builders/builder'
 require 'docman/builders/dir_builder'
 require 'docman/builders/symlink_builder'
 require 'docman/builders/git_direct_builder'
+require 'docman/builders/git_root_chain_builder'
 require 'docman/builders/git_strip_builder'
 require 'docman/builders/drupal_drush_builder'
 require 'docman/deployers/deployer'
@@ -27,6 +28,7 @@ require 'docman/commands/create_symlink_cmd'
 require 'docman/commands/execute_script_cmd'
 require 'docman/commands/clean_changed_cmd'
 require 'docman/commands/git_commit_cmd'
+require 'docman/commands/git_copy_repo_content_cmd'
 require 'docman/taggers/tagger'
 require 'docman/taggers/incremental_tagger'
 require 'docman/taggers/option_tagger'
@@ -35,7 +37,7 @@ module Docman
   class Application < Docman::Command
 
     attr_reader :config, :docroot_config
-    attr_accessor :deploy_target, :options, :force
+    attr_accessor :deploy_target, :options, :force, :commit_count
 
     include Singleton
     include Docman::Context
@@ -45,6 +47,7 @@ module Docman
       @workspace_dir = Dir.pwd
       @config = Docman::Config.new(File.join(Pathname(__FILE__).dirname.parent, 'config', 'config.yaml'))
       @force = false
+      @commit_count = 0
     end
 
     def init(name, repo, options)

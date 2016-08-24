@@ -53,6 +53,7 @@ module Docman
           hooks = Marshal::load(Marshal.dump(hooks))
           unless context.nil? or hooks.nil?
             hooks.each do |hook|
+              hook['order'] = 0 unless hook['order']
               hook['context'] = context
             end
           end
@@ -66,6 +67,7 @@ module Docman
     end
 
     def add_action(name, hook, context = nil)
+      hook['order'] = 0 unless hook['order']
       if @hooks.has_key? name
         @hooks[name] << {'type' => hook}
       else
@@ -75,6 +77,7 @@ module Docman
 
     def run_actions(name)
       if @hooks.has_key?(name) and not @hooks[name].nil?
+        @hooks[name].sort_by!{|a| a['order']}
         @hooks[name].each do |hook|
           next if hook.has_key?('run_on_success_only') and hook['run_on_success_only'] and not @execute_result
           context = hook.has_key?('context') ? hook['context'] : @context

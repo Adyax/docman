@@ -96,16 +96,8 @@ module Docman
       Digest::MD5.hexdigest(Marshal::dump(@raw_infos))
     end
 
-    def root_path
-      @root['fuil_build_path']
-    end
-
     def deploy_target_name
       @deploy_target.name
-    end
-
-    def root_states
-      @root.states
     end
 
   end
