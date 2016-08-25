@@ -72,10 +72,10 @@ module Docman
       result
     end
 
-    def self.update(path)
-      @logger.info "Update #{path}"
+    def self.update(path, options)
+      @logger.info "Update #{path} #{options}"
       Dir.chdir path
-      exec('pull')
+      exec("pull #{options}")
     end
 
     def self.commit(root_path, path, message, tag = nil)
