@@ -18,7 +18,9 @@ Init local environment:
 
 Build local environment:
 
-    $ docman build local environment
+    $ docman build local {state}
+
+where state can be: development, staging, stable.
 
 
 Work on your website!
