@@ -144,23 +144,21 @@ module Docman
 
     def info(command, file, options = false)
       result = {}
-      with_rescue(false) do
-        @docroot_config = DocrootConfig.new(@workspace_dir, deploy_target)
-        if (command == 'full')
-          result['states'] = Docman::Application.instance.config['deploy_targets']['git_target']['states']
-          result['environments'] = Docman::Application.instance.config['environments']
+      @docroot_config = DocrootConfig.new(@workspace_dir, deploy_target)
+      if (command == 'full')
+        result['states'] = Docman::Application.instance.config['deploy_targets']['git_target']['states']
+        result['environments'] = Docman::Application.instance.config['environments']
 
-          projects = {}
-          info = @docroot_config.structure
-          @docroot_config.chain(info).values.each do |item|
-            projects.merge! info_recursive(item, command)
-          end
-          result['projects'] = projects
-        else
-          info = @docroot_config.structure
-          @docroot_config.chain(info).values.each do |item|
-            result.merge! info_recursive(item, command)
-          end
+        projects = {}
+        info = @docroot_config.structure
+        @docroot_config.chain(info).values.each do |item|
+          projects.merge! info_recursive(item, command)
+        end
+        result['projects'] = projects
+      else
+        info = @docroot_config.structure
+        @docroot_config.chain(info).values.each do |item|
+          result.merge! info_recursive(item, command)
         end
       end
       File.open(file, 'w') {|f| f.write result.to_json}
