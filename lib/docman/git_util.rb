@@ -81,6 +81,7 @@ module Docman
     def self.commit(root_path, path, message, tag = nil)
       if repo_changed? path
         # pull root_path
+        Dir.chdir root_path
         exec %Q(add --all #{path.slice "#{root_path}/"})
         exec %Q(commit -m "#{message}") if repo_changed? path
         self.tag(root_path, tag) if tag
