@@ -50,6 +50,9 @@ deploy_targets:
         handler: :git_strip_builder
         hooks:
           builder:
+            before_execute:
+              - type: :git_pull
+                execution_dir: $PROJECT$
             after_execute:
               - type: :git_commit
                 order: 100

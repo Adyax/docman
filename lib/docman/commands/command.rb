@@ -69,7 +69,7 @@ module Docman
     def add_action(name, hook, context = nil)
       hook['order'] = 0 unless hook['order']
       if @hooks.has_key? name
-        @hooks[name] << {'type' => hook}
+        @hooks[name] << hook
       else
         @hooks[name] = [hook]
       end
