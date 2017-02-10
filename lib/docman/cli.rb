@@ -44,7 +44,7 @@ module Docman
     def build(deploy_target, state)
       get_to_root_dir
       if options[:force]
-        FileUtils.rm_r('master') if File.directory? 'master'
+        FileUtils.rm_f('master') if File.directory? 'master'
       end
       Application.instance.build(deploy_target, state, options)
       say('Complete!', :green)

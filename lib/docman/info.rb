@@ -61,8 +61,9 @@ module Docman
       to_save['result'] = result
       to_save['type'] = self['type']
       to_save['build_type'] = self['build_type']
-
-      File.open(File.join(self['full_build_path'], 'info.yaml'), 'w') {|f| f.write to_save.to_yaml}
+      if environment_name() != 'local'
+        File.open(File.join(self['full_build_path'], 'info.yaml'), 'w') {|f| f.write to_save.to_yaml}
+      end
       to_save
     end
 
