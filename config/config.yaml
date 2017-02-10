@@ -7,10 +7,31 @@ deploy_targets:
         handler: :dir_builder
       root_chain:
         handler: :git_direct_builder
+        hooks:
+          builder:
+            after_execute:
+              - type: :yaml_execute
+                source_type: file
+                order: -10
+                stage: build
       drupal:
         handler: :drupal_drush_builder
+        hooks:
+          builder:
+            after_execute:
+              - type: :yaml_execute
+                source_type: file
+                order: -10
+                stage: build
       repo:
         handler: :git_direct_builder
+        hooks:
+          builder:
+            after_execute:
+              - type: :yaml_execute
+                source_type: file
+                order: -10
+                stage: build
       dir:
         handler: :dir_builder
       symlink:
@@ -35,6 +56,11 @@ deploy_targets:
         hooks:
           builder:
             after_execute:
+              - type: :yaml_execute
+                source_type: file
+                order: -10
+                execution_dir: $PROJECT$
+                stage: build
               - type: :git_commit
                 order: 100
                 execution_dir: $PROJECT$
@@ -54,6 +80,11 @@ deploy_targets:
               - type: :git_pull
                 execution_dir: $PROJECT$
             after_execute:
+              - type: :yaml_execute
+                source_type: file
+                order: -10
+                execution_dir: $PROJECT$
+                stage: build
               - type: :git_commit
                 order: 100
                 execution_dir: $PROJECT$

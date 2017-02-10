@@ -67,11 +67,14 @@ module Docman
     end
 
     def add_action(name, hook, context = nil)
-      hook['order'] = 0 unless hook['order']
-      if @hooks.has_key? name
-        @hooks[name] << hook
-      else
-        @hooks[name] = [hook]
+      version = Docman::Application.instance.config.version
+      unless hook['version'].nil? || hook['version'] != version
+        hook['order'] = 0 unless hook['order']
+        if @hooks.has_key? name
+          @hooks[name] << hook
+        else
+          @hooks[name] = [hook]
+        end
       end
     end
 
@@ -137,6 +140,7 @@ module Docman
       value.gsub!('$PROJECT$', @context['full_build_path']) unless @context['full_build_path'].nil?
       value.gsub!('$INFO$', @context['full_path']) unless @context['full_path'].nil?
       value.gsub!('$ENVIRONMENT$', @context.environment_name) unless @context.environment_name.nil?
+      value.gsub!('$DOCMAN_BIN$', Application::bin)
     end
 
   end

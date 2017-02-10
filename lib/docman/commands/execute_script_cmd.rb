@@ -4,7 +4,6 @@ module Docman
 
     register_command :script
 
-
     def validate_command
       raise Docman::CommandValidationError.new("Please provide 'execution_dir' param") if self['execution_dir'].nil?
       raise Docman::CommandValidationError.new("Please provide 'location' param") if self['location'].nil?

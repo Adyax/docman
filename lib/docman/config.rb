@@ -23,11 +23,16 @@ module Docman
     def merge_config_from_file(file)
       config = YAML::load_file(file)
       @config.deep_merge(config)
+      @config['version'] = config['version'].nil? ? 1 : config['version']
       assign_to_self
     end
 
     def config_hash
       Digest::MD5.hexdigest(Marshal::dump(@unmutable_config))
+    end
+
+    def version
+      @config['version']
     end
 
   end
