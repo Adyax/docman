@@ -46,7 +46,8 @@ module Docman
     end
 
     def version_type(options = {})
-      state(options).nil? ? nil : state(options)['type']
+      return self['version_type'] if self.key? 'version_type'
+      return state(options).nil? ? nil : state(options)['type']
     end
 
     def describe(type = 'short')
@@ -59,11 +60,18 @@ module Docman
       to_save['version_type'] = self.version_type unless self.version_type.nil?
       to_save['version'] = self.version unless self.version.nil?
       to_save['result'] = result
+      to_save['provider'] = self['provider'] unless self['provider'].nil?
       to_save['type'] = self['type']
       to_save['build_type'] = self['build_type']
-      if environment_name() != 'local'
-        File.open(File.join(self['full_build_path'], 'info.yaml'), 'w') {|f| f.write to_save.to_yaml}
+      FileUtils::mkdir_p info_dir unless File.directory? info_dir
+
+      # Create local git ignored .docman dir for info file
+      if environment_name() == 'local'
+        gitignore_file = File.join(info_dir, '.gitignore')
+        File.open(gitignore_file, 'w') {|f| f.write '*'} unless File.file? gitignore_file
       end
+      File.open(info_file, 'w') {|f| f.write to_save.to_yaml}
+      #end
       to_save
     end
 
@@ -112,11 +120,25 @@ module Docman
       false
     end
 
-    #TODO: check if info.yaml needed for local state
     def stored_version
-      info_filename = File.join(self['full_build_path'], 'info.yaml')
-      return false unless File.file?(info_filename)
-      YAML::load_file(info_filename)
+      info_file_yaml
+    end
+
+    def info_dir(path = nil)
+      File.join(
+          path.nil? ? self['full_build_path'] : path,
+          environment_name() == 'local' ? '.docman' : ''
+      )
+    end
+
+    # TODO: make default with lazy initialize
+    def info_file(path = nil)
+      File.join(info_dir(path), 'info.yaml')
+    end
+
+    def info_file_yaml
+      file = info_file
+      File.file?(file) ? YAML::load_file(file) : nil
     end
 
     def state(options = {})

@@ -7,7 +7,11 @@ module Docman
 
     attr_reader :structure, :deploy_target, :docroot_dir, :root, :raw_infos
 
-    def initialize(docroot_dir, deploy_target = nil)
+    def initialize(docroot_dir, deploy_target = nil, options = nil)
+      @override = {}
+      if options && options['config']
+        @override = JSON.parse(options['config'])
+      end
       @docroot_dir = docroot_dir
       @deploy_target = deploy_target
       @docroot_config_dir = File.join(docroot_dir, 'config')
@@ -45,6 +49,10 @@ module Docman
       info['parent'] = parent
       info['order'] = info.has_key?('order') ? info['order'] : 10
       info['children'] = children
+
+      if @override['projects'] && @override['projects'].key?(info['name'])
+        info.merge! @override['projects'][info['name']]
+      end
 
       i = Docman::Info.new(info)
       @root = i if parent.nil?

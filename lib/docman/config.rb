@@ -1,6 +1,7 @@
 require 'singleton'
 require 'hash_deep_merge'
 require 'digest/md5'
+require 'json'
 
 module Docman
   class Config < Hash

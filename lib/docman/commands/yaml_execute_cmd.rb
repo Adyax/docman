@@ -15,27 +15,30 @@ module Docman
 
     def execute
       with_logging('yaml_execute') do
+        Dir.chdir @context['full_build_path']
         if self['environments'].nil? || self['environments'] == 'all' || self['environments'].include?(@context.environment_name)
-          commands = nil
-          if self['source_type'] == 'file'
-            yaml_file_name = self['yaml_file_name'].nil? ? '.build.yml' : self['yaml_file_name']
-            build_file = File.join(@context['full_build_path'], yaml_file_name)
-            if File.file? build_file
-              build_file_yaml = YAML::load_file(build_file)
-              commands = build_file_yaml[self['stage']]
-              source = yaml_file_name
+          if self['providers'].nil? || self['providers'] == 'all' || self['providers'].include?(@context['provider'])
+            commands = nil
+            if self['source_type'] == 'file'
+              yaml_file_name = self['yaml_file_name'].nil? ? '.build.yml' : self['yaml_file_name']
+              build_file = File.join(@context['full_build_path'], yaml_file_name)
+              if File.file? build_file
+                build_file_yaml = YAML::load_file(build_file)
+                commands = build_file_yaml[self['stage']]
+                source = yaml_file_name
+              end
             end
-          end
-          if self['source_type'] == 'inline'
-            commands = self['commands']
-            source = 'inline'
-          end
-          unless commands.nil?
-            commands.each do |cmd|
-              logger.info "Execute from #{source}: #{cmd}"
-              logger.info `#{cmd}`
-              if $?.exitstatus > 0
-                raise "Command #{cmd} was failed"
+            if self['source_type'] == 'inline'
+              commands = self['commands']
+              source = 'inline'
+            end
+            unless commands.nil?
+              commands.each do |cmd|
+                logger.info "Execute from #{source}: #{cmd}"
+                logger.info `#{cmd}`
+                if $?.exitstatus > 0
+                  raise "Command #{cmd} was failed"
+                end
               end
             end
           end

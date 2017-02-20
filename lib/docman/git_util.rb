@@ -62,11 +62,11 @@ module Docman
       exec("clone #{single_branch} #{depth} #{repo} #{path}")
     end
 
-    def self.last_revision(path = nil)
+    def self.last_revision(path = nil, branch = 'HEAD')
       result = nil
       if self.repo? path
         Dir.chdir path unless path.nil?
-        result = `git rev-parse --short HEAD`
+        result = `git rev-parse --short #{branch}`
         result.delete!("\n")
       end
       result

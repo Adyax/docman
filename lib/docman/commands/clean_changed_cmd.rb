@@ -14,11 +14,11 @@ module Docman
         if @context.need_rebuild?
           return false if @context['type'] == 'dir'
           return false if @context['type'] == 'root' and @context['build_type'] == :dir_builder and not GitUtil.repo?(@context['full_build_path'])
-          return false if @context['type'] == 'root' and @context['build_type'] == :git_direct_builder and GitUtil.repo?(@context['full_build_path'])
-          return false if @context['type'] == 'root_chain' and @context['build_type'] == :git_direct_builder and GitUtil.repo?(@context['full_build_path'])
+          return false if @context['type'] == 'root' and @context['build_type'] == :direct_builder and GitUtil.repo?(@context['full_build_path'])
+          return false if @context['type'] == 'root_chain' and @context['build_type'] == :direct_builder and GitUtil.repo?(@context['full_build_path'])
           return false if @context['type'] == 'root_chain' and @context['build_type'] == :git_root_chain_builder and GitUtil.repo?(@context['full_build_path'])
           if @context['type'] == 'repo'
-            if @context['build_type'] == :git_direct_builder
+            if @context['build_type'] == :direct_builder
               return false if GitUtil.repo?(@context['full_build_path'])
             end
           end
