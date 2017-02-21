@@ -1,19 +1,16 @@
 ---
 # common hooks used in deploy targets below
 common_hooks:
-  - &execute_yaml_file_for_git_provider
-    type: :yaml_execute
-    providers:
-      - :git_repo_provider
-    source_type: file
-    order: -10
-    stage: build
-
   - &execute_yaml_file
     type: yaml_execute
     source_type: file
     order: -10
     stage: build
+
+  - &execute_yaml_file_for_git_provider
+    <<: *execute_yaml_file
+    providers:
+      - :git_repo_provider
 
   - &remove_git_dir
     type: :yaml_execute
