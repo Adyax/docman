@@ -94,6 +94,8 @@ deploy_targets:
     builders:
       root:
         handler: :direct_builder
+        provider: :git_repo_provider
+        target_path_id: full_build_path
         hooks:
           builder:
             after_execute:
