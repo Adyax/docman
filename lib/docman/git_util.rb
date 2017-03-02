@@ -9,7 +9,8 @@ module Docman
 
     def self.exec(command, show_result = true)
       @logger.info "#{@git} #{command}"
-      result = `#{@git} #{command}`.delete!("\n")
+      result = `#{@git} #{command}`
+      #result = `#{@git} #{command}`.delete!("\n")
       @logger.info result if show_result and result
       raise "ERROR: #{result}" unless $?.exitstatus == 0
       result
