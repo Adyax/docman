@@ -22,10 +22,12 @@ module Docman
     end
 
     def merge_config_from_file(file)
-      config = YAML::load_file(file)
-      @config.deep_merge(config)
-      @config['version'] = config['version'].nil? ? 1 : config['version']
-      assign_to_self
+      if File.file?(file)
+        config = YAML::load_file(file)
+        @config.deep_merge(config)
+        @config['version'] = config['version'].nil? ? 1 : config['version']
+        assign_to_self
+      end
     end
 
     def config_hash
