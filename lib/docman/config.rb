@@ -24,7 +24,7 @@ module Docman
     def merge_config_from_file(file)
       if File.file?(file)
         config = YAML::load_file(file)
-        if config
+        unless config.nil?
           @config.deep_merge(config)
           @config['version'] = config['version'].nil? ? 1 : config['version']
         end
