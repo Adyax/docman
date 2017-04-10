@@ -141,3 +141,12 @@ environments:
     deploy_target: striped
     state: development
     clean_changed: true
+  dev:
+    deploy_target: git_target
+    state: development
+  test:
+    deploy_target: git_target
+    state: staging
+  prod:
+    deploy_target: git_target
+    state: stable
