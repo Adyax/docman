@@ -150,3 +150,6 @@ environments:
   prod:
     deploy_target: git_target
     state: stable
+
+components:
+  master:

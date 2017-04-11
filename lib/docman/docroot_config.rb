@@ -17,15 +17,68 @@ module Docman
       @docroot_config_dir = File.join(docroot_dir, 'config')
       update(' origin master')
       if File.file? File.join(@docroot_config_dir, 'config.yaml')
-        Docman::Application.instance.config.merge_config_from_file(File.join(@docroot_config_dir, 'config.yaml'))
+        Docman::Application.instance.config.merge_config_from_file(@docroot_config_dir, 'config.yaml')
       end
       @names = {}
       @raw_infos = {}
-      @structure = structure_build File.join(@docroot_config_dir, 'master')
+      master_file = File.join(@docroot_config_dir, 'master')
+      if File.file? master_file
+        @structure = structure_build(File.join(@docroot_config_dir, 'master'))
+      else
+        @structure = structure_build_from_config_file(File.join(@docroot_config_dir, 'master'))
+      end
     end
 
     def update(options = '')
       GitUtil.update @docroot_config_dir, options
+    end
+
+    def structure_build_from_config_file(path, prefix = '', parent = nil, parent_key = 'master')
+      config = Docman::Application.instance.config
+      return if config['components'][parent_key].nil?
+      children = []
+
+      info = config['components'][parent_key]
+      @raw_infos[parent_key] = info
+
+      unless info['status'].nil?
+        return if info['status'] == 'disabled'
+      end
+
+      name = parent_key
+      prefix = prefix.size > 0 ? File.join(prefix, name) : name
+      info['full_path'] = path
+      info['docroot_config'] = self
+      info['build_path'] = prefix
+      info['full_build_path'] = File.join(@docroot_dir, prefix)
+      info['temp_path'] = File.join(@docroot_dir, 'tmp', info['build_path'])
+      info['states_path'] = File.join(@docroot_dir, 'states', info['build_path'])
+      info['name'] = name
+      info['parent'] = parent
+      info['order'] = info.has_key?('order') ? info['order'] : 10
+      info['children'] = children
+
+      if @override['projects'] && @override['projects'].key?(info['name'])
+        info.merge! @override['projects'][info['name']]
+      end
+
+      i = Docman::Info.new(info)
+      @root = i if parent.nil?
+      i['root'] = @root
+
+      @names[name.to_s] = i
+
+      # Dir.foreach(path) do |entry|
+      #   next if (entry == '..' || entry == '.')
+      #   full_path = File.join(path, entry)
+      #   if File.directory?(full_path)
+      #     dir_hash = structure_build(full_path, prefix, i)
+      #     unless dir_hash == nil
+      #       children << dir_hash
+      #     end
+      #   end
+      # end
+      i
     end
 
     def structure_build(path, prefix = '', parent = nil)
