@@ -153,3 +153,5 @@ environments:
 
 components:
   master:
+
+pipeline_script: .pipeline
