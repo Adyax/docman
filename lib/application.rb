@@ -147,7 +147,7 @@ module Docman
 
     def info(command, file, options = false)
       result = {}
-      @docroot_config = DocrootConfig.new(@workspace_dir, deploy_target)
+      @docroot_config = DocrootConfig.new(@workspace_dir, deploy_target, options)
       if (command == 'full')
         result['states'] = Docman::Application.instance.config['deploy_targets']['git_target']['states']
         result['environments'] = Docman::Application.instance.config['environments']

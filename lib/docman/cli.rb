@@ -102,6 +102,8 @@ module Docman
     desc 'info', 'Get info'
     method_option :force, :aliases => '-f', :desc => 'Force full rebuild'
     option :tag
+    method_option :config_repo, :desc => 'Configuration repo address'
+    method_option :config_repo_branch, :desc => 'Configuration repo branch', :default => 'master'
     def info(command, file)
       say(Application.instance.info(command, file, options).to_json);
       # say('Complete!', :green)
