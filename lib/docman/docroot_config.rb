@@ -22,7 +22,7 @@ module Docman
       @names = {}
       @raw_infos = {}
       master_file = File.join(@docroot_config_dir, 'master')
-      if File.file? master_file
+      if File.directory? master_file
         @structure = structure_build(File.join(@docroot_config_dir, 'master'))
       else
         @structure = structure_build_from_config_file(File.join(@docroot_config_dir, 'master'))
