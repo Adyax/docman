@@ -56,6 +56,8 @@ module Docman
     desc 'deploy', 'Deploy to target'
     method_option :force, :aliases => '-f', :desc => 'Force full deploy'
     method_option :config, :desc => 'Configuration override JSON'
+    method_option :config_repo, :desc => 'Configuration repo address'
+    method_option :config_repo_branch, :desc => 'Configuration repo branch', :default => 'master'
     def deploy(deploy_target, name, type, version)
       get_to_root_dir
       if version.start_with?('state_')

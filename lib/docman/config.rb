@@ -30,7 +30,7 @@ module Docman
           @config['version'] = config['version'].nil? ? 1 : config['version']
         end
 
-        if options[:config_repo]
+        unless options[:config_repo].nil?
           scenariosPath = File.join(docroot_config_dir, '/../', 'scenarios')
           unless config['scenario'].nil?
             `rm -fR #{scenariosPath}` if File.directory? scenariosPath
