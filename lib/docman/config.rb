@@ -21,7 +21,7 @@ module Docman
       @unmutable_config = Marshal::load(Marshal.dump(@config))
     end
 
-    def merge_config_from_file(docroot_config_dir, config_file)
+    def merge_config_from_file(docroot_config_dir, config_file, options = nil)
       file = File.join(docroot_config_dir, config_file)
       if File.file?(file)
         config = YAML::load_file(file)
@@ -29,11 +29,17 @@ module Docman
           @config.deep_merge(config)
           @config['version'] = config['version'].nil? ? 1 : config['version']
         end
-        unless config['scenario'].nil?
-          scenario_config_file = File.join(Pathname(__FILE__).dirname.parent.parent, 'config', 'scenarios', config['scenario'], 'config.yaml')
-          if File.file? scenario_config_file
-            scenario_config = YAML::load_file(scenario_config_file)
-            @config.deep_merge(scenario_config)
+
+        if options[:config_repo]
+          scenariosPath = File.join(docroot_config_dir, '/../', 'scenarios')
+          unless config['scenario'].nil?
+            `rm -fR #{scenariosPath}` if File.directory? scenariosPath
+            GitUtil.clone_repo(options[:config_repo], scenariosPath, 'branch', options[:config_repo_branch], true, 1)
+            scenario_config_file = File.join(scenariosPath, 'scenarios', config['scenario'], 'config.yaml')
+            if File.file? scenario_config_file
+              scenario_config = YAML::load_file(scenario_config_file)
+              @config.deep_merge(scenario_config)
+            end
           end
         end
         assign_to_self

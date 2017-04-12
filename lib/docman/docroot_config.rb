@@ -17,7 +17,7 @@ module Docman
       @docroot_config_dir = File.join(docroot_dir, 'config')
       update(' origin master')
       if File.file? File.join(@docroot_config_dir, 'config.yaml')
-        Docman::Application.instance.config.merge_config_from_file(@docroot_config_dir, 'config.yaml')
+        Docman::Application.instance.config.merge_config_from_file(@docroot_config_dir, 'config.yaml', options)
       end
       @names = {}
       @raw_infos = {}

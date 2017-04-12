@@ -41,6 +41,8 @@ module Docman
     desc 'build', 'Build docroot'
     method_option :force, :aliases => '-f', :desc => 'Force full rebuild'
     method_option :config, :desc => 'Configuration override JSON'
+    method_option :config_repo, :desc => 'Configuration repo address'
+    method_option :config_repo_branch, :desc => 'Configuration repo branch', :default => 'master'
     option :tag
     def build(deploy_target, state)
       get_to_root_dir
