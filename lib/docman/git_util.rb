@@ -34,7 +34,7 @@ module Docman
         Dir.chdir path
         self.reset_repo(path) #if self.repo_changed?(path)
         if type == 'branch'
-          exec "fetch"
+          #exec "fetch"
           exec "checkout #{version}"
           exec "pull origin #{version}"
         end
