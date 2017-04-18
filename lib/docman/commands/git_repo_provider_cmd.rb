@@ -25,7 +25,7 @@ module Docman
     end
 
     def get_content
-      GitUtil.get(@context['repo'], self['target_path'], @context.version_type, @context.version)
+      GitUtil.get(@context['repo'], self['target_path'], @context.version_type, @context.version, true, 1)
     end
 
     def changed_from_last_version?
