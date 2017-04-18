@@ -5,7 +5,7 @@ module Docman
       register_builder :git_root_chain_builder
 
       def prepare_build_dir
-        GitUtil.get(@context['root_repo'], @context['full_build_path'], @context.version_type(type: 'root'), @context.version(type: 'root'))
+        GitUtil.get(@context['root_repo'], @context['full_build_path'], @context.version_type(type: 'root'), @context.version(type: 'root'), true, 1)
       end
 
     end
