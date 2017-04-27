@@ -27,4 +27,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'net-sftp'
   spec.add_dependency 'hooks'
   spec.add_dependency 'diffy'
+  spec.add_dependency 'io-console'
 end
