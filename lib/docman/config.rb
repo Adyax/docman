@@ -8,9 +8,12 @@ module Docman
 
     attr_reader :unmutable_config
 
+    @loaded_scenario_sources
+
     def initialize(file)
       super
       @config = YAML::load_file(file)
+      @loaded_scenario_sources = {}
       assign_to_self
     end
 
@@ -28,26 +31,59 @@ module Docman
         unless options[:config_repo].nil? || config.nil?
           scenarios_path = File.join(docroot_config_dir, '/../', 'scenarios')
           `rm -fR #{scenarios_path}` if File.directory? scenarios_path
-          GitUtil.clone_repo(options[:config_repo], scenarios_path, 'branch', options[:config_repo_branch], true, 1)
-          config = merge_scenarios_configs(config, scenarios_path)
+          `mkdir -p scenarios_path`
+          config['scenario_sources'] = {}
+          config['scenario_sources']['mothership'] = {}
+          config['scenario_sources']['mothership']['repo'] = options[:config_repo]
+          config['scenario_sources']['mothership']['ref'] = options[:config_repo_branch]
+          config = merge_scenarios_configs(config, {}, scenarios_path, nil)
         end
       end
       unless config.nil?
-        @config.deep_merge!(config)
+        unless config['override_docman_default'].nil?
+          self.clear
+          @config = config
+        else
+          @config.deep_merge!(config)
+        end
         @config['version'] = config['version'].nil? ? 1 : config['version']
       end
 
       assign_to_self
     end
 
-    def merge_scenarios_configs(config, scenarios_path)
+    def merge_scenarios_configs(config, temp_config = {}, scenarios_path, current_scenario_source_name)
+      temp_config.deep_merge!(config)
       scenarios_config = {}
-      if config['scenarios']
-        config['scenarios'].each do |scenario|
-          scenario_config_file = File.join(scenarios_path, 'scenarios', scenario, 'config.yaml')
-          if File.file? scenario_config_file
-            scenario_config = merge_scenarios_configs(YAML::load_file(scenario_config_file), scenarios_path)
-            scenarios_config.deep_merge!(scenario_config)
+      unless config['scenarios'].nil?
+        config['scenarios'].each do |s|
+          scenario = {}
+          if s.is_a? String
+            values = s.split(':')
+            if values.size() > 1
+              scenario_source_name = values[0]
+              scenario_name = values[1]
+            else
+              scenario_source_name = current_scenario_source_name
+              scenario_name = values[0]
+            end
+            scenario['name'] = scenario_name
+            if temp_config['scenario_sources'].key? scenario_source_name
+              scenario_source_path = File.join(scenarios_path, scenario_source_name)
+              if @loaded_scenario_sources.key? scenario_source_name
+                scenario['source'] = @loaded_scenario_sources[scenario_source_name]
+              else
+                `rm -fR #{scenario_source_path}` if File.directory? scenario_source_path
+                scenario['source'] = temp_config['scenario_sources'][scenario_source_name]
+                GitUtil.clone_repo(scenario['source']['repo'], scenario_source_path, 'branch', scenario['source']['ref'], true, 1)
+                @loaded_scenario_sources[scenario_source_name] = scenario['source']
+              end
+              scenario_config_file = File.join(scenario_source_path, 'scenarios', scenario['name'], 'config.yaml')
+              if File.file? scenario_config_file
+                scenario_config = merge_scenarios_configs(YAML::load_file(scenario_config_file), temp_config, scenarios_path, scenario_source_name)
+                scenarios_config.deep_merge!(scenario_config)
+              end
+            end
           end
         end
       end
