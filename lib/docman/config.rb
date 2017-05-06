@@ -36,7 +36,10 @@ module Docman
           config['scenario_sources']['mothership'] = {}
           config['scenario_sources']['mothership']['repo'] = options[:config_repo]
           config['scenario_sources']['mothership']['ref'] = options[:config_repo_branch]
-          config = merge_scenarios_configs(config, {}, scenarios_path, nil)
+          config['scenario_sources']['root_config'] = {}
+          config['scenario_sources']['root_config']['dir'] = docroot_config_dir
+          @loaded_scenario_sources['root_config'] = config['scenario_sources']['root_config']
+          config = merge_scenarios_configs(config, {}, scenarios_path, 'root_config')
         end
       end
       unless config.nil?
@@ -69,7 +72,8 @@ module Docman
             end
             scenario['name'] = scenario_name
             if temp_config['scenario_sources'].key? scenario_source_name
-              scenario_source_path = File.join(scenarios_path, scenario_source_name)
+              temp_config['scenario_sources'][scenario_source_name]['dir']
+              scenario_source_path = temp_config['scenario_sources'][scenario_source_name]['dir'] ? temp_config['scenario_sources'][scenario_source_name]['dir'] : File.join(scenarios_path, scenario_source_name)
               if @loaded_scenario_sources.key? scenario_source_name
                 scenario['source'] = @loaded_scenario_sources[scenario_source_name]
               else
@@ -82,6 +86,7 @@ module Docman
               if File.file? scenario_config_file
                 scenario_config = merge_scenarios_configs(YAML::load_file(scenario_config_file), temp_config, scenarios_path, scenario_source_name)
                 scenarios_config.deep_merge!(scenario_config)
+                puts "Loaded scenario #{scenario['name']} from source #{scenario_source_name}"
               end
             end
           end
