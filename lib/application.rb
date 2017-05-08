@@ -81,9 +81,8 @@ module Docman
     def build(deploy_target_name, state, options = false)
       with_rescue do
         @options = options
-        @deploy_target = @config['deploy_targets'][deploy_target_name]
-        @deploy_target['name'] = deploy_target_name
-        @docroot_config = DocrootConfig.new(@workspace_dir, deploy_target, options)
+        @docroot_config = DocrootConfig.new(@workspace_dir, deploy_target_name, options)
+        @deploy_target = @docroot_config.deploy_target
         execute('build', state, nil, options['tag'])
       end
     end
@@ -92,10 +91,8 @@ module Docman
       result = nil
       with_rescue do
         @options = options
-        @deploy_target = @config['deploy_targets'][deploy_target_name]
-        raise "Wrong deploy target: #{deploy_target_name}" if @deploy_target.nil?
-        @deploy_target['name'] = deploy_target_name
-        @docroot_config = DocrootConfig.new(@workspace_dir, deploy_target, options)
+        @docroot_config = DocrootConfig.new(@workspace_dir, deploy_target_name, options)
+        @deploy_target = @docroot_config.deploy_target
         @docroot_config.states_dependin_on(name, version).keys.each do |state|
           execute('deploy', state, name)
           write_environment(@deploy_target['states'][state], name)
@@ -147,7 +144,7 @@ module Docman
 
     def info(command, file, options = false)
       result = {}
-      @docroot_config = DocrootConfig.new(@workspace_dir, deploy_target, options)
+      @docroot_config = DocrootConfig.new(@workspace_dir, nil, options)
       if (command == 'full')
         result['states'] = Docman::Application.instance.config['deploy_targets']['git_target']['states']
         result['environments'] = Docman::Application.instance.config['environments']

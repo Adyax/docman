@@ -7,18 +7,23 @@ module Docman
 
     attr_reader :structure, :deploy_target, :docroot_dir, :root, :raw_infos
 
-    def initialize(docroot_dir, deploy_target = nil, options = nil)
+    def initialize(docroot_dir, deploy_target_name = nil, options = nil)
       @override = {}
       if options && options['config']
         @override = JSON.parse(options['config'])
       end
       @docroot_dir = docroot_dir
-      @deploy_target = deploy_target
+      #@deploy_target = deploy_target
       @docroot_config_dir = File.join(docroot_dir, 'config')
       update(' origin master')
       if File.file? File.join(@docroot_config_dir, 'config.yaml')
         Docman::Application.instance.config.merge_config_from_file(@docroot_config_dir, 'config.yaml', options)
       end
+
+      @deploy_target = Application.instance.config['deploy_targets'][deploy_target_name]
+      raise "Wrong deploy target: #{deploy_target_name}" if @deploy_target.nil?
+      @deploy_target['name'] = deploy_target_name
+
       @names = {}
       @raw_infos = {}
       master_file = File.join(@docroot_config_dir, 'master')
