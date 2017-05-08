@@ -20,9 +20,11 @@ module Docman
         Docman::Application.instance.config.merge_config_from_file(@docroot_config_dir, 'config.yaml', options)
       end
 
-      @deploy_target = Application.instance.config['deploy_targets'][deploy_target_name]
-      raise "Wrong deploy target: #{deploy_target_name}" if @deploy_target.nil?
-      @deploy_target['name'] = deploy_target_name
+      if deploy_target_name
+        @deploy_target = Application.instance.config['deploy_targets'][deploy_target_name]
+        raise "Wrong deploy target: #{deploy_target_name}" if @deploy_target.nil?
+        @deploy_target['name'] = deploy_target_name
+      end
 
       @names = {}
       @raw_infos = {}
