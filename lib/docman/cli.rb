@@ -41,8 +41,6 @@ module Docman
     desc 'build', 'Build docroot'
     method_option :force, :aliases => '-f', :desc => 'Force full rebuild'
     method_option :config, :desc => 'Configuration override JSON'
-    method_option :config_repo, :desc => 'Configuration repo address'
-    method_option :config_repo_branch, :desc => 'Configuration repo branch', :default => 'master'
     option :tag
     def build(deploy_target, state)
       get_to_root_dir
@@ -56,8 +54,6 @@ module Docman
     desc 'deploy', 'Deploy to target'
     method_option :force, :aliases => '-f', :desc => 'Force full deploy'
     method_option :config, :desc => 'Configuration override JSON'
-    method_option :config_repo, :desc => 'Configuration repo address'
-    method_option :config_repo_branch, :desc => 'Configuration repo branch', :default => 'master'
     def deploy(deploy_target, name, type, version)
       get_to_root_dir
       if version.start_with?('state_')
@@ -102,8 +98,6 @@ module Docman
     desc 'info', 'Get info'
     method_option :force, :aliases => '-f', :desc => 'Force full rebuild'
     option :tag
-    method_option :config_repo, :desc => 'Configuration repo address'
-    method_option :config_repo_branch, :desc => 'Configuration repo branch', :default => 'master'
     def info(command, file)
       say(Application.instance.info(command, file, options).to_json);
       # say('Complete!', :green)

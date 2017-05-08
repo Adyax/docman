@@ -28,17 +28,16 @@ module Docman
       file = File.join(docroot_config_dir, config_file)
       if File.file?(file)
         config = YAML::load_file(file)
-        unless options[:config_repo].nil? || config.nil?
+        if config['scenarios']
           scenarios_path = File.join(docroot_config_dir, '/../', 'scenarios')
           `rm -fR #{scenarios_path}` if File.directory? scenarios_path
           `mkdir -p scenarios_path`
-          config['scenario_sources'] = {}
-          config['scenario_sources']['mothership'] = {}
-          config['scenario_sources']['mothership']['repo'] = options[:config_repo]
-          config['scenario_sources']['mothership']['ref'] = options[:config_repo_branch]
-          config['scenario_sources']['root_config'] = {}
-          config['scenario_sources']['root_config']['dir'] = docroot_config_dir
-          @loaded_scenario_sources['root_config'] = config['scenario_sources']['root_config']
+          unless config['scenarioSources']
+            config['scenarioSources'] = {}
+          end
+          config['scenarioSources']['root_config'] = {}
+          config['scenarioSources']['root_config']['dir'] = docroot_config_dir
+          @loaded_scenario_sources['root_config'] = config['scenarioSources']['root_config']
           config = merge_scenarios_configs(config, {}, scenarios_path, 'root_config')
         end
       end
@@ -71,14 +70,15 @@ module Docman
               scenario_name = values[0]
             end
             scenario['name'] = scenario_name
-            if temp_config['scenario_sources'].key? scenario_source_name
-              temp_config['scenario_sources'][scenario_source_name]['dir']
-              scenario_source_path = temp_config['scenario_sources'][scenario_source_name]['dir'] ? temp_config['scenario_sources'][scenario_source_name]['dir'] : File.join(scenarios_path, scenario_source_name)
+            if temp_config['scenarioSources'].key? scenario_source_name
+              temp_config['scenarioSources'][scenario_source_name]['dir']
+              scenario_source_path = temp_config['scenarioSources'][scenario_source_name]['dir'] ? temp_config['scenarioSources'][scenario_source_name]['dir'] : File.join(scenarios_path, scenario_source_name)
               if @loaded_scenario_sources.key? scenario_source_name
                 scenario['source'] = @loaded_scenario_sources[scenario_source_name]
               else
                 `rm -fR #{scenario_source_path}` if File.directory? scenario_source_path
-                scenario['source'] = temp_config['scenario_sources'][scenario_source_name]
+                scenario['source'] = temp_config['scenarioSources'][scenario_source_name]
+                scenario['source']['ref'] = scenario['source']['ref'] ? scenario['source']['ref'] : 'master'
                 GitUtil.clone_repo(scenario['source']['repo'], scenario_source_path, 'branch', scenario['source']['ref'], true, 1)
                 @loaded_scenario_sources[scenario_source_name] = scenario['source']
               end
