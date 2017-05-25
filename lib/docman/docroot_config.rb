@@ -15,6 +15,8 @@ module Docman
       @docroot_dir = docroot_dir
       #@deploy_target = deploy_target
       @docroot_config_dir = File.join(docroot_dir, 'config')
+
+      Dir.chdir @docroot_config_dir
       update(' origin master')
       if File.file? File.join(@docroot_config_dir, 'config.yaml')
         Docman::Application.instance.config.merge_config_from_file(@docroot_config_dir, 'config.yaml', options)
@@ -37,6 +39,7 @@ module Docman
     end
 
     def update(options = '')
+      GitUtil.exec("reset --hard", false)
       GitUtil.update @docroot_config_dir, options
     end
 

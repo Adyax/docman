@@ -8,7 +8,7 @@ module Docman
     @git = ENV.has_key?('GIT_CMD') ? ENV['GIT_CMD'] : 'git'
 
     def self.exec(command, show_result = true)
-      @logger.info "#{@git} #{command}"
+      @logger.info "#{@git} #{command} in #{Dir.pwd}"
       result = `#{@git} #{command}`
       #result = `#{@git} #{command}`.delete!("\n")
       @logger.info result if show_result and result
