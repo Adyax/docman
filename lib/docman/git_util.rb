@@ -33,13 +33,13 @@ module Docman
       if File.directory? path and File.directory?(File.join(path, '.git'))
         Dir.chdir path
         self.reset_repo(path) #if self.repo_changed?(path)
+        exec 'fetch --tags'
         if type == 'branch'
           #exec "fetch"
           exec "checkout #{version}"
           exec "pull origin #{version}"
         end
         if type == 'tag'
-          exec 'fetch --tags'
           exec "checkout tags/#{version}"
         end
       else
