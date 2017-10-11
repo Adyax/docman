@@ -223,6 +223,16 @@ module Docman
       Docman::Deployers::Deployer.create(params, nil, self).perform
     end
 
+    def config_dirs(options)
+      config_dirs = []
+      if options[:config_dir]
+        config_dirs = options[:config_dir].split(',')
+      end
+      config_dirs.push('.drupipe/config.yaml')
+      config_dirs.push('')
+      config_dirs
+    end
+
     def force?
       @force or @options[:force]
     end

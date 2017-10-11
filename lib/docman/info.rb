@@ -105,7 +105,7 @@ module Docman
 
     def _need_rebuild?
       return true if Docman::Application.instance.force?
-      return true unless File.directory? self['full_build_path']
+      return true unless File.directaory? self['full_build_path']
       v = stored_version
       return true unless v
       return true if v['type'] != self['type']

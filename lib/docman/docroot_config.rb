@@ -1,3 +1,4 @@
+require 'application'
 require 'fileutils'
 require 'docman/info'
 
@@ -18,9 +19,18 @@ module Docman
 
       Dir.chdir @docroot_config_dir
       update(' origin master')
-      if File.file? File.join(@docroot_config_dir, 'config.yaml')
-        Docman::Application.instance.config.merge_config_from_file(@docroot_config_dir, 'config.yaml', options)
+      config_dir = nil
+      config_dirs = Docman::Application.instance.config_dirs(options)
+      config_dirs.each do |dir|
+        if File.file? File.join(@docroot_config_dir, dir, 'config.yaml')
+          config_dir = File.join(@docroot_config_dir, dir)
+          break
+        end
       end
+
+      raise "Configuration file config.yaml not found." if config_dir.nil?
+
+      Docman::Application.instance.config.merge_config_from_file(config_dir, 'config.yaml', options)
 
       if deploy_target_name
         @deploy_target = Application.instance.config['deploy_targets'][deploy_target_name]

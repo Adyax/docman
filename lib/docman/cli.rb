@@ -97,6 +97,7 @@ module Docman
 
     desc 'info', 'Get info'
     method_option :force, :aliases => '-f', :desc => 'Force full rebuild'
+    method_option :config_dir, :desc => 'Config directories divided by coma where docman will search for config.yaml'
     option :tag
     def info(command, file)
       say(Application.instance.info(command, file, options).to_json);
