@@ -228,7 +228,7 @@ module Docman
       if options[:config_dir]
         config_dirs = options[:config_dir].split(',')
       end
-      config_dirs.push('.drupipe/config.yaml')
+      config_dirs.push('.drupipe')
       config_dirs.push('')
       config_dirs
     end
