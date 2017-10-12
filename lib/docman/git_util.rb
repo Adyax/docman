@@ -8,7 +8,7 @@ module Docman
     @git = ENV.has_key?('GIT_CMD') ? ENV['GIT_CMD'] : 'git'
 
     def self.exec(command, show_result = true)
-      @logger.info "#{@git} #{command}"
+      @logger.info "#{@git} #{command} in #{Dir.pwd}"
       result = `#{@git} #{command}`
       #result = `#{@git} #{command}`.delete!("\n")
       @logger.info result if show_result and result
@@ -33,13 +33,13 @@ module Docman
       if File.directory? path and File.directory?(File.join(path, '.git'))
         Dir.chdir path
         self.reset_repo(path) #if self.repo_changed?(path)
+        exec 'fetch --tags'
         if type == 'branch'
-          exec "fetch"
+          #exec "fetch"
           exec "checkout #{version}"
           exec "pull origin #{version}"
         end
         if type == 'tag'
-          exec 'fetch --tags'
           exec "checkout tags/#{version}"
         end
       else
@@ -63,11 +63,11 @@ module Docman
       exec("clone #{single_branch} #{depth} #{repo} #{path}")
     end
 
-    def self.last_revision(path = nil)
+    def self.last_revision(path = nil, branch = 'HEAD')
       result = nil
       if self.repo? path
         Dir.chdir path unless path.nil?
-        result = `git rev-parse --short HEAD`
+        result = `git rev-parse --short #{branch}`
         result.delete!("\n")
       end
       result

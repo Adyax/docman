@@ -17,6 +17,7 @@ module Docman
     define_hooks :before_execute, :after_execute
 
     def self.create(params, context = nil, caller = nil)
+      params['type'] = params['type'].to_sym if params['type'].instance_of? String
       c = @@subclasses[params['type']]
       if c
         c.new(params, context, caller)

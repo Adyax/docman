@@ -13,12 +13,12 @@ require 'logger'
 require 'json'
 
 require 'docman/builders/builder'
+require 'docman/builders/provider_builder'
+require 'docman/builders/git_provider_builder'
 require 'docman/builders/dir_builder'
-require 'docman/builders/symlink_builder'
-require 'docman/builders/git_direct_builder'
+require 'docman/builders/direct_builder'
 require 'docman/builders/git_root_chain_builder'
 require 'docman/builders/git_strip_builder'
-require 'docman/builders/drupal_drush_builder'
 require 'docman/deployers/deployer'
 require 'docman/deployers/git_deployer'
 require 'docman/deployers/common_deployer'
@@ -30,7 +30,8 @@ require 'docman/commands/clean_changed_cmd'
 require 'docman/commands/git_commit_cmd'
 require 'docman/commands/yaml_execute_cmd'
 require 'docman/commands/git_pull_cmd'
-require 'docman/commands/git_copy_repo_content_cmd'
+require 'docman/commands/git_repo_provider_cmd'
+require 'docman/commands/nexus_provider_cmd'
 require 'docman/taggers/tagger'
 require 'docman/taggers/incremental_tagger'
 require 'docman/taggers/option_tagger'
@@ -80,9 +81,8 @@ module Docman
     def build(deploy_target_name, state, options = false)
       with_rescue do
         @options = options
-        @deploy_target = @config['deploy_targets'][deploy_target_name]
-        @deploy_target['name'] = deploy_target_name
-        @docroot_config = DocrootConfig.new(@workspace_dir, deploy_target)
+        @docroot_config = DocrootConfig.new(@workspace_dir, deploy_target_name, options)
+        @deploy_target = @docroot_config.deploy_target
         execute('build', state, nil, options['tag'])
       end
     end
@@ -91,10 +91,8 @@ module Docman
       result = nil
       with_rescue do
         @options = options
-        @deploy_target = @config['deploy_targets'][deploy_target_name]
-        raise "Wrong deploy target: #{deploy_target_name}" if @deploy_target.nil?
-        @deploy_target['name'] = deploy_target_name
-        @docroot_config = DocrootConfig.new(@workspace_dir, deploy_target)
+        @docroot_config = DocrootConfig.new(@workspace_dir, deploy_target_name, options)
+        @deploy_target = @docroot_config.deploy_target
         @docroot_config.states_dependin_on(name, version).keys.each do |state|
           execute('deploy', state, name)
           write_environment(@deploy_target['states'][state], name)
@@ -146,7 +144,7 @@ module Docman
 
     def info(command, file, options = false)
       result = {}
-      @docroot_config = DocrootConfig.new(@workspace_dir, deploy_target)
+      @docroot_config = DocrootConfig.new(@workspace_dir, nil, options)
       if (command == 'full')
         result['states'] = Docman::Application.instance.config['deploy_targets']['git_target']['states']
         result['environments'] = Docman::Application.instance.config['environments']

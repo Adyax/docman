@@ -3,6 +3,7 @@ require 'docman/commands/command'
 module Docman
   module Builders
     class Builder < Docman::Command
+
       @@builders = {}
       @@build_results = {}
 
@@ -28,8 +29,7 @@ module Docman
         clean_changed = environment['clean_changed'].nil? ? true : environment['clean_changed']
         add_action('before_execute', {'type' => :clean_changed}, @context) if clean_changed
 
-        info_file = File.join(@context['full_build_path'], 'info.yaml')
-        info = YAML::load_file(info_file) if File.file? info_file
+        info = @context.info_file_yaml
         if info
           info['context'] = @context
           name = @context['name']
@@ -37,6 +37,13 @@ module Docman
           environment['previous'][name] = info
         end
 
+        unless @context.key? 'provider'
+          @context['provider'] = self['provider']
+        end
+        if @context['provider'] && self['target_path_id']
+          self['target_path'] = @context[self['target_path_id']]
+          @provider = Docman::Command.create({'type' => @context['provider'], 'target_path' => self['target_path']}, @context, self)
+        end
       end
 
       def validate_command
@@ -51,6 +58,7 @@ module Docman
       before_execute do
         if @context.need_rebuild?
           @context.build_mode = :rebuild
+          log("Need to rebuild")
         else
           if @context.changed? or changed?
             @context.build_mode = :update

@@ -171,12 +171,12 @@ module Docman
         @build_results[info['name']] = build_result ? build_result : 'Not builded'
         @versions[info['name']] = builder.version
         @builded << info['name']
-        if (build_result)
-          info['children'].sort_by!{|a| a['order']}
-          info['children'].each do |child|
-            build_recursive(child)
-          end
+        # if (build_result)
+        info['children'].sort_by!{|a| a['order']}
+        info['children'].each do |child|
+          build_recursive(child)
         end
+        # end
       end
 
       # TODO: need to refactor.
