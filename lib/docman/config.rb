@@ -24,14 +24,14 @@ module Docman
       @unmutable_config = Marshal::load(Marshal.dump(@config))
     end
 
-    def merge_config_from_file(docroot_config_dir, config_file, options = nil)
+    def merge_config_from_file(docroot_dir, docroot_config_dir, config_file, options = nil)
       file = File.join(docroot_config_dir, config_file)
       if File.file?(file)
         config = YAML::load_file(file)
         if config['scenarios']
-          scenarios_path = File.join(docroot_config_dir, '/../', 'scenarios')
+          scenarios_path = File.join(docroot_dir, '.docman/scenarios')
           `rm -fR #{scenarios_path}` if File.directory? scenarios_path
-          `mkdir -p scenarios_path`
+          `mkdir -p #{scenarios_path}`
           unless config['scenarioSources']
             config['scenarioSources'] = {}
           end

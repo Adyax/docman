@@ -6,7 +6,7 @@ module Docman
 
   class DocrootConfig
 
-    attr_reader :structure, :deploy_target, :docroot_dir, :root, :raw_infos
+    attr_reader :structure, :deploy_target, :docroot_dir, :docroot_config_dir, :config_dir, :root, :raw_infos
 
     def initialize(docroot_dir, deploy_target_name = nil, options = nil)
       @override = {}
@@ -18,7 +18,7 @@ module Docman
       @docroot_config_dir = File.join(docroot_dir, 'config')
 
       Dir.chdir @docroot_config_dir
-      update(' origin master')
+      update('origin')
       config_dir = nil
       config_dirs = Docman::Application.instance.config_dirs(options)
       config_dirs.each do |dir|
@@ -30,7 +30,9 @@ module Docman
 
       raise "Configuration file config.yaml not found." if config_dir.nil?
 
-      Docman::Application.instance.config.merge_config_from_file(config_dir, 'config.yaml', options)
+      @config_dir = config_dir
+
+      Docman::Application.instance.config.merge_config_from_file(docroot_dir, @config_dir, 'config.yaml', options)
 
       if deploy_target_name
         @deploy_target = Application.instance.config['deploy_targets'][deploy_target_name]
@@ -49,8 +51,10 @@ module Docman
     end
 
     def update(options = '')
+      Dir.chdir @docroot_config_dir
       GitUtil.exec("reset --hard", false)
-      GitUtil.update @docroot_config_dir, options
+      branch = GitUtil.branch
+      GitUtil.update @docroot_config_dir, "#{options} #{branch.strip}"
     end
 
     def structure_build_from_config_file(path, prefix = '', parent = nil, parent_key = 'master')
@@ -70,9 +74,9 @@ module Docman
       info['full_path'] = path
       info['docroot_config'] = self
       info['build_path'] = prefix
-      info['full_build_path'] = File.join(@docroot_dir, prefix)
-      info['temp_path'] = File.join(@docroot_dir, 'tmp', info['build_path'])
-      info['states_path'] = File.join(@docroot_dir, 'states', info['build_path'])
+      info['full_build_path'] = File.join(@docroot_dir, '.docman', prefix)
+      info['temp_path'] = File.join(@docroot_dir, '.docman/tmp', info['build_path'])
+      info['states_path'] = File.join(@docroot_dir, '.docman/states', info['build_path'])
       info['name'] = name
       info['parent'] = parent
       info['order'] = info.has_key?('order') ? info['order'] : 10
