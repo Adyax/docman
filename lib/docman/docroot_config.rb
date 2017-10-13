@@ -119,9 +119,9 @@ module Docman
       info['full_path'] = path
       info['docroot_config'] = self
       info['build_path'] = prefix
-      info['full_build_path'] = File.join(@docroot_dir, prefix)
-      info['temp_path'] = File.join(@docroot_dir, 'tmp', info['build_path'])
-      info['states_path'] = File.join(@docroot_dir, 'states', info['build_path'])
+      info['full_build_path'] = File.join(@docroot_dir, '.docman', prefix)
+      info['temp_path'] = File.join(@docroot_dir, '.docman/tmp', info['build_path'])
+      info['states_path'] = File.join(@docroot_dir, '.docman/states', info['build_path'])
       info['name'] = name
       info['parent'] = parent
       info['order'] = info.has_key?('order') ? info['order'] : 10
