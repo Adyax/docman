@@ -71,6 +71,7 @@ deploy_targets:
         hooks:
           builder:
             after_execute:
+              - <<: *remove_git_dir
               - <<: *execute_yaml_file
       root:
         handler: :dir_builder
@@ -110,6 +111,7 @@ deploy_targets:
           builder:
             after_execute:
               - <<: *execute_yaml_file
+              - <<: *git_commit
       root:
         handler: :direct_builder
         provider: :git_repo_provider
