@@ -41,6 +41,7 @@ module Docman
     desc 'build', 'Build docroot'
     method_option :force, :aliases => '-f', :desc => 'Force full rebuild'
     method_option :config, :desc => 'Configuration override JSON'
+    method_option :config_dir, :desc => 'Config directories divided by coma where docman will search for config.yaml'
     option :tag
     def build(deploy_target, state)
       get_to_root_dir
@@ -54,6 +55,7 @@ module Docman
     desc 'deploy', 'Deploy to target'
     method_option :force, :aliases => '-f', :desc => 'Force full deploy'
     method_option :config, :desc => 'Configuration override JSON'
+    method_option :config_dir, :desc => 'Config directories divided by coma where docman will search for config.yaml'
     def deploy(deploy_target, name, type, version)
       get_to_root_dir
       if version.start_with?('state_')
@@ -97,6 +99,7 @@ module Docman
 
     desc 'info', 'Get info'
     method_option :force, :aliases => '-f', :desc => 'Force full rebuild'
+    method_option :config_dir, :desc => 'Config directories divided by coma where docman will search for config.yaml'
     option :tag
     def info(command, file)
       say(Application.instance.info(command, file, options).to_json);

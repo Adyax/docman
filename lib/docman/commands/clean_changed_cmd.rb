@@ -13,6 +13,7 @@ module Docman
       if File.directory? @context['full_build_path']
         if @context.need_rebuild?
           return false if @context['type'] == 'dir'
+          return false if @context['type'] == 'single' and @context['build_type'] == :copy_builder and not GitUtil.repo?(@context['full_build_path'])
           return false if @context['type'] == 'root' and @context['build_type'] == :dir_builder and not GitUtil.repo?(@context['full_build_path'])
           return false if @context['type'] == 'root' and @context['build_type'] == :direct_builder and GitUtil.repo?(@context['full_build_path'])
           return false if @context['type'] == 'root_chain' and @context['build_type'] == :direct_builder and GitUtil.repo?(@context['full_build_path'])
