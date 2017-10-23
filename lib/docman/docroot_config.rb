@@ -20,15 +20,21 @@ module Docman
       Dir.chdir @docroot_config_dir
       update('origin')
       config_dir = nil
+      config_file = nil
       config_dirs = Docman::Application.instance.config_dirs(options)
       config_dirs.each do |dir|
         if File.file? File.join(@docroot_config_dir, dir, 'config.yaml')
           config_dir = File.join(@docroot_config_dir, dir)
+          config_file = 'config.yaml'
+          break
+        elsif File.file? File.join(@docroot_config_dir, dir, 'config.yml')
+          config_dir = File.join(@docroot_config_dir, dir)
+          config_file = 'config.yml'
           break
         end
       end
 
-      raise "Configuration file config.yaml not found." if config_dir.nil?
+      raise "Configuration file config.yaml or config.yml not found." if config_dir.nil? and config_file.nil?
 
       @config_dir = config_dir
 
