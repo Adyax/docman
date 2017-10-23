@@ -20,21 +20,12 @@ module Docman
           if self['providers'].nil? || self['providers'] == 'all' || self['providers'].include?(@context['provider'])
             commands = nil
             if self['source_type'] == 'file'
-              yaml_file_name = self['yaml_file_name'].nil? ? 'unipipe' : self['yaml_file_name']
-              config_dirs = Docman::Application.instance.config_dirs(options)
-              config_dirs.each do |dir|
-                build_file = File.join(@docroot_config_dir, dir, yaml_file_name)
-                if File.file? "#{build_file}.yaml"
-                  build_file_yaml = YAML::load_file("#{build_file}.yaml")
-                  commands = build_file_yaml[self['stage']]
-                  source = yaml_file_name
-                  break
-                elsif File.file? "#{build_file}.yml"
-                  build_file_yaml = YAML::load_file("#{build_file}.yml")
-                  commands = build_file_yaml[self['stage']]
-                  source = yaml_file_name
-                  break
-                end
+              yaml_file_name = self['yaml_file_name'].nil? ? '{unipipe,.unipipe,drupipe,.drupipe,build,.build}.{yaml,yml}' : self['yaml_file_name']
+              build_file = Dir.glob([File.join(@context['docroot_config'].config_dir, yaml_file_name), File.join(@context['full_build_path'], yaml_file_name)]).first
+              if not build_file.nil?
+                build_file_yaml = YAML::load_file(build_file)
+                commands = build_file_yaml[self['stage']]
+                source = yaml_file_name
               end
             end
             if self['source_type'] == 'inline'
