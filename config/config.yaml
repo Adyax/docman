@@ -30,6 +30,12 @@ deploy_targets:
     # deployer handler
     handler: :common_deployer
     builders:
+      single:
+        handler: :copy_builder
+        hooks:
+          builder:
+            after_execute:
+              - <<: *execute_yaml_file
       root:
         handler: :dir_builder
       root_chain:
@@ -60,6 +66,13 @@ deploy_targets:
     # deployer handler
     handler: :common_deployer
     builders:
+      single:
+        handler: :copy_builder
+        hooks:
+          builder:
+            after_execute:
+              - <<: *remove_git_dir
+              - <<: *execute_yaml_file
       root:
         handler: :dir_builder
       root_chain:
@@ -92,6 +105,13 @@ deploy_targets:
     # deployer handler
     handler: :git_deployer
     builders:
+      single:
+        handler: :copy_builder
+        hooks:
+          builder:
+            after_execute:
+              - <<: *execute_yaml_file
+              - <<: *git_commit
       root:
         handler: :direct_builder
         provider: :git_repo_provider

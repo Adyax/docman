@@ -16,6 +16,7 @@ require 'docman/builders/builder'
 require 'docman/builders/provider_builder'
 require 'docman/builders/git_provider_builder'
 require 'docman/builders/dir_builder'
+require 'docman/builders/copy_builder'
 require 'docman/builders/direct_builder'
 require 'docman/builders/git_root_chain_builder'
 require 'docman/builders/git_strip_builder'
@@ -221,6 +222,17 @@ module Docman
       params['environment'] = @config['environments'][@deploy_target['states'][state]]
       params['environment_name'] = @deploy_target['states'][state]
       Docman::Deployers::Deployer.create(params, nil, self).perform
+    end
+
+    def config_dirs(options)
+      config_dirs = []
+      if options[:config_dir]
+        config_dirs = options[:config_dir].split(',')
+      end
+      config_dirs.push('.unipipe')
+      config_dirs.push('.drupipe')
+      config_dirs.push('')
+      config_dirs
     end
 
     def force?
