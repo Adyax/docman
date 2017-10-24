@@ -19,20 +19,17 @@ module Docman
 
       Dir.chdir @docroot_config_dir
       update('origin')
-      config_dir = nil
-      config_dirs = Docman::Application.instance.config_dirs(options)
-      config_dirs.each do |dir|
-        if File.file? File.join(@docroot_config_dir, dir, 'config.yaml')
-          config_dir = File.join(@docroot_config_dir, dir)
-          break
-        end
-      end
+      config_files = Docman::Application.instance.config_dirs(options).collect{|item|
+        File.join(@docroot_config_dir, item, 'config.{yaml,yml}')
+      }
+      config_file_path = Dir.glob(config_files).first
 
-      raise "Configuration file config.yaml not found." if config_dir.nil?
+      raise "Configuration file config.{yaml,yml} not found." if config_file_path.nil?
 
-      @config_dir = config_dir
+      @config_dir = File.dirname(config_file_path)
+      @config_file = File.basename(config_file_path)
 
-      Docman::Application.instance.config.merge_config_from_file(docroot_dir, @config_dir, 'config.yaml', options)
+      Docman::Application.instance.config.merge_config_from_file(docroot_dir, @config_dir, @config_file, options)
 
       if deploy_target_name
         @deploy_target = Application.instance.config['deploy_targets'][deploy_target_name]
