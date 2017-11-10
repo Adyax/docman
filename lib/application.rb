@@ -226,12 +226,18 @@ module Docman
 
     def config_dirs(options)
       config_dirs = []
-      if options[:config_dir]
-        config_dirs = options[:config_dir].split(',')
+      if options.key? :config_dir
+        config_dirs_cli = options[:config_dir].split(',')
+        config_dirs_cli.each { |dir|
+          config_dirs.push(File.join(dir, '.unipipe'))
+          config_dirs.push(File.join(dir, '.drupipe'))
+          config_dirs.push('')
+        }
+      else
+        config_dirs.push('.unipipe')
+        config_dirs.push('.drupipe')
+        config_dirs.push('')
       end
-      config_dirs.push('.unipipe')
-      config_dirs.push('.drupipe')
-      config_dirs.push('')
       config_dirs
     end
 
