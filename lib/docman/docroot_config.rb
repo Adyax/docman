@@ -18,7 +18,7 @@ module Docman
       @docroot_config_dir = File.join(docroot_dir, 'config')
 
       Dir.chdir @docroot_config_dir
-      if not options.key? :config_dir
+      unless options.key? :config_dir
         update('origin')
       end
       config_files = Docman::Application.instance.config_dirs(options).collect{|item|
