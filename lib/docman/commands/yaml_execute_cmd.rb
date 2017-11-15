@@ -33,19 +33,26 @@ module Docman
                 source = yaml_file_name
               end
             end
+            chdir = ''
             if self['source_type'] == 'inline'
               commands = self['commands']
               source = 'inline'
+              if self.has_key?('exec_dir')
+                chdir = self['exec_dir']
+              end
             end
+            chdir_full = File.join(@context['full_build_path'], chdir)
+            Dir.chdir chdir_full
             unless commands.nil?
               commands.each do |cmd|
-                logger.info "Execute from #{source}: #{cmd}"
+                logger.info "Execute in #{chdir_full} from #{source}: #{cmd}"
                 logger.info `#{cmd}`
                 if $?.exitstatus > 0
                   raise "Command #{cmd} was failed"
                 end
               end
             end
+            Dir.chdir @context['full_build_path']
           end
         end
       end
