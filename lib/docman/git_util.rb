@@ -25,7 +25,9 @@ module Docman
     def self.reset_repo(path)
       Dir.chdir path
       exec 'reset --hard'
-      exec 'clean -f -d'
+      exec 'clean -f -d -x --dry-run'
+      exec 'status'
+      exec 'clean -f -d -x'
     end
 
     def self.get(repo, path, type, version, single_branch = nil, depth = nil, reset = false)
