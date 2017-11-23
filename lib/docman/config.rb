@@ -43,11 +43,7 @@ module Docman
 	    puts "UNIPIPE_SOURCES: #{unipipe_sources}"
             sources = JSON.parse(unipipe_sources)
 	    puts "UNIPIPE_SOURCES PARSED: #{sources}"
-            if sources.has_key?(@config['uniconf'][@config_version]['keys']['sources'])
-              config[@config['uniconf'][@config_version]['keys']['sources']].deep_merge(sources[@config['uniconf'][@config_version]['keys']['sources']])
-            else
-              puts "UNIPIPE_SOURCES does not contain #{@config['uniconf'][@config_version]['keys']['sources']} configuration."
-            end
+            config[@config['uniconf'][@config_version]['keys']['sources']].deep_merge(sources)
           else
             puts "UNIPIPE_SOURCES not defined in environment. Additional sources may be not available."
           end
