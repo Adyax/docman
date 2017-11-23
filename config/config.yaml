@@ -1,4 +1,14 @@
 ---
+uniconf:
+  keys:
+    include: from
+    sources: sources
+    params: params
+    jobs: jobs
+  dirs:
+    sources: scenarios
+  include:
+    prefix: .params.
 # common hooks used in deploy targets below
 common_hooks:
   - &execute_yaml_file
