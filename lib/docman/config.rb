@@ -32,13 +32,17 @@ module Docman
         if config.has_key?('config_version')
           @config_version = config['config_version']
         end
+	puts "Config version: #{@config_version}"
+	puts "Uniconf: #{@config['uniconf'][@config_version]}"
         if config.has_key?(@config['uniconf'][@config_version]['keys']['include'])
           scenarios_path = File.join(docroot_dir, '.docman/scenarios')
           `rm -fR #{scenarios_path}` if File.directory? scenarios_path
           `mkdir -p #{scenarios_path}`
           if ENV.has_key?('UNIPIPE_SOURCES')
             unipipe_sources = ENV['UNIPIPE_SOURCES']
+	    puts "UNIPIPE_SOURCES: #{unipipe_sources}"
             sources = JSON.parse(unipipe_sources)
+	    puts "UNIPIPE_SOURCES PARSED: #{sources}"
             if sources.has_key?(@config['uniconf'][@config_version]['keys']['sources'])
               config[@config['uniconf'][@config_version]['keys']['sources']].deep_merge(sources[@config['uniconf'][@config_version]['keys']['sources']])
             else
