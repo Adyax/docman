@@ -28,23 +28,27 @@ module Docman
       file = File.join(docroot_config_dir, config_file)
       if File.file?(file)
         config = YAML::load_file(file)
-        if config.has_key?(@config['uniconf']['keys']['include'])
+        @config_version = 1
+        if config.has_key?('config_version')
+          @config_version = config['config_version']
+        end
+        if config.has_key?(@config['uniconf'][@config_version]['keys']['include'])
           scenarios_path = File.join(docroot_dir, '.docman/scenarios')
           `rm -fR #{scenarios_path}` if File.directory? scenarios_path
           `mkdir -p #{scenarios_path}`
           if ENV.has_key?('UNIPIPE_SOURCES')
             unipipe_sources = ENV['UNIPIPE_SOURCES']
             sources = JSON.parse(unipipe_sources)
-            if sources.has_key?(@config['uniconf']['keys']['sources'])
-              config[@config['uniconf']['keys']['sources']].deep_merge(sources[@config['uniconf']['keys']['sources']])
+            if sources.has_key?(@config['uniconf'][@config_version]['keys']['sources'])
+              config[@config['uniconf'][@config_version]['keys']['sources']].deep_merge(sources[@config['uniconf'][@config_version]['keys']['sources']])
             end
           end
-          unless config[@config['uniconf']['keys']['sources']]
-            config[@config['uniconf']['keys']['sources']] = {}
+          unless config[@config['uniconf'][@config_version]['keys']['sources']]
+            config[@config['uniconf'][@config_version]['keys']['sources']] = {}
           end
-          config[@config['uniconf']['keys']['sources']]['root_config'] = {}
-          config[@config['uniconf']['keys']['sources']]['root_config']['dir'] = docroot_config_dir
-          @loaded_scenario_sources['root_config'] = config[@config['uniconf']['keys']['sources']]['root_config']
+          config[@config['uniconf'][@config_version]['keys']['sources']]['root_config'] = {}
+          config[@config['uniconf'][@config_version]['keys']['sources']]['root_config']['dir'] = docroot_config_dir
+          @loaded_scenario_sources['root_config'] = config[@config['uniconf'][@config_version]['keys']['sources']]['root_config']
           config = merge_scenarios_configs(config, {}, scenarios_path, 'root_config')
         end
       end
@@ -64,8 +68,8 @@ module Docman
     def merge_scenarios_configs(config, temp_config = {}, scenarios_path = '', current_scenario_source_name = '')
       temp_config.deep_merge!(config)
       scenarios_config = {}
-      unless config[@config['uniconf']['keys']['include']].nil?
-        config[@config['uniconf']['keys']['include']].each do |s|
+      unless config[@config['uniconf'][@config_version]['keys']['include']].nil?
+        config[@config['uniconf'][@config_version]['keys']['include']].each do |s|
           scenario = {}
           if s.is_a? String
             values = s.split(':')
@@ -77,19 +81,19 @@ module Docman
               scenario_name = values[0]
             end
             scenario['name'] = scenario_name
-            if temp_config[@config['uniconf']['keys']['sources']].key? scenario_source_name
-              temp_config[@config['uniconf']['keys']['sources']][scenario_source_name]['dir']
-              scenario_source_path = temp_config[@config['uniconf']['keys']['sources']][scenario_source_name]['dir'] ? temp_config[@config['uniconf']['keys']['sources']][scenario_source_name]['dir'] : File.join(scenarios_path, scenario_source_name)
+            if temp_config[@config['uniconf'][@config_version]['keys']['sources']].key? scenario_source_name
+              temp_config[@config['uniconf'][@config_version]['keys']['sources']][scenario_source_name]['dir']
+              scenario_source_path = temp_config[@config['uniconf'][@config_version]['keys']['sources']][scenario_source_name]['dir'] ? temp_config[@config['uniconf'][@config_version]['keys']['sources']][scenario_source_name]['dir'] : File.join(scenarios_path, scenario_source_name)
               if @loaded_scenario_sources.key? scenario_source_name
                 scenario['source'] = @loaded_scenario_sources[scenario_source_name]
               else
                 `rm -fR #{scenario_source_path}` if File.directory? scenario_source_path
-                scenario['source'] = temp_config[@config['uniconf']['keys']['sources']][scenario_source_name]
+                scenario['source'] = temp_config[@config['uniconf'][@config_version]['keys']['sources']][scenario_source_name]
                 scenario['source']['ref'] = scenario['source']['ref'] ? scenario['source']['ref'] : 'master'
                 GitUtil.clone_repo(scenario['source']['repo'], scenario_source_path, 'branch', scenario['source']['ref'], true, 1)
                 @loaded_scenario_sources[scenario_source_name] = scenario['source']
               end
-              scenario_config_file = File.join(scenario_source_path, @config['uniconf']['dirs']['sources'], scenario['name'], 'config.yaml')
+              scenario_config_file = File.join(scenario_source_path, @config['uniconf'][@config_version]['dirs']['sources'], scenario['name'], 'config.yaml')
               if File.file? scenario_config_file
                 scenario_config = merge_scenarios_configs(YAML::load_file(scenario_config_file), temp_config, scenarios_path, scenario_source_name)
                 scenarios_config.deep_merge!(scenario_config)
