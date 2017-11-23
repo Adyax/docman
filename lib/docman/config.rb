@@ -32,22 +32,26 @@ module Docman
         if config.has_key?('config_version')
           @config_version = config['config_version']
         end
-	puts "Config version: #{@config_version}"
-	puts "Uniconf: #{@config['uniconf'][@config_version]}"
+        puts "Config version: #{@config_version}"
+        puts "Uniconf: #{@config['uniconf'][@config_version]}"
         if config.has_key?(@config['uniconf'][@config_version]['keys']['include'])
           scenarios_path = File.join(docroot_dir, '.docman/scenarios')
           `rm -fR #{scenarios_path}` if File.directory? scenarios_path
           `mkdir -p #{scenarios_path}`
           if ENV.has_key?('UNIPIPE_SOURCES')
             unipipe_sources = ENV['UNIPIPE_SOURCES']
-	    puts "UNIPIPE_SOURCES: #{unipipe_sources}"
-            sources = JSON.parse(unipipe_sources)
-	    puts "UNIPIPE_SOURCES PARSED: #{sources}"
-            config[@config['uniconf'][@config_version]['keys']['sources']].deep_merge(sources)
+            puts "UNIPIPE_SOURCES: #{unipipe_sources}"
+            sources = {}
+            sources[@config['uniconf'][@config_version]['keys']['sources']] = JSON.parse(unipipe_sources)
+            puts "UNIPIPE_SOURCES PARSED: #{sources}"
+            unless config.has_key?(@config['uniconf'][@config_version]['keys']['sources'])
+              config[@config['uniconf'][@config_version]['keys']['sources']] = {}
+            end
+            config.deep_merge(sources)
           else
             puts "UNIPIPE_SOURCES not defined in environment. Additional sources may be not available."
           end
-          unless config[@config['uniconf'][@config_version]['keys']['sources']]
+          unless config.has_key?(@config['uniconf'][@config_version]['keys']['sources'])
             config[@config['uniconf'][@config_version]['keys']['sources']] = {}
           end
           config[@config['uniconf'][@config_version]['keys']['sources']]['root_config'] = {}
