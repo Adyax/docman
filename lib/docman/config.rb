@@ -104,7 +104,7 @@ module Docman
             if temp_config[@config['uniconf'][@config_version]['keys']['sources']].has_key?(scenario_source_name)
               scenario_source_path =  File.join(scenarios_path, scenario_source_name)
               if temp_config[@config['uniconf'][@config_version]['keys']['sources']][scenario_source_name].has_key?('dir') and not temp_config[@config['uniconf'][@config_version]['keys']['sources']][scenario_source_name]['dir'].nil?
-                scenario_source_pathtemp_config[@config['uniconf'][@config_version]['keys']['sources']][scenario_source_name]['dir']
+                scenario_source_path = temp_config[@config['uniconf'][@config_version]['keys']['sources']][scenario_source_name]['dir']
               end
               if @loaded_scenario_sources.key? scenario_source_name
                 scenario['source'] = @loaded_scenario_sources[scenario_source_name]
