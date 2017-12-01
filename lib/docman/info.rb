@@ -146,7 +146,7 @@ module Docman
     end
 
     def states(options = {})
-      if options[:type] == 'root' and self['type'] == 'root_chain'
+      if options[:type] == 'root' and (self['type'] == 'root_chain' or self['type'] == 'single')
         self['root_repo_states']
       else
         self['states']
