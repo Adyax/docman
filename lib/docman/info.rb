@@ -19,7 +19,7 @@ module Docman
       unless self['docroot_config'].deploy_target.nil?
         if self.has_key? 'states'
           self['states'].each_pair do |name, state|
-            if state.has_key?('source') and (not state.has_key?('type') or state.has_key['type'] == 'external_source')
+            if state.has_key?('source') and (not state.has_key?('type') or (state.has_key?('type') and state['type'] == 'external_source'))
               if state['source']['type'] == :retrieve_from_repo
                 @state_name = name
                 repo = state['source']['repo'] == :project_repo ? self['repo'] : state['source']['repo']
@@ -146,7 +146,7 @@ module Docman
     end
 
     def states(options = {})
-      if options[:type] == 'root' and self['type'] == 'root_chain'
+      if options[:type] == 'root' and (self['type'] == 'root_chain' or self['type'] == 'single')
         self['root_repo_states']
       else
         self['states']
