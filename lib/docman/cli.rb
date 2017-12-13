@@ -10,6 +10,7 @@ module Docman
 
     desc 'init "dirname" "repo"', 'Initialize docroot in "dirname" from config repo "repo"'
     method_option :force, :aliases => '-f', :desc => 'Force init'
+    method_option :debug, :aliases => '-d', :desc => 'Debug'
     method_option :skip, :aliases => '-s', :desc => 'Skip if docroot initialized already'
     option :branch
     def init(name, repo)
@@ -40,6 +41,7 @@ module Docman
 
     desc 'build', 'Build docroot'
     method_option :force, :aliases => '-f', :desc => 'Force full rebuild'
+    method_option :debug, :aliases => '-d', :desc => 'Debug'
     method_option :config, :desc => 'Configuration override JSON'
     method_option :config_dir, :desc => 'Config directories divided by coma where docman will search for config.yaml'
     option :tag
@@ -54,6 +56,7 @@ module Docman
 
     desc 'deploy', 'Deploy to target'
     method_option :force, :aliases => '-f', :desc => 'Force full deploy'
+    method_option :debug, :aliases => '-d', :desc => 'Debug'
     method_option :config, :desc => 'Configuration override JSON'
     method_option :config_dir, :desc => 'Config directories divided by coma where docman will search for config.yaml'
     def deploy(deploy_target, name, type, version)
@@ -99,6 +102,7 @@ module Docman
 
     desc 'info', 'Get info'
     method_option :force, :aliases => '-f', :desc => 'Force full rebuild'
+    method_option :debug, :aliases => '-d', :desc => 'Debug'
     method_option :config_dir, :desc => 'Config directories divided by coma where docman will search for config.yaml'
     option :tag
     def info(command, file)

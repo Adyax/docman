@@ -66,7 +66,7 @@ module Docman
     def with_rescue(write_to_file = true)
       failed_filepath = File.join(@workspace_dir, 'failed')
       if File.file?(failed_filepath)
-        log 'Last operation failed, forced rebuild mode'
+        puts 'Last operation failed, forced rebuild mode'
         FileUtils.rm_f failed_filepath
         @force = true
       end
