@@ -31,7 +31,13 @@ module Docman
     end
 
     def log(message, type = 'debug')
-      logger.send(type, "#{prefix} - #{message}")
+      if type == 'debug'
+        if Application::instance.options.has_key?('debug')
+          logger.send(type, "#{prefix} - #{message}")
+        end
+      else
+        logger.send(type, "#{prefix} - #{message}")
+      end
     end
 
     def prefix

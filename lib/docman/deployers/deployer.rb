@@ -83,7 +83,7 @@ module Docman
         else
           log 'No changes in docroot', 'info'
         end
-        log "Deploy results:\n" + @build_results.to_yaml
+        log "Deploy results:\n" + @build_results.to_yaml, 'info'
       end
 
       def deploy

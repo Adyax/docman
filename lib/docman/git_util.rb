@@ -19,14 +19,20 @@ module Docman
     def self.squash_commits(commit_count, message = nil)
       message = "$(git log --format=%B --reverse HEAD..HEAD@{1})" unless message
       exec "reset --soft HEAD~#{commit_count}"
-      exec "commit --no-verify -m \"#{message}\""
+      if Application::instance.options.has_key?('debug')
+        exec "commit --no-verify -m \"#{message}\""
+      else
+        exec "commit --quiet --no-verify -m \"#{message}\""
+      end
     end
 
     def self.reset_repo(path)
       Dir.chdir path
       exec 'reset --hard'
-      exec 'clean -f -d -x --dry-run'
-      exec 'status'
+      if Application::instance.options.has_key?('debug')
+        exec 'clean -f -d -x --dry-run'
+        exec 'status'
+      end
       exec 'clean -f -d -x'
     end
 
@@ -86,7 +92,14 @@ module Docman
         # pull root_path
         Dir.chdir root_path
         exec %Q(add --all #{path.slice "#{root_path}/"})
-        exec %Q(commit --no-verify -m "#{message}") if repo_changed? path
+        if repo_changed? path
+          if Application::instance.options.has_key?('debug')
+            exec %Q(commit --no-verify -m "#{message}")
+          else
+            exec %Q(commit --quiet --no-verify -m "#{message}")
+          end
+        end
+
         self.tag(root_path, tag) if tag
         Docman::Application.instance.commit_count = Docman::Application.instance.commit_count + 1
       end
