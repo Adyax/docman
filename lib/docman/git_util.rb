@@ -16,7 +16,7 @@ module Docman
       result
     end
 
-    def self.squash_commits(commit_count, message = nil)
+    def self.squash_commits(commit_count, message = nil, tag = nil)
       message = "$(git log --format=%B --reverse HEAD..HEAD@{1})" unless message
       exec "reset --soft HEAD~#{commit_count}"
       if Application::instance.options.has_key?('debug')
@@ -24,6 +24,7 @@ module Docman
       else
         exec "commit --quiet --no-verify -m \"#{message}\""
       end
+      self.tag(Dir.pwd, tag) if tag
     end
 
     def self.reset_repo(path)

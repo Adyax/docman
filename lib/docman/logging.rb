@@ -32,7 +32,7 @@ module Docman
 
     def log(message, type = 'debug')
       if type == 'debug'
-        if Application::instance.options.has_key?('debug')
+        if Application::instance.options.respond_to?('has_key') and Application::instance.options.has_key?('debug')
           logger.send(type, "#{prefix} - #{message}")
         end
       else

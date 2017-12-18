@@ -23,8 +23,8 @@ module Docman
           tag = version
         end
 
-        GitUtil.commit(root['full_build_path'], root['full_build_path'], 'Updated version', tag)
-        GitUtil.squash_commits(Docman::Application.instance.commit_count)
+        GitUtil.commit(root['full_build_path'], root['full_build_path'], 'Updated version')
+        GitUtil.squash_commits(Docman::Application.instance.commit_count, nil, tag)
         GitUtil.push(root['full_build_path'], root.version(type: 'root'))
       end
 
