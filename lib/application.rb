@@ -36,6 +36,7 @@ require 'docman/commands/nexus_provider_cmd'
 require 'docman/taggers/tagger'
 require 'docman/taggers/incremental_tagger'
 require 'docman/taggers/option_tagger'
+require 'docman/taggers/source_tagger'
 
 module Docman
   class Application < Docman::Command
@@ -72,7 +73,7 @@ module Docman
       end
       yield
     rescue Exception => e
-      log "Operation failed: #{e.message}", 'error'
+      puts "Operation failed: #{e.message}", 'error'
       if write_to_file
         File.open(failed_filepath, 'w') {|f| f.write(e.message) }
       end

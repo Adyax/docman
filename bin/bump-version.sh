@@ -48,8 +48,8 @@ if [ -f VERSION ]; then
     cat CHANGES >> tmpfile
     mv tmpfile CHANGES
     git add CHANGES VERSION
-    git commit -m "[skip] [ci-skip] Version bump to $INPUT_STRING"
-    git tag -a -m "[skip] [ci-skip] Tagging version $INPUT_STRING" "$INPUT_STRING"
+    git commit -m "[skip] [ci-skip] [ci skip] Version bump to $INPUT_STRING"
+    git tag -a -m "[skip] [ci-skip] [ci skip] Tagging version $INPUT_STRING" "$INPUT_STRING"
     git push origin ${INPUT_STRING}
     git push origin master
 else
@@ -67,8 +67,8 @@ else
         echo "" >> CHANGES
         echo "" >> CHANGES
         git add VERSION CHANGES
-        git commit -m "[skip] [ci-skip] Added VERSION and CHANGES files, Version bump to 0.1.0"
-        git tag -a -m "[skip] [ci-skip] Tagging version 0.1.0" "0.1.0"
+        git commit -m "[skip] [ci-skip] [ci skip] Added VERSION and CHANGES files, Version bump to 0.1.0"
+        git tag -a -m "[skip] [ci-skip] [ci skip] Tagging version 0.1.0" "0.1.0"
         git push origin --tags
         git push origin master
     fi
@@ -92,7 +92,7 @@ if [ -n "$1" ]; then
   echo "version: $TAG" >> info.yaml
   git add info.yaml
   if [ -n "$3" ] && [ "$3" == "skip" ]; then
-    git commit -m "[skip] [ci-skip] Changed tag to: $TAG" & git push -u origin ${BRANCH}
+    git commit -m "[skip] [ci-skip] [ci skip] Changed tag to: $TAG" & git push -u origin ${BRANCH}
   else
     git commit -m "Changed tag to: $TAG"
     git push -u origin ${BRANCH}
