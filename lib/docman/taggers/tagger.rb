@@ -11,7 +11,7 @@ module Docman
         if c
           c.new(params, context, caller, 'tagger')
         else
-          raise "Bad tagger type: #{type}"
+          raise "Bad tagger type: #{params['handler']}"
         end
       end
 
