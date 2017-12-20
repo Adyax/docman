@@ -45,7 +45,7 @@ module Docman
       if File.directory? master_file
         @structure = structure_build(File.join(@docroot_config_dir, 'master'))
       else
-        @structure = structure_build_from_config_file(File.join(@docroot_config_dir, 'master'))
+        @structure = structure_build_from_config_file(Docman::Application.instance.config)
       end
     end
 
@@ -56,12 +56,17 @@ module Docman
       GitUtil.update @docroot_config_dir, "#{options} #{branch.strip}"
     end
 
-    def structure_build_from_config_file(path, prefix = '', parent = nil, parent_key = 'master')
-      config = Docman::Application.instance.config
+    def structure_build_from_config_file(config, prefix = '', parent = nil, parent_key = 'master')
       return if config['components'][parent_key].nil?
       children = []
 
       info = config['components'][parent_key]
+
+      children_components_config = nil
+      unless info['components'].nil?
+        children_components_config = {'components' => info.delete('components')}
+      end
+
       @raw_infos[parent_key] = info
 
       unless info['status'].nil?
@@ -70,7 +75,7 @@ module Docman
 
       name = parent_key
       prefix = prefix.size > 0 ? File.join(prefix, name) : name
-      info['full_path'] = path
+      info['full_path'] = @docroot_config_dir
       info['docroot_config'] = self
       info['build_path'] = prefix
       info['full_build_path'] = File.join(@docroot_dir, prefix)
@@ -91,16 +96,11 @@ module Docman
 
       @names[name.to_s] = i
 
-      # Dir.foreach(path) do |entry|
-      #   next if (entry == '..' || entry == '.')
-      #   full_path = File.join(path, entry)
-      #   if File.directory?(full_path)
-      #     dir_hash = structure_build(full_path, prefix, i)
-      #     unless dir_hash == nil
-      #       children << dir_hash
-      #     end
-      #   end
-      # end
+      unless children_components_config.nil?
+        children_components_config['components'].each {|name, config|
+          children << structure_build_from_config_file(children_components_config, prefix, i, name)
+        }
+      end
       i
     end
 
