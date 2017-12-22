@@ -170,8 +170,16 @@ module Docman
 
     def states_dependin_on(name, version)
       states = {}
-      project(name).states.each do |state, info|
-        states[state] = info if info['version'] == version
+      master_project = project(name)
+      if master_project.has_key?('states_project')
+        states_project = project(master_project['states_project'])
+        states_project.states.each do |state, info|
+          states[state] = info if info['version'] == version
+        end
+      else
+        master_project.states.each do |state, info|
+          states[state] = info if info['version'] == version
+        end
       end
       states
     end
