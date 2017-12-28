@@ -95,9 +95,9 @@ module Docman
         exec %Q(add --all #{path.slice "#{root_path}/"})
         if repo_changed? path
           if Application::instance.options.has_key?('debug')
-            exec %Q(commit --no-verify -m "#{message}")
+            exec %Q(commit --allow-empty --no-verify -m "#{message}")
           else
-            exec %Q(commit --quiet --no-verify -m "#{message}")
+            exec %Q(commit --allow-empty --quiet --no-verify -m "#{message}")
           end
         end
 
