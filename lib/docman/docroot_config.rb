@@ -97,8 +97,8 @@ module Docman
       @names[name.to_s] = i
 
       unless children_components_config.nil?
-        children_components_config['components'].each {|name, config|
-          children << structure_build_from_config_file(children_components_config, prefix, i, name)
+        children_components_config['components'].each {|child_name, child_config|
+          children << structure_build_from_config_file(children_components_config, prefix, i, child_name)
         }
       end
       i

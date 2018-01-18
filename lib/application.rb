@@ -37,6 +37,7 @@ require 'docman/taggers/tagger'
 require 'docman/taggers/incremental_tagger'
 require 'docman/taggers/option_tagger'
 require 'docman/taggers/source_tagger'
+require 'docman/taggers/components_tagger'
 
 module Docman
   class Application < Docman::Command
