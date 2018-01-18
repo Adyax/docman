@@ -10,7 +10,7 @@ module Docman
 
       define_hooks :before_push, :after_push, :before_build, :after_build, :before_deploy, :after_deploy
 
-      attr_accessor :build_results
+      attr_accessor :build_results, :docroot_config, :versions
 
       @@deployers = {}
 
