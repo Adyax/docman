@@ -14,7 +14,7 @@ module Docman
         tag_parts << "#{state}--#{time}"
         @caller.build_results.each { |component_name, component_build_result|
           unless component_name == 'master'
-            tag_parts << "#{component_name}:#{component_build_result['version']}"
+            tag_parts << "#{component_name}-#{component_build_result['version']}"
           end
         }
         tag = tag_parts.join('--')
