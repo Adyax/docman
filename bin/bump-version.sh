@@ -13,34 +13,79 @@
 # a file called CHANGES (under the title of the new version
 # number) and create a GIT tag.
 
-git checkout master
-git pull origin master
+POSITIONAL=()
+BRANCH="master"
+NEXT=0
+SKIP=0
+
+if [[ $# == 0 ]]; then
+    POSITIONAL+=("-h")
+    set -- "${POSITIONAL[@]}" # restore positional parameters
+fi
+
+while [[ $# -gt 0 ]]; do
+    key="$1"
+    case $key in
+        -b|--branch*)
+            if [[ $key == "-b" ]] || [[ $key == "--branch" ]]; then
+                BRANCH="$2"
+                shift # past argument
+                shift # past value
+            else
+                BRANCH="${1#*=}"
+                shift # past argument=value
+            fi
+        ;;
+        -n|--next)
+            NEXT=1
+            shift # past argument
+        ;;
+        -s|--skip)
+            SKIP=1
+            shift # past argument
+        ;;
+        -h|--help)
+            echo "Usage: -[hbns] [state] [next] [skip]"
+            echo -e "\t-h, --help\n\t\tShow this help message."
+            echo -e "\t-b [branch], --branch [branch], --branch=[branch]\n\t\tTag specific branch."
+            echo -e "\t-n, --next\n\t\tSet next release without prompt."
+            echo -e "\t-s, --skip\n\t\tSkip CI trigger with commit message."
+            exit 0
+        ;;
+        *)    # unknown option
+            POSITIONAL+=("$1") # save it in an array for later
+            shift # past argument
+        ;;
+    esac
+done
+
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+if [[ $NEXT == 0 ]] && [ -n "$2" ] && [ "$2" == "next" ]; then
+    NEXT=1
+fi
+
+if [[ $SKIP == 0 ]] && [ -n "$3" ] && [ "$3" == "skip" ]; then
+    SKIP=1
+fi
+
 git fetch
+git checkout $BRANCH
+git pull origin $BRANCH
 
 if [ -f VERSION ]; then
     BASE_STRING=`cat VERSION`
     echo $BASE_STRING
     if [[ $BASE_STRING =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)([\.\-][0-9a-zA_Z_\-]+)?$ ]]; then
-        # echo "WO PREFIX"
         V_MAJOR=${BASH_REMATCH[1]}
         V_MINOR=${BASH_REMATCH[2]}
         V_PATCH=${BASH_REMATCH[3]}
         V_SUFFIX=${BASH_REMATCH[4]}
         echo "Current version : $BASE_STRING"
-        # echo "V_MAJOR $V_MAJOR"
-        # echo "V_MINOR $V_MINOR"
-        # echo "V_PATCH $V_PATCH"
-        # echo "V_SUFFIX $V_SUFFIX"
         V_PATCH=$((V_PATCH + 1))
         SUGGESTED_VERSION="${V_PREFIX}${V_MAJOR}.${V_MINOR}.${V_PATCH}${V_SUFFIX}"
     else
         if [[ $BASE_STRING =~ ^([0-9a-zA_Z_\-]+[\-])([0-9]+)\.([0-9]+)\.([0-9]+)([\.\-][0-9a-zA_Z_\-]+)?$ ]]; then
-            # echo "W PREFIX"
-            # V_PREFIX=${BASH_REMATCH[1]}
-            # V_MAJOR=${BASH_REMATCH[2]}
-            # V_MINOR=${BASH_REMATCH[3]}
-            # V_PATCH=${BASH_REMATCH[4]}
-            # V_SUFFIX=${BASH_REMATCH[5]}
             echo "V_PREFIX $V_PREFIX"
             echo "V_MAJOR $V_MAJOR"
             echo "V_MINOR $V_MINOR"
@@ -56,7 +101,7 @@ if [ -f VERSION ]; then
 
 
     if [ -n "$SUGGESTED_VERSION" ]; then
-        if [ -n "$2" ] && [ "$2" == "next" ]; then
+        if [[ $NEXT == 1 ]]; then
           INPUT_STRING=$SUGGESTED_VERSION
         else
             read -p "Enter a version number [$SUGGESTED_VERSION]: " INPUT_STRING
@@ -85,7 +130,7 @@ if [ -f VERSION ]; then
     git commit -m "[skip] [ci-skip] [ci skip] Version bump to $INPUT_STRING"
     git tag -a -m "[skip] [ci-skip] [ci skip] Tagging version $INPUT_STRING" "$INPUT_STRING"
     git push origin ${INPUT_STRING}
-    git push origin master
+    git push origin $BRANCH
 else
     echo "Could not find a VERSION file"
     read -p "Do you want to create a version file and start from scratch? [y]" RESPONSE
@@ -104,33 +149,34 @@ else
         git commit -m "[skip] [ci-skip] [ci skip] Added VERSION and CHANGES files, Version bump to 0.1.0"
         git tag -a -m "[skip] [ci-skip] [ci skip] Tagging version 0.1.0" "0.1.0"
         git push origin --tags
-        git push origin master
+        git push origin $BRANCH
     fi
     TAG="0.1.0"
 fi
 
 if [ -n "$1" ]; then
   git fetch
-  BRANCH="state_$1"
+  STATE_BRANCH="state_$1"
   #git show-ref --verify --quiet "refs/heads/${BRANCH}"
   git ls-remote --exit-code . origin/state_stable &> /dev/null
   if [ $? == 0 ]; then
-    git checkout ${BRANCH}
-    git pull origin ${BRANCH}
+    git checkout ${STATE_BRANCH}
+    git pull origin ${STATE_BRANCH}
   else
-    git checkout --orphan ${BRANCH}
+    git checkout --orphan ${STATE_BRANCH}
     git rm --cached -r .
     git clean -f -d
   fi
   echo "type: tag" > info.yaml
   echo "version: $TAG" >> info.yaml
   git add info.yaml
-  if [ -n "$3" ] && [ "$3" == "skip" ]; then
-    git commit -m "[skip] [ci-skip] [ci skip] Changed tag to: $TAG" & git push -u origin ${BRANCH}
+  if [[ $SKIP == 1 ]]; then
+    git commit -m "[skip] [ci-skip] [ci skip] Changed tag to: $TAG"
+    git push -u origin ${STATE_BRANCH}
   else
     git commit -m "Changed tag to: $TAG"
-    git push -u origin ${BRANCH}
+    git push -u origin ${STATE_BRANCH}
   fi
-  git checkout master
+  git checkout $BRANCH
   echo ${TAG}
 fi
