@@ -1,13 +1,13 @@
 #!/bin/bash
- 
+
 # works with a file called VERSION in the current directory,
 # the contents of which should be a semantic version number
 # such as "1.2.3"
- 
+
 # this script will display the current version, automatically
 # suggest a "minor" version update, and ask for input to use
 # the suggestion, or a newly entered value.
- 
+
 # once the new version number is determined, the script will
 # pull a list of changes from git history, prepend this to
 # a file called CHANGES (under the title of the new version
@@ -19,23 +19,57 @@ git fetch
 
 if [ -f VERSION ]; then
     BASE_STRING=`cat VERSION`
-    BASE_LIST=(`echo $BASE_STRING | tr '.' ' '`)
-    V_MAJOR=${BASE_LIST[0]}
-    V_MINOR=${BASE_LIST[1]}
-    V_PATCH=${BASE_LIST[2]}
-    echo "Current version : $BASE_STRING"
-    #V_MINOR=$((V_MINOR + 1))
-    V_PATCH=$((V_PATCH + 1))
-    #V_PATCH=0
-    SUGGESTED_VERSION="$V_MAJOR.$V_MINOR.$V_PATCH"
-
-    if [ -n "$2" ] && [ "$2" == "next" ]; then
-        INPUT_STRING=$SUGGESTED_VERSION
+    echo $BASE_STRING
+    if [[ $BASE_STRING =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)([\.\-][0-9a-zA_Z_\-]+)?$ ]]; then
+        # echo "WO PREFIX"
+        V_MAJOR=${BASH_REMATCH[1]}
+        V_MINOR=${BASH_REMATCH[2]}
+        V_PATCH=${BASH_REMATCH[3]}
+        V_SUFFIX=${BASH_REMATCH[4]}
+        echo "Current version : $BASE_STRING"
+        # echo "V_MAJOR $V_MAJOR"
+        # echo "V_MINOR $V_MINOR"
+        # echo "V_PATCH $V_PATCH"
+        # echo "V_SUFFIX $V_SUFFIX"
+        V_PATCH=$((V_PATCH + 1))
+        SUGGESTED_VERSION="${V_PREFIX}${V_MAJOR}.${V_MINOR}.${V_PATCH}${V_SUFFIX}"
     else
-      read -p "Enter a version number [$SUGGESTED_VERSION]: " INPUT_STRING
-      if [ "$INPUT_STRING" = "" ]; then
+        if [[ $BASE_STRING =~ ^([0-9a-zA_Z_\-]+[\-])([0-9]+)\.([0-9]+)\.([0-9]+)([\.\-][0-9a-zA_Z_\-]+)?$ ]]; then
+            # echo "W PREFIX"
+            # V_PREFIX=${BASH_REMATCH[1]}
+            # V_MAJOR=${BASH_REMATCH[2]}
+            # V_MINOR=${BASH_REMATCH[3]}
+            # V_PATCH=${BASH_REMATCH[4]}
+            # V_SUFFIX=${BASH_REMATCH[5]}
+            echo "V_PREFIX $V_PREFIX"
+            echo "V_MAJOR $V_MAJOR"
+            echo "V_MINOR $V_MINOR"
+            echo "V_PATCH $V_PATCH"
+            echo "V_SUFFIX $V_SUFFIX"
+            echo "Current version : $BASE_STRING"
+            V_PATCH=$((V_PATCH + 1))
+            SUGGESTED_VERSION="${V_PREFIX}${V_MAJOR}.${V_MINOR}.${V_PATCH}${V_SUFFIX}"
+        fi
+    fi
+
+    echo $SUGGESTED_VERSION
+
+
+    if [ -n "$SUGGESTED_VERSION" ]; then
+        if [ -n "$2" ] && [ "$2" == "next" ]; then
           INPUT_STRING=$SUGGESTED_VERSION
-      fi
+        else
+            read -p "Enter a version number [$SUGGESTED_VERSION]: " INPUT_STRING
+            if [ "$INPUT_STRING" = "" ]; then
+                INPUT_STRING=$SUGGESTED_VERSION
+            fi
+        fi
+    else
+        read -p "Enter a version number: " INPUT_STRING
+        if [ "$INPUT_STRING" = "" ]; then
+            echo "Version number should not be empty to continue."
+            exit 1
+        fi
     fi
 
     echo "Will set new version to be $INPUT_STRING"
