@@ -71,11 +71,10 @@ fi
 
 git fetch
 git checkout $BRANCH
-git pull origin $BRANCH
+git pull origin $BRANCH 2>/dev/null 
 
 if [ -f VERSION ]; then
     BASE_STRING=`cat VERSION`
-    echo $BASE_STRING
     if [[ $BASE_STRING =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)([\.\-][0-9a-zA_Z_\-]+)?$ ]]; then
         V_MAJOR=${BASH_REMATCH[1]}
         V_MINOR=${BASH_REMATCH[2]}
@@ -96,9 +95,6 @@ if [ -f VERSION ]; then
             SUGGESTED_VERSION="${V_PREFIX}${V_MAJOR}.${V_MINOR}.${V_PATCH}${V_SUFFIX}"
         fi
     fi
-
-    echo $SUGGESTED_VERSION
-
 
     if [ -n "$SUGGESTED_VERSION" ]; then
         if [[ $NEXT == 1 ]]; then
