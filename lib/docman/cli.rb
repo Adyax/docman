@@ -71,9 +71,9 @@ module Docman
     end
 
     desc 'bump', 'Bump version'
-    method_option :next, :aliases => '-n', :desc => 'Automatically use next version number'
-    method_option :branch, :aliases => '-b', :desc => 'Bump release on specific branch'
-    method_option :skip, :aliases => '-s', :desc => 'Skip CI with commit message'
+    method_option :next, :type => :boolean, :aliases => '-n', :desc => 'Automatically use next version number'
+    method_option :branch, :type => :string, :aliases => '-b', :desc => 'Bump release on specific branch'
+    method_option :skip, :type => :boolean, :aliases => '-s', :desc => 'Skip CI with commit message'
     #option :state
     #option :skip
     def bump(state = nil)
