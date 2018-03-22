@@ -85,11 +85,11 @@ if [ -f VERSION ]; then
         SUGGESTED_VERSION="${V_PREFIX}${V_MAJOR}.${V_MINOR}.${V_PATCH}${V_SUFFIX}"
     else
         if [[ $BASE_STRING =~ ^([0-9a-zA_Z_\-]+[\-])([0-9]+)\.([0-9]+)\.([0-9]+)([\.\-][0-9a-zA_Z_\-]+)?$ ]]; then
-            echo "V_PREFIX $V_PREFIX"
-            echo "V_MAJOR $V_MAJOR"
-            echo "V_MINOR $V_MINOR"
-            echo "V_PATCH $V_PATCH"
-            echo "V_SUFFIX $V_SUFFIX"
+            V_PREFIX=${BASH_REMATCH[1]}
+            V_MAJOR=${BASH_REMATCH[2]}
+            V_MINOR=${BASH_REMATCH[3]}
+            V_PATCH=${BASH_REMATCH[4]}
+            V_SUFFIX=${BASH_REMATCH[5]}
             echo "Current version : $BASE_STRING"
             V_PATCH=$((V_PATCH + 1))
             SUGGESTED_VERSION="${V_PREFIX}${V_MAJOR}.${V_MINOR}.${V_PATCH}${V_SUFFIX}"
