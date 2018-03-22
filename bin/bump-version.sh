@@ -71,7 +71,7 @@ fi
 
 git fetch
 git checkout $BRANCH
-git pull origin $BRANCH 2>/dev/null 
+git pull origin $BRANCH 2>/dev/null || echo "Branch not found on origin."
 
 if [ -f VERSION ]; then
     BASE_STRING=`cat VERSION`
