@@ -81,9 +81,7 @@ module Docman
       bump_params.push("--branch=#{options[:branch]}") if options[:branch]
       bump_params.push('--next') if options[:next]
       bump_params.push('--skip') if options[:skip]
-      puts "#{Application::bin}/bump-version.sh #{bump_params.join(' ')} #{state}"
-      require 'debug'
-      # Exec.do "#{Application::bin}/bump-version.sh #{bump_params.join(' ')} #{state}"
+      Exec.do "#{Application::bin}/bump-version.sh #{bump_params.join(' ')} #{state}"
       say('Complete!', :green)
     end
 
