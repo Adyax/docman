@@ -1,3 +1,3 @@
 module Docman
-  VERSION = "0.0.83"
+  VERSION = "0.0.95"
 end
