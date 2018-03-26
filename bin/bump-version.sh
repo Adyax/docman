@@ -75,12 +75,12 @@ git pull origin $BRANCH 2>/dev/null || echo "Branch not found on origin."
 
 if [ -f VERSION ]; then
     BASE_STRING=`cat VERSION`
+    echo "Current version : $BASE_STRING"
     if [[ $BASE_STRING =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)([\.\-][0-9a-zA_Z_\-]+)?$ ]]; then
         V_MAJOR=${BASH_REMATCH[1]}
         V_MINOR=${BASH_REMATCH[2]}
         V_PATCH=${BASH_REMATCH[3]}
         V_SUFFIX=${BASH_REMATCH[4]}
-        echo "Current version : $BASE_STRING"
         V_PATCH=$((V_PATCH + 1))
         SUGGESTED_VERSION="${V_PREFIX}${V_MAJOR}.${V_MINOR}.${V_PATCH}${V_SUFFIX}"
     else
@@ -90,7 +90,6 @@ if [ -f VERSION ]; then
             V_MINOR=${BASH_REMATCH[3]}
             V_PATCH=${BASH_REMATCH[4]}
             V_SUFFIX=${BASH_REMATCH[5]}
-            echo "Current version : $BASE_STRING"
             V_PATCH=$((V_PATCH + 1))
             SUGGESTED_VERSION="${V_PREFIX}${V_MAJOR}.${V_MINOR}.${V_PATCH}${V_SUFFIX}"
         fi
