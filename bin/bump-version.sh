@@ -15,6 +15,7 @@
 
 POSITIONAL=()
 BRANCH="master"
+TAG=""
 NEXT=0
 SKIP=0
 
@@ -36,6 +37,16 @@ while [[ $# -gt 0 ]]; do
                 shift # past argument=value
             fi
         ;;
+        -t|--tag*)
+            if [[ $key == "-t" ]] || [[ $key == "--tag" ]]; then
+                TAG="$2"
+                shift # past argument
+                shift # past value
+            else
+                TAG="${1#*=}"
+                shift # past argument=value
+            fi
+        ;;
         -n|--next)
             NEXT=1
             shift # past argument
@@ -48,6 +59,7 @@ while [[ $# -gt 0 ]]; do
             echo "Usage: -[hbns] [state] [next] [skip]"
             echo -e "\t-h, --help\n\t\tShow this help message."
             echo -e "\t-b [branch], --branch [branch], --branch=[branch]\n\t\tTag specific branch."
+            echo -e "\t-t [tag], --tag [tag], --tag=[tag]\n\t\tBump specific version."
             echo -e "\t-n, --next\n\t\tSet next release without prompt."
             echo -e "\t-s, --skip\n\t\tSkip CI trigger with commit message."
             exit 0
@@ -95,21 +107,25 @@ if [ -f VERSION ]; then
         fi
     fi
 
-    if [ -n "$SUGGESTED_VERSION" ]; then
-        if [[ $NEXT == 1 ]]; then
-          INPUT_STRING=$SUGGESTED_VERSION
+    if [[ $TAG == "" ]]; then
+        if [ -n "$SUGGESTED_VERSION" ]; then
+            if [[ $NEXT == 1 ]]; then
+              INPUT_STRING=$SUGGESTED_VERSION
+            else
+                read -p "Enter a version number [$SUGGESTED_VERSION]: " INPUT_STRING
+                if [ "$INPUT_STRING" = "" ]; then
+                    INPUT_STRING=$SUGGESTED_VERSION
+                fi
+            fi
         else
-            read -p "Enter a version number [$SUGGESTED_VERSION]: " INPUT_STRING
+            read -p "Enter a version number: " INPUT_STRING
             if [ "$INPUT_STRING" = "" ]; then
-                INPUT_STRING=$SUGGESTED_VERSION
+                echo "Version number should not be empty to continue."
+                exit 1
             fi
         fi
     else
-        read -p "Enter a version number: " INPUT_STRING
-        if [ "$INPUT_STRING" = "" ]; then
-            echo "Version number should not be empty to continue."
-            exit 1
-        fi
+        INPUT_STRING=$TAG
     fi
 
     echo "Will set new version to be $INPUT_STRING"
