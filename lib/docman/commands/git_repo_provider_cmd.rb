@@ -25,7 +25,9 @@ module Docman
     end
 
     def get_content
-      GitUtil.get(@context['repo'], self['target_path'], @context.version_type, @context.version, true, 1)
+      single_branch = @context.has_key?("single_branch") ? @context["single_branch"] : true
+      depth = @context.has_key?("depth") ? @context["depth"] : 1
+      GitUtil.get(@context['repo'], self['target_path'], @context.version_type, @context.version, single_branch, depth)
     end
 
     def changed_from_last_version?
