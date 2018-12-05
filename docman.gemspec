@@ -29,4 +29,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'diffy'
   spec.add_dependency 'io-console'
   spec.add_dependency 'json'
+  spec.add_dependency 'etc'
 end
