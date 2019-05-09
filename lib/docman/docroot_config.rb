@@ -90,6 +90,8 @@ module Docman
         info.merge! @override['projects'][info['name']]
       end
 
+      info = override_from_environment(info)
+
       i = Docman::Info.new(info)
       @root = i if parent.nil?
       i['root'] = @root
@@ -130,6 +132,8 @@ module Docman
         info.merge! @override['projects'][info['name']]
       end
 
+      info = override_from_environment(info)
+
       i = Docman::Info.new(info)
       @root = i if parent.nil?
       i['root'] = @root
@@ -147,6 +151,58 @@ module Docman
         end
       end
       i
+    end
+
+    def override_from_environment(info)
+
+      docman_config_var = "DOCMAN_CONFIG"
+      if ENV.has_key? docman_config_var and ENV[docman_config_var].length > 0
+        puts "Variable #{docman_config_var} => #{ENV[docman_config_var]}"
+        docman_config_overrides = JSON.parse(ENV[docman_config_var])
+        if docman_config_overrides['projects'] && docman_config_overrides['projects'].key?(info['name'])
+          info.merge! @override['projects'][info['name']]
+        end
+      else
+        puts "Variable #{docman_config_var} not found."
+      end
+
+      docman_repo_var = "DOCMAN_PROJECTS_#{info['name'].upcase}_REPO"
+      if ENV.has_key? docman_repo_var and ENV[docman_repo_var].length > 0
+        puts "Variable #{docman_repo_var} => #{ENV[docman_repo_var]}"
+        info['repo'] = ENV[docman_repo_var]
+      else
+        puts "Variable #{docman_repo_var} not found."
+      end
+
+      docman_order_var = "DOCMAN_PROJECTS_#{info['name'].upcase}_ORDER"
+      if ENV.has_key? docman_order_var and ENV[docman_tag_var].length > 0
+        puts "Variable #{docman_order_var} => #{ENV[docman_order_var]}"
+        info['order'] = ENV[docman_order_var]
+      else
+        puts "Variable #{docman_order_var} not found."
+      end
+
+      docman_version_var = "DOCMAN_PROJECTS_#{info['name'].upcase}_VERSION"
+      if ENV.has_key? docman_version_var and ENV[docman_version_var].length > 0
+        puts "Variable #{docman_version_var} => #{ENV[docman_version_var]}"
+        info['states'].each do |k,v|
+          info['states'][k]['version'] = ENV[docman_version_var]
+        end
+      else
+        puts "Variable #{docman_version_var} not found."
+      end
+
+      docman_type_var = "DOCMAN_PROJECTS_#{info['name'].upcase}_TYPE"
+      if ENV.has_key? docman_type_var and ENV[docman_type_var].length > 0
+        puts "Variable #{docman_type_var} => #{ENV[docman_type_var]}"
+        info['states'].each do |k,v|
+          info['states'][k]['type'] = ENV[docman_type_var]
+        end
+      else
+        puts "Variable #{docman_type_var} not found."
+      end
+
+      info
     end
 
     def chain(info)
