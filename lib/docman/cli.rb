@@ -45,7 +45,7 @@ module Docman
     method_option :config, :desc => 'Configuration override JSON'
     method_option :config_dir, :desc => 'Config directories divided by coma where docman will search for config.yaml'
     option :tag
-    def build(deploy_target, state="")
+    def build(deploy_target="git_target", state="")
       docman_state_var = "DOCMAN_STATE"
       if ENV.has_key? docman_state_var and ENV[docman_state_var].length > 0
         state = ENV[docman_state_var]
