@@ -186,20 +186,11 @@ module Docman
       if ENV.has_key? docman_version_var and ENV[docman_version_var].length > 0
         puts "Variable #{docman_version_var} => #{ENV[docman_version_var]}"
         info['states'].each do |k,v|
+          info['states'][k]['type'] = "branch"
           info['states'][k]['version'] = ENV[docman_version_var]
         end
       else
         puts "Variable #{docman_version_var} not found."
-      end
-
-      docman_type_var = "DOCMAN_PROJECTS_#{info['name'].upcase}_TYPE"
-      if ENV.has_key? docman_type_var and ENV[docman_type_var].length > 0
-        puts "Variable #{docman_type_var} => #{ENV[docman_type_var]}"
-        info['states'].each do |k,v|
-          info['states'][k]['type'] = ENV[docman_type_var]
-        end
-      else
-        puts "Variable #{docman_type_var} not found."
       end
 
       info
