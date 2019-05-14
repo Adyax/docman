@@ -8,7 +8,9 @@ module Docman
 
     attr_reader :structure, :deploy_target, :docroot_dir, :docroot_config_dir, :config_dir, :root, :raw_infos
 
-    def initialize(docroot_dir, deploy_target_name = nil, options = nil)
+    def initialize(docroot_dir, deploy_target_name = nil, options = nil, state = nil)
+      @state = state
+
       @override = {}
       if options && options['config']
         @override = JSON.parse(options['config'])
@@ -160,7 +162,7 @@ module Docman
         puts "Variable #{docman_config_var} => #{ENV[docman_config_var]}"
         docman_config_overrides = JSON.parse(ENV[docman_config_var])
         if docman_config_overrides['projects'] && docman_config_overrides['projects'].key?(info['name'])
-          info.merge! @override['projects'][info['name']]
+          info.merge! docman_config_overrides['projects'][info['name']]
         end
       else
         puts "Variable #{docman_config_var} not found."
@@ -185,9 +187,14 @@ module Docman
       docman_version_var = "DOCMAN_PROJECTS_#{info['name'].upcase}_VERSION"
       if ENV.has_key? docman_version_var and ENV[docman_version_var].length > 0
         puts "Variable #{docman_version_var} => #{ENV[docman_version_var]}"
-        info['states'].each do |k,v|
-          info['states'][k]['type'] = "branch"
-          info['states'][k]['version'] = ENV[docman_version_var]
+        if @state.nil?
+          info['states'].each do |k,v|
+            info['states'][k]['type'] = "branch"
+            info['states'][k]['version'] = ENV[docman_version_var]
+          end
+        else
+          info['states'][@state]['type'] = "branch"
+          info['states'][@state]['version'] = ENV[docman_version_var]
         end
       else
         puts "Variable #{docman_version_var} not found."
