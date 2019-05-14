@@ -45,13 +45,21 @@ module Docman
     method_option :config, :desc => 'Configuration override JSON'
     method_option :config_dir, :desc => 'Config directories divided by coma where docman will search for config.yaml'
     option :tag
-    def build(deploy_target, state)
-      get_to_root_dir
-      if options[:force]
-        FileUtils.rm_rf('master') if File.directory? 'master'
+    def build(deploy_target="git_target", state="")
+      docman_state_var = "DOCMAN_STATE"
+      if ENV.has_key? docman_state_var and ENV[docman_state_var].length > 0
+        state = ENV[docman_state_var]
       end
-      Application.instance.build(deploy_target, state, options)
-      say('Complete!', :green)
+      if state.length > 0
+        get_to_root_dir
+        if options[:force]
+          FileUtils.rm_rf('master') if File.directory? 'master'
+        end
+        Application.instance.build(deploy_target, state, options)
+        say('Complete!', :green)
+      else
+        say("Cant build without state parameter or #{docman_state_var} environment variable.")
+      end
     end
 
     desc 'deploy', 'Deploy to target'

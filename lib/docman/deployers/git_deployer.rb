@@ -14,7 +14,15 @@ module Docman
           prev_version = File.file?(filepath) ? File.open(filepath) : nil
           params = self['environment']['tagger']
           params['prev_version'] = prev_version
-          version = Docman::Taggers::Tagger.create(params, root, self).perform
+          version = ''
+          docman_tag_var = "DOCMAN_TAG"
+          if ENV.has_key? docman_tag_var and ENV[docman_tag_var].length > 0
+            puts "Variable #{docman_tag_var} => #{ENV[docman_tag_var]}"
+            version = ENV[docman_tag_var]
+          else
+            puts "Variable #{docman_tag_var} not found."
+            version = Docman::Taggers::Tagger.create(params, root, self).perform
+          end
           File.open(filepath, 'w') {|f| f.write(version) }
 
           filepath = File.join(root['full_build_path'], 'version.properties')
