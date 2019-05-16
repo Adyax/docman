@@ -168,7 +168,7 @@ module Docman
         puts "Variable #{docman_config_var} not found."
       end
 
-      docman_repo_var = "DOCMAN_PROJECTS_#{info['name'].upcase}_REPO"
+      docman_repo_var = "COMPONENT_#{info['name'].upcase}_REPO"
       if ENV.has_key? docman_repo_var and ENV[docman_repo_var].length > 0
         puts "Variable #{docman_repo_var} => #{ENV[docman_repo_var]}"
         info['repo'] = ENV[docman_repo_var]
@@ -176,7 +176,7 @@ module Docman
         puts "Variable #{docman_repo_var} not found."
       end
 
-      docman_order_var = "DOCMAN_PROJECTS_#{info['name'].upcase}_ORDER"
+      docman_order_var = "COMPONENT_#{info['name'].upcase}_ORDER"
       if ENV.has_key? docman_order_var and ENV[docman_tag_var].length > 0
         puts "Variable #{docman_order_var} => #{ENV[docman_order_var]}"
         info['order'] = ENV[docman_order_var]
@@ -184,7 +184,7 @@ module Docman
         puts "Variable #{docman_order_var} not found."
       end
 
-      docman_version_var = "DOCMAN_PROJECTS_#{info['name'].upcase}_VERSION"
+      docman_version_var = "COMPONENT_#{info['name'].upcase}_VERSION"
       if ENV.has_key? docman_version_var and ENV[docman_version_var].length > 0
         puts "Variable #{docman_version_var} => #{ENV[docman_version_var]}"
         if @state.nil?
