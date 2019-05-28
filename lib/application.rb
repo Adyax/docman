@@ -94,7 +94,7 @@ module Docman
       result = nil
       with_rescue do
         @options = options
-        @docroot_config = DocrootConfig.new(@workspace_dir, deploy_target_name, options, state)
+        @docroot_config = DocrootConfig.new(@workspace_dir, deploy_target_name, options)
         @deploy_target = @docroot_config.deploy_target
         @docroot_config.states_dependin_on(name, version).keys.each do |state|
           execute('deploy', state, name)
