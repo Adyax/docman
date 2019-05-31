@@ -69,7 +69,7 @@ module Docman
         single_branch=''
         depth=''
       end
-      exec("clone #{single_branch} #{depth} #{repo} #{path}")
+      exec("clone --quite #{single_branch} #{depth} #{repo} #{path}")
     end
 
     def self.last_revision(path = nil, branch = 'HEAD')
