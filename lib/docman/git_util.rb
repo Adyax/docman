@@ -70,7 +70,7 @@ module Docman
         depth=''
       end
       if ENV.has_key? 'DOCMAN_GIT_CLONE_QUITE_STDERR' and ENV['DOCMAN_GIT_CLONE_QUITE_STDERR'] == '1'
-        quite = '--quite'
+        quite = '--quiet'
       else
         quite = ''
       end
