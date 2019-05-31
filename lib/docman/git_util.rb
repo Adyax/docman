@@ -69,7 +69,17 @@ module Docman
         single_branch=''
         depth=''
       end
-      exec("clone --quite #{single_branch} #{depth} #{repo} #{path}")
+      if ENV.has_key? 'DOCMAN_GIT_CLONE_QUITE_STDERR' and ENV['DOCMAN_GIT_CLONE_QUITE_STDERR'] == '1'
+        quite = '--quite'
+      else
+        quite = ''
+      end
+      if ENV.has_key? 'DOCMAN_GIT_CLONE_QUITE_STDOUT' and ENV['DOCMAN_GIT_CLONE_QUITE_STDOUT'] == '1'
+        stdout = '&> /dev/null'
+      else
+        stdout = ''
+      end
+      exec("clone #{quite} #{single_branch} #{depth} #{repo} #{path} #{stdout}")
     end
 
     def self.last_revision(path = nil, branch = 'HEAD')
