@@ -16,11 +16,15 @@ module Docman
           params['prev_version'] = prev_version
           version = ''
           docman_tag_var = "DOCMAN_TAG"
+          docman_release_var = "RELEASE_VERSION"
           if ENV.has_key? docman_tag_var and ENV[docman_tag_var].length > 0
             puts "Variable #{docman_tag_var} => #{ENV[docman_tag_var]}"
             version = ENV[docman_tag_var]
+          elsif ENV.has_key? docman_release_var and ENV[docman_release_var].length > 0
+            puts "Variable #{docman_release_var} => #{ENV[docman_release_var]}"
+            version = ENV[docman_release_var]
           else
-            puts "Variable #{docman_tag_var} not found."
+            puts "Variable #{docman_release_var} or #{docman_tag_var} not found."
             version = Docman::Taggers::Tagger.create(params, root, self).perform
           end
           File.open(filepath, 'w') {|f| f.write(version) }
