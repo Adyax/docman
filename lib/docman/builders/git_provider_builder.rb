@@ -9,10 +9,36 @@ module Docman
       end
 
       def build_with_provider
-        `find #{@context['full_build_path']} -mindepth 1 -maxdepth 1 -not -name '.git' -exec rm -rf {} \\;` if File.directory? @context['full_build_path']
+        ignore = ['.git']
+        docman_ignore_var = "DOCMAN_IGNORE"
+        if ENV.has_key? docman_ignore_var and ENV[docman_ignore_var].length > 0
+          puts "Variable #{docman_ignore_var} => #{ENV[docman_ignore_var]}"
+          is = ENV[docman_ignore_var]
+          isa = is.split(":")
+          isa.each do |item|
+            ignore.push(item)
+          end
+        else
+          puts "Variable #{docman_ignore_var} not found."
+        end
+        ignore.uniq!
+
+        find_ignore = "\( -path \"./#{ignore.join("\" -o -path \"./")}\" \)"
+
+        puts "FIND IGNORE => #{find_ignore}"
+
+        `find #{@context['full_build_path']} -mindepth 1 #{find_ignore} -prune -o -exec rm -rf {} \\;` if File.directory? @context['full_build_path']
         FileUtils.rm_r self['target_path'] if @context.need_rebuild? and File.directory? self['target_path']
         result = @provider.perform
-        `rsync -a --exclude '.git' #{self['target_path']}/. #{@context['full_build_path']}`
+
+        ria = ignore.each do |item|
+          "--exclude \"#{item}\""
+        end
+        rsync_ignore = ria.join(" ")
+
+        puts "RSYNC IGNORE => #{rsync_ignore}"
+
+        `rsync -a #{rsync_ignore} #{self['target_path']}/. #{@context['full_build_path']}`
         result
       end
 
