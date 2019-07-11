@@ -23,7 +23,7 @@ module Docman
         end
         ignore.uniq!
 
-        find_ignore = "\( -path \"./#{ignore.join("\" -o -path \"./")}\" \)"
+        find_ignore = "\\( -path \"./#{ignore.join("\" -o -path \"./")}\" \\)"
 
         puts "FIND IGNORE => #{find_ignore}"
 
