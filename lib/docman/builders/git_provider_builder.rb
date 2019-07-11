@@ -34,7 +34,7 @@ module Docman
         ria = ignore.each do |item|
           "--exclude \"#{item}\""
         end
-        rsync_ignore = ria.join(" ")
+        rsync_ignore = "--exclude=\"#{ria.join("\" --exclude=\"")}\""
 
         puts "RSYNC IGNORE => #{rsync_ignore}"
 
