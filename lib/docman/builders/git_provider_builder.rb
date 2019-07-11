@@ -23,7 +23,7 @@ module Docman
         end
         ignore.uniq!
 
-        fia = ignore
+        fia = []
         ignore.each do |item|
           path = ''
           item.split("/").each do |part|
