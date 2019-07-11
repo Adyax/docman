@@ -36,7 +36,7 @@ module Docman
 
         puts "FIND IGNORE => #{find_ignore}"
 
-        `find #{@context['full_build_path']} -mindepth 1 #{find_ignore} -prune -o -exec rm -rf {} \\;` if File.directory? @context['full_build_path']
+        `find #{@context['full_build_path']} -mindepth 1 #{find_ignore} -prune -o -print0 | xargs -0 -r -t rm -rf` if File.directory? @context['full_build_path']
         FileUtils.rm_r self['target_path'] if @context.need_rebuild? and File.directory? self['target_path']
         result = @provider.perform
 
