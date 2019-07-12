@@ -47,8 +47,6 @@ module Docman
 
         puts "RSYNC IGNORE => #{rsync_ignore}"
 
-        # require 'pry'; binding.pry
-
         `rsync -a #{rsync_ignore} #{self['target_path']}/. #{@context['full_build_path']}`
         result
       end
