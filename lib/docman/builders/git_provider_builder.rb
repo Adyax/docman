@@ -25,18 +25,18 @@ module Docman
 
         fia = []
         ignore.each do |item|
+          fia.push("^#{File.join(@context['full_build_path'], item).gsub('.', '\.')}/.*$")
           path = ''
           item.split("/").each do |part|
-            path = [path, part].join("/")
-            fia.push(path)
+            path = File.join(path, part)
+            fia.push("^#{File.join(@context['full_build_path'], path).gsub('.', '\.')}$")
           end
         end
-
-        find_ignore = "\\( -path \"./#{fia.join("\" -o -path \"./")}\" \\)"
-
+        # find_ignore = "\\( -path \"#{fia.join("\" -o -path \"")}\" \\)"
+        # puts "FIND IGNORE => #{find_ignore}"
+        find_ignore = "-e \"#{fia.join("\" -e \"")}\""
         puts "FIND IGNORE => #{find_ignore}"
-
-        `find #{@context['full_build_path']} -mindepth 1 #{find_ignore} -prune -o -print0 | xargs -0 -r -t rm -rf` if File.directory? @context['full_build_path']
+        `find #{@context['full_build_path']} -mindepth 1 -print0 | grep -z -v #{find_ignore} | xargs -0 -r -t rm -rf` if File.directory? @context['full_build_path']
         FileUtils.rm_r self['target_path'] if @context.need_rebuild? and File.directory? self['target_path']
         result = @provider.perform
 
@@ -46,6 +46,8 @@ module Docman
         rsync_ignore = "--exclude=\"#{ria.join("\" --exclude=\"")}\""
 
         puts "RSYNC IGNORE => #{rsync_ignore}"
+
+        # require 'pry'; binding.pry
 
         `rsync -a #{rsync_ignore} #{self['target_path']}/. #{@context['full_build_path']}`
         result
